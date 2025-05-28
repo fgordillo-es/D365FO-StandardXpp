@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>AbbreviationCodeImport_RU</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The <c>AbbreviationCodeImport_RU</c> class import
+/// Abridgements of addresses through ODBC connection
+/// </summary>
+/// <remarks>
+/// DSN for import should be selected in the dialog
+/// </remarks>
+class AbbreviationCodeImport_RU extends ODBCImport_RU implements BatchRetryable
+{
+    #Address_RU
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>importFile_KladrAbbreviations</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Populates abridgements table using result set
+    /// </summary>
+    /// <remarks>
+    /// Result set gets by executing query, defined in macro library
+    /// </remarks>
+    protected void importFile_KladrAbbreviations()
+    {
+        AddressTypeTable_RU addressTypeTable;
+        int                 numOfErrors;
+        AddrTypeCode_RU     addrTypeCode;
+
+        setprefix("@SYS28609");
+
+        resultSet = statement.executeQueryWithParameters(#SelectFromSOCRBASE, SqlParams::create());
+
+        while (resultSet.next())
+        {
+            addrTypeCode = int2str(resultSet.getInt(#4));
+
+            addressTypeTable = AddressTypeTable_RU::findByCode(addrTypeCode, true);
+
+            addressTypeTable.AddrTypeCode     = addrTypeCode;
+            addressTypeTable.AddrTypeFullName = resultSet.getString(#3);
+            addressTypeTable.AddrTypeName     = resultSet.getString(#2);
+            addressTypeTable.AddrTypeLevel    = resultSet.getInt(#1);
+
+            try
+            {
+                ttsBegin;
+
+                if (addressTypeTable.RecId)
+                {
+                    if (addressTypeTable.orig().AddrTypeCode     != addressTypeTable.AddrTypeCode     ||
+                        addressTypeTable.orig().AddrTypeFullName != addressTypeTable.AddrTypeFullName ||
+                        addressTypeTable.orig().AddrTypeName     != addressTypeTable.AddrTypeName     ||
+                        addressTypeTable.orig().AddrTypeLevel    != addressTypeTable.AddrTypeLevel)
+                    {
+                        addressTypeTable.update();
+                    }
+                }
+                else
+                {
+                    addressTypeTable.insert();
+                }
+
+                ttsCommit;
+            }
+            catch (Exception::Error)
+            {
+                numOfErrors ++;
+            }
+        }
+        if (numOfErrors)
+        {
+            warning(strfmt("@GLS107273", numOfErrors));
+        }
+        else
+        {
+            info("@GLS105894");
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>run</Name>
+				<Source><![CDATA[
+    public void run()
+    {
+        super();
+
+        this.importFile_KladrAbbreviations();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>construct</Name>
+				<Source><![CDATA[
+    public static AbbreviationCodeImport_RU construct()
+    {
+        return new AbbreviationCodeImport_RU();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>description</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Returns label - description of <c>AbbreviationCodeImport_RU</c>
+    /// </summary>
+    /// <returns>
+    /// Returns string value
+    /// </returns>
+    public static Name description()
+    {
+        return "@GLS106944";
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    public static void main(Args _args)
+    {
+        AbbreviationCodeImport_RU import = AbbreviationCodeImport_RU::construct();
+
+        if (import.prompt())
+        {
+            import.runOperation();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canRunInNewSession</Name>
+				<Source><![CDATA[
+    protected boolean canRunInNewSession()
+    {
+        return false;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>isRetryable</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Controls whether the batch task should be retried in case of transient errors.
+    /// </summary>
+    /// <returns>
+    /// Always returns true.
+    /// </returns>
+    [Hookable(false)]
+    public final boolean isRetryable()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>
