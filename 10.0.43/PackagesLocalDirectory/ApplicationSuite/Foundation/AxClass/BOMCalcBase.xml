@@ -1,0 +1,866 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>BomCalcBase</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+abstract class BomCalcBase
+{
+    ItemId              itemId;
+    InventDimId         inventDimId;
+    InventDim           inventDim;
+    UnitOfMeasureSymbol inventUnitId;
+
+    TransDate           calcDate;
+    CostProfitSet       profitSet;
+    BOMCalcGroup        bomCalcGroup;
+    Qty                 seriesSize;
+
+    List                listBOM;
+
+    Level               level;
+    LineNum             lineNum;
+    LineNum             globalLineNum;
+
+    BOMCalcBase         parentBOMCalc;
+
+    Map                 mapTotalItemConsumption; // used for calculation trade agreements
+    boolean             existTradeAgreements;
+
+    boolean             useStandardQty;
+
+    RunbaseProgress     progressBar;
+    boolean             showProgress;
+    int64               progressTotals;
+
+    NoYes               overrideGroupWarnings;
+
+    NoYes               checkNoBOM;
+    NoYes               checkNoRoute;
+    NoYes               checkNoResource;
+    NoYes               checkNoConsump;
+    NoYes               checkNoCostPrice;
+    int                 checkAgeCostPrice;
+    real                checkMinContribution;
+    NoYes               checkMissingUpdates;
+    NoYes               checkUseFallBack;
+
+    BOMCostPriceModel   costPriceModel;
+
+    PdsComdPricingRun   pdsComdPricingRun;
+    BOMVersion          pmfBOMVersion;
+
+    PmfRecycledBpParentCalcState                pmfRecycledBpParentCalcState;
+
+    boolean             skipInventTablevalidation;
+    const private int   infiniteLoopThreshold = 100;
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>addTotalItemConsumption</Name>
+				<Source><![CDATA[
+    void addTotalItemConsumption(ItemId _itemId, InventDimId _inventDimId, Qty _consumptionQty)
+    {
+        str key;
+
+        if (useStandardQty || level == 0) // Linetype = Item and makeToOrder = false
+        {
+            key = _itemId + '/' + _inventDimId;
+
+            if (mapTotalItemConsumption.exists(key))
+            {
+                _consumptionQty = _consumptionQty + mapTotalItemConsumption.lookup(key);
+            }
+            mapTotalItemConsumption.insert(key, _consumptionQty);
+
+            if (!existTradeAgreements) // call only once
+            {
+                this.setExistTradeAgreements();
+                existTradeAgreements = true;
+            }
+        }
+        else
+        {
+            if (!parentBOMCalc)
+            {
+                throw error(strFmt("@SYS27147", classStr(BOMCalcBase)));
+            }
+            parentBOMCalc.addTotalItemConsumption(_itemId, _inventDimId, _consumptionQty); // recursive call to the upper level
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>allowNonBOMFormula</Name>
+				<Source><![CDATA[
+    public boolean allowNonBOMFormula()
+    {
+        return false;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmIsCostBreakdownAllowed</Name>
+				<Source><![CDATA[
+    public boolean parmIsCostBreakdownAllowed()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>bomCalcGroup</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Gets the calculation group settings.
+    /// </summary>
+    /// <returns>
+    ///    The calculation group settings.
+    /// </returns>
+    public BOMCalcGroup bomCalcGroup()
+    {
+        return bomCalcGroup;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>bufferCalcTrans</Name>
+				<Source><![CDATA[
+    // Must be overridden.
+    // Returns buffer used as calculation transaction.
+    Common bufferCalcTrans()
+    {
+        throw error(Error::missingOverload(funcName()));
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calcRoute</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Calculates the cost for the route.
+    /// </summary>
+    protected void calcRoute()
+    {
+        List            listRoute;
+        ListEnumerator  listEnumerator;
+
+        setPrefix("@SYS28551");
+
+        listRoute = this.initListRoute();
+        listEnumerator = listRoute.getEnumerator();
+
+        // Calculate route operations
+        if (listEnumerator)
+        {
+            while (listEnumerator.moveNext())
+            {
+                listEnumerator.current().calc();
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createRecycledBpConsumptionCalc</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Creates an <c>IPmfRecycledBpConsumptionCalc</c> interface implementation that should be used for consumption calculation for a given <c>BOMCalcLine</c> class instance.
+    /// </summary>
+    /// <param name="_bomCalcLine">
+    /// A <c>BOMCalcLine</c> class instance.
+    /// </param>
+    /// <returns>
+    /// An <c>IPmfRecycledBpConsumptionCalc</c> interface implementation.
+    /// </returns>
+    public abstract IPmfRecycledBpConsumptionCalc createRecycledBpConsumptionCalc(BOMCalcLine _bomCalcLine)
+    {
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getLineNum</Name>
+				<Source><![CDATA[
+    LineNum getLineNum()
+    {
+        LineNum newLineNum;
+
+        if (level == 0)
+        {
+            globalLineNum++;
+            newLineNum = globalLineNum;
+        }
+        else
+        {
+            if (!parentBOMCalc)
+            {
+                throw error(strFmt("@SYS27147", classStr(BOMCalcBase)));
+            }
+            newLineNum = parentBOMCalc.getLineNum(); // recursive call to the top level
+        }
+
+        return newLineNum;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getTotalItemConsumption</Name>
+				<Source><![CDATA[
+    // total item consumption for trade agreements
+    Qty getTotalItemConsumption(ItemId _itemId, InventDimId _inventDimId)
+    {
+        str key;
+        Qty totalItemConsumption;
+
+        if (useStandardQty || level == 0) // Linetype = Item and makeToOrder = false
+        {
+            key = _itemId + '/' + _inventDimId;
+
+            if (mapTotalItemConsumption.exists(key))
+            {
+                totalItemConsumption = mapTotalItemConsumption.lookup(key);
+            }
+            else
+            {
+                totalItemConsumption = 0;
+            }
+        }
+        else
+        {
+            if (!parentBOMCalc)
+            {
+                throw error(strFmt("@SYS27147", classStr(BOMCalcBase)));
+            }
+            totalItemConsumption = parentBOMCalc.getTotalItemConsumption(_itemId, _inventDimId); // recursive call to the upper level
+        }
+
+        return totalItemConsumption;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>hasTradeAgreements</Name>
+				<Source><![CDATA[
+    boolean hasTradeAgreements(ItemId _itemId, InventDimId _inventDimId)
+    {
+        str     key;
+        boolean hasTradeAgreements;
+
+        if (useStandardQty || level == 0) // Linetype = Item and makeToOrder = false
+        {
+            key = _itemId + '/' + _inventDimId;
+
+            if (mapTotalItemConsumption.exists(key))
+            {
+                hasTradeAgreements = true;
+            }
+            else
+            {
+                hasTradeAgreements = false;
+            }
+        }
+        else
+        {
+            if (!parentBOMCalc)
+            {
+                throw error(strFmt("@SYS27147", classStr(BOMCalcBase)));
+            }
+            hasTradeAgreements = parentBOMCalc.hasTradeAgreements(_itemId, _inventDimId); // recursive call to the upper level
+        }
+
+        return hasTradeAgreements;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>incProgressTotals</Name>
+				<Source><![CDATA[
+    void incProgressTotals()
+    {
+        if (!progressBar)
+        {
+            return;
+        }
+
+        if (level != 0)
+        {
+            if (!parentBOMCalc)
+            {
+                throw error(strFmt("@SYS27147", classStr(BOMCalcBase)));
+            }
+            parentBOMCalc.incProgressTotals(); // recursive call to the top level
+        }
+
+        if (level == 0)
+        {
+            progressTotals++;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initListRoute</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Creates a list of Route operations current production order.
+    /// </summary>
+    /// <returns>
+    /// The initialized list.
+    /// </returns>
+    protected abstract List initListRoute()
+    {
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initParameters</Name>
+				<Source><![CDATA[
+    protected void initParameters()
+    {
+        InventTable inventTable;
+
+        if (itemId)
+        {
+            inventTable = InventTable::find(itemId);
+
+            if (!inventTable)
+            {
+                throw error(strfmt(InventTable::txtNotExist(),itemId));
+            }
+
+            if (!skipInventTablevalidation)
+            {
+                if (!this.allowNonBOMFormula()
+                && !inventTable.isFormulaOrBOMAllowed())
+                {
+                    if (#PMFEnabled)
+                    {
+                        throw error(strfmt("@PRO2614", itemId));
+                    }
+                    else
+                    {
+                        throw error(strfmt("@SYS19326", itemId));
+                    }
+                }
+            }
+        }
+
+        if (inventDimId && !inventDim)
+        {
+            inventDim = InventDim::find(inventDimId);
+        }
+
+        bomCalcGroup = inventTable.bomCalcGroup();
+
+        if (!inventUnitId)
+        {
+            inventUnitId = inventTable.inventUnitId();
+        }
+
+        if (!calcDate)
+        {
+            calcDate = DateTimeUtil::getSystemDate(DateTimeUtil::getUserPreferredTimeZone());
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initProgressBar</Name>
+				<Source><![CDATA[
+    void initProgressBar()
+    {
+        #macrolib.aviFiles
+
+        if (level != 0 || (level ==0 && !showProgress))
+        {
+            return;
+        }
+
+        progressBar = new RunbaseProgress(1, null);
+        progressBar.setCaption("@SYS13118");
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    public void new()
+    {
+        level                   = 0;
+        lineNum                 = 0;
+        globalLineNum           = 0;
+
+        profitSet               = CostProfitSet::Standard;
+        listBOM                 = new List(Types::Class);
+
+        mapTotalItemConsumption = new Map(Types::String, Types::Real);
+        existTradeAgreements    = false;
+        useStandardQty          = false;
+
+        progressTotals          = 0;
+        progressBar             = null;
+
+        overrideGroupWarnings   = NoYes::No;
+        checkNoBOM              = NoYes::No;
+        checkNoRoute            = NoYes::No;
+        checkNoResource         = NoYes::No;
+        checkNoConsump          = NoYes::No;
+        checkNoCostPrice        = NoYes::No;
+        checkAgeCostPrice       = 0;
+        checkMinContribution    = 0;
+
+        costPriceModel          = BOMCostPriceModel::BOMCalcGroup;
+
+        pmfRecycledBpParentCalcState = PmfRecycledBpParentCalcState::construct();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCalcDate</Name>
+				<Source><![CDATA[
+    TransDate parmCalcDate(TransDate _calcDate = calcDate)
+    {
+        calcDate = _calcDate;
+        return calcDate;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCheckAgeCostPrice</Name>
+				<Source><![CDATA[
+    int parmCheckAgeCostPrice(int _checkAgeCostPrice = checkAgeCostPrice)
+    {
+        checkAgeCostPrice = _checkAgeCostPrice;
+        return checkAgeCostPrice;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCheckMinContribution</Name>
+				<Source><![CDATA[
+    real parmCheckMinContribution(real _checkMinContribution = checkMinContribution)
+    {
+        checkMinContribution = _checkMinContribution;
+        return checkMinContribution;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCheckMissingUpdates</Name>
+				<Source><![CDATA[
+    NoYes parmCheckMissingUpdates(NoYes _checkMissingUpdates = checkMissingUpdates)
+    {
+        checkMissingUpdates = _checkMissingUpdates;
+        return checkMissingUpdates;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCheckNoBOM</Name>
+				<Source><![CDATA[
+    NoYes parmCheckNoBOM(NoYes _checkNoBOM = checkNoBOM)
+    {
+        checkNoBOM = _checkNoBOM;
+        return checkNoBOM;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCheckNoConsump</Name>
+				<Source><![CDATA[
+    NoYes parmCheckNoConsump(NoYes _checkNoConsump = checkNoConsump)
+    {
+        checkNoConsump = _checkNoConsump;
+        return checkNoConsump;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCheckNoCostPrice</Name>
+				<Source><![CDATA[
+    NoYes parmCheckNoCostPrice(NoYes _checkNoCostPrice = checkNoCostPrice)
+    {
+        checkNoCostPrice = _checkNoCostPrice;
+        return checkNoCostPrice;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCheckNoResource</Name>
+				<Source><![CDATA[
+    NoYes parmCheckNoResource(NoYes _checkNoResource = checkNoResource)
+    {
+        checkNoResource = _checkNoResource;
+        return checkNoResource;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCheckNoRoute</Name>
+				<Source><![CDATA[
+    NoYes parmCheckNoRoute(NoYes _checkNoRoute = checkNoRoute)
+    {
+        checkNoRoute = _checkNoRoute;
+        return checkNoRoute;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCheckUseFallBack</Name>
+				<Source><![CDATA[
+    NoYes parmCheckUseFallBack(NoYes _checkUseFallBack = checkUseFallBack)
+    {
+        checkUseFallBack = _checkUseFallBack;
+        return checkUseFallBack;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCostPriceModel</Name>
+				<Source><![CDATA[
+    public BOMCostPriceModel parmCostPriceModel(BOMCostPriceModel _costPriceModel = costPriceModel)
+    {
+        costPriceModel = _costPriceModel;
+
+        return costPriceModel;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmExistTradeAgreements</Name>
+				<Source><![CDATA[
+    boolean parmExistTradeAgreements(boolean _existTradeAgreements = existTradeAgreements)
+    {
+        existTradeAgreements = _existTradeAgreements;
+        return existTradeAgreements;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmInventDim</Name>
+				<Source><![CDATA[
+    InventDim parmInventDim(InventDim _inventDim = inventDim)
+    {
+        inventDim = _inventDim;
+        return inventDim;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmInventDimId</Name>
+				<Source><![CDATA[
+    InventDimId parmInventDimId(InventDimId _inventDimId = inventDimId)
+    {
+        inventDimId = _inventDimId;
+        return inventDimId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmInventTable</Name>
+				<Source><![CDATA[
+    InventTable parmInventTable(InventTable _inventTable = InventTable::find(itemId))
+    {
+        itemId = _inventTable.ItemId;
+
+        if (!prmisdefault(_inventTable))
+        {
+            skipInventTablevalidation = true;
+        }
+        if (!_inventTable)
+        {
+            skipInventTablevalidation = false;
+        }
+
+        return _inventTable;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmInventUnitId</Name>
+				<Source><![CDATA[
+    InventUnitId parmInventUnitId(InventUnitId _inventUnitId = inventUnitId)
+    {
+        inventUnitId = _inventUnitId;
+        return inventUnitId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmItemId</Name>
+				<Source><![CDATA[
+    ItemId parmItemId(ItemId _itemId = itemId)
+    {
+        itemId = _itemId;
+        return itemId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmLevel</Name>
+				<Source><![CDATA[
+    Level parmLevel(Level _level = level)
+    {
+        level = _level;
+        return level;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmOverrideGroupWarnings</Name>
+				<Source><![CDATA[
+    // Override BOMCalcGroup warnings
+    NoYes parmOverrideGroupWarnings(NoYes _overrideGroupWarnings = overrideGroupWarnings)
+    {
+        overrideGroupWarnings = _overrideGroupWarnings;
+        return overrideGroupWarnings;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmParentBOMCalc</Name>
+				<Source><![CDATA[
+    BOMCalcBase parmParentBOMCalc(BOMCalcBase _parentBOMCalc = parentBOMCalc)
+    {
+        parentBOMCalc = _parentBOMCalc;
+        return parentBOMCalc;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPdsComdPricingRun</Name>
+				<Source><![CDATA[
+    public PdsComdPricingRun parmPdsComdPricingRun(
+        PdsComdPricingRun _pdsComdPricingRun = pdsComdPricingRun)
+    {
+        pdsComdPricingRun = _pdsComdPricingRun;
+        return pdsComdPricingRun;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPmfBomVersion</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// This method gets/sets the BOMVersion record to use for the calc
+    /// </summary>
+    /// <param name="_pmfBOMVersion">BOMVersion to use</param>
+    /// <returns>returns BOMVersion</returns>
+    public BOMVersion parmPmfBomVersion(
+        BOMVersion _pmfBOMVersion = pmfBOMVersion)
+    {
+        pmfBOMVersion = _pmfBOMVersion;
+        return pmfBOMVersion;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmProfitSet</Name>
+				<Source><![CDATA[
+    CostProfitSet parmProfitSet(CostProfitSet _profitSet = profitSet)
+    {
+        profitSet = _profitSet;
+        return profitSet;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmProgressBar</Name>
+				<Source><![CDATA[
+    RunbaseProgress parmProgressBar(RunbaseProgress _progressBar = progressBar)
+    {
+        progressBar = _progressBar;
+        return progressBar;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmSeriesSize</Name>
+				<Source><![CDATA[
+    Qty parmSeriesSize(Qty _seriesSize = seriesSize)
+    {
+        seriesSize = _seriesSize;
+        return seriesSize;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmShowProgress</Name>
+				<Source><![CDATA[
+    boolean parmShowProgress(boolean _showProgress = showProgress)
+    {
+        showProgress = _showProgress;
+        return showProgress;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmUseStandardQty</Name>
+				<Source><![CDATA[
+    boolean parmUseStandardQty(boolean _useStandardQty = useStandardQty)
+    {
+        useStandardQty = _useStandardQty;
+        return _useStandardQty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setExistTradeAgreements</Name>
+				<Source><![CDATA[
+    void setExistTradeAgreements()
+    {
+        if (level == 0)
+        {
+            existTradeAgreements = true;
+        }
+        else
+        {
+            if (!parentBOMCalc)
+            {
+                throw error(strFmt("@SYS27147", classStr(BOMCalcBase)));
+            }
+            parentBOMCalc.setExistTradeAgreements(); // recursive call to the top level
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setLineNum</Name>
+				<Source><![CDATA[
+    void setLineNum()
+    {
+        lineNum = this.getLineNum();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setProgressTotals</Name>
+				<Source><![CDATA[
+    void setProgressTotals()
+    {
+        if (!progressBar || level != 0)
+            return;
+
+        progressBar.setTotal(progressTotals);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateProgress</Name>
+				<Source><![CDATA[
+    void updateProgress()
+    {
+        if (!progressBar)
+        {
+            return;
+        }
+
+        progressBar.setText(strFmt("@SYS24300",itemId));
+
+        progressBar.incCount();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validate</Name>
+				<Source><![CDATA[
+    boolean validate()
+    {
+        if (!itemId)
+        {
+            return checkFailed("@SYS25157");
+        }
+
+        if (level != 0)
+        {
+            if (level > this.parmInifiniteLoopThreshold())
+            {
+                infolog.add(
+                    Exception::Error,
+                    strFmt("@SCM:BomCalcMaximumIterationReachedErrorLabel", itemId, this.parmInifiniteLoopThreshold()),
+                    '',
+                    null,
+                    false);
+                return false;
+            }
+
+            if (!parentBOMCalc)
+            {
+                return checkFailed(strFmt("@SYS27147", classId2Name(classIdGet(this))));
+            }
+        }
+
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>description</Name>
+				<Source><![CDATA[
+    public static ClassDescription description()
+    {
+        return "@SYS343262";
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmInifiniteLoopThreshold</Name>
+				<Source><![CDATA[
+    protected int parmInifiniteLoopThreshold()
+    {
+        return max(infiniteLoopThreshold, BOMParameters::find().bomMaxLevel);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

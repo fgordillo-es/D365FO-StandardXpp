@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>BomCalcLine</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+abstract class BomCalcLine
+{
+    ItemId                  itemId;
+    InventDimId             inventDimId;
+    ItemCalcType            calculationType;
+    UnitOfMeasureSymbol     inventUnitId;
+    CostingVersionId        costingVersionId;
+    BOMCalcFallBack         bomCalcFallBack;
+    CostingVersionId        fallBackVersionId;
+    InventSiteId            siteId;
+
+    BOMCalcGroup            bomCalcGroup;
+    BOMCalcData             bomCalcData;
+    BOMCalcCost             bomCalcCost;
+
+    BOMCalcCostPrice        costPriceModel;
+    BOMCalcSalesPrice       salesPriceModel;
+
+    BOMCalcBase             parentBOMCalc;
+    BOMCalcBase             childBOMCalc;
+
+    VendAccount             vendAccount;
+    Qty                     tradeAgreementQty;
+
+    LineNum                 lineNum;
+    CostGroupId             costGroup;
+    BOMDependencyManager    bomDependencyManager;
+
+    IPmfRecycledBpConsumptionCalc                pmfRecycledBpConsumptionCalc;
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>bufferCalcTrans</Name>
+				<Source><![CDATA[
+    // Must be overridden.
+    // Returns buffer used as calculation transaction.
+    Common bufferCalcTrans()
+    {
+        throw error(Error::missingOverload(funcname()));
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calcCost</Name>
+				<Source><![CDATA[
+    protected boolean calcCost(Qty _consumptionInventQty, boolean _calcTradeAgreements = false)
+    {
+        BOMCostPriceModel   parentCostPriceModel        = parentBOMCalc.parmCostPriceModel();
+        BOMCalcCostPrice    bomCalcGroupCostPrice       = bomCalcGroup.getCostPriceModel(parentCostPriceModel);
+        BOMCalcCostPrice    bomCalcGroupCostPriceAlt    = bomCalcGroup.getCostPriceModelAlt(parentCostPriceModel);
+
+        // If trade agreements are used as cost price model, collect total consumption and calculate this item later
+        if (!_calcTradeAgreements && bomCalcGroupCostPrice == BOMCalcCostPrice::PriceDisc)
+        {
+            this.parmParentBOMCalc().addTotalItemConsumption(itemId, inventDimId, _consumptionInventQty);
+            return false;
+        }
+
+        tradeAgreementQty = !_calcTradeAgreements ? 0 : this.parmParentBOMCalc().getTotalItemConsumption(itemId, inventDimId);
+
+        bomCalcCost.initCalc(this.parmParentBOMCalc().parmCalcDate(),
+                             itemId,
+                             inventDimId,
+                             _consumptionInventQty,
+                             tradeAgreementQty,
+                             vendAccount,
+                             this.parmParentBOMCalc().parmProfitSet(),
+                             costingVersionId,
+                             bomCalcFallBack,
+                             fallBackVersionId,
+                             parentCostPriceModel,
+                             siteId);
+        bomCalcCost.setBurden(this.pmfIsBurden(), this.pmfBurdenAmount());
+
+        // calculate cost price
+        bomCalcCost.calcPrimaryCostModel();
+        costPriceModel  = bomCalcGroupCostPrice;
+
+        if (!_calcTradeAgreements && !bomCalcCost.costPrice() && bomCalcGroupCostPriceAlt == BOMCalcCostPrice::PriceDisc)
+        {
+            this.parmParentBOMCalc().addTotalItemConsumption(itemId, inventDimId, _consumptionInventQty);
+            return false;
+        }
+
+        if (!bomCalcCost.costPrice() && bomCalcGroupCostPrice != bomCalcGroupCostPriceAlt)
+        {
+            bomCalcCost.calcAlternativeCostModel();
+            costPriceModel  = bomCalcGroupCostPriceAlt;
+        }
+
+        // calculate sales price
+        bomCalcCost.calcSalesPrice();
+        salesPriceModel  = bomCalcGroup.getSalesPriceModel(parentCostPriceModel);
+
+        this.updateCalcData();
+
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calculateReducedRecycledBpConsumption</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Calculates recycled byproduct reduced consumption.
+    /// </summary>
+    /// <param name="_originalConsumption">
+    /// The original consumption.
+    /// </param>
+    /// <returns>
+    /// The reduced consumption.
+    /// </returns>
+    public Qty calculateReducedRecycledBpConsumption(Qty _originalConsumption)
+    {
+        IPmfRecycledBpConsumptionCalc    recycledConsumptionCalc = this.parmPmfRecycledBpConsumptionCalc();
+
+        if (recycledConsumptionCalc)
+        {
+            recycledConsumptionCalc.parmBomLineQty(_originalConsumption);
+
+            recycledConsumptionCalc.calc();
+
+            return recycledConsumptionCalc.parmReducedQty();
+        }
+        else
+        {
+            return _originalConsumption;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>constructCalcCost</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Returns and instance of the BOMCalcCost class.  Returns
+    /// BOMCalcCost_Commodity if the run is a commodity pricing run, otherwise an
+    /// instance of BOMCalcCost is returned.
+    /// </summary>
+    /// <returns>
+    /// New instace of the BOMCalcCost class.
+    /// Type depends on the type of costing run.
+    /// </returns>
+    /// <remarks>
+    /// Example: BOMCalcCost bomCalcCost = BOMCalcLine.constructCalcCost();
+    /// </remarks>
+    protected BOMCalcCost constructCalcCost()
+    {
+        BOMCalcCost             calcCost;
+        BOMCalcCost_Commodity   comCalcCost;
+
+        if (parentBOMCalc.parmPdsComdPricingRun())
+        {
+            comCalcCost = BOMCalcCost_Commodity::construct();
+            comCalcCost.parmPdsComdPricingRun(
+                parentBOMCalc.parmPdsComdPricingRun());
+
+            calcCost = comCalcCost;
+        }
+        else
+        {
+            calcCost = BOMCalcCost::construct();
+        }
+
+        return calcCost;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initParameters</Name>
+				<Source><![CDATA[
+    protected void initParameters()
+    {
+        InventTable inventTable = InventTable::find(itemId);
+
+        if (!inventTable)
+        {
+            throw error(strfmt(InventTable::txtNotExist(),itemId));
+        }
+
+        bomCalcGroup    = inventTable.bomCalcGroup();
+        calculationType = inventTable.inventItemType().calculationType();
+        inventUnitId    = inventTable.inventUnitId();
+        costGroup       = inventTable.costGroup();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mustCalcCostBreakdown</Name>
+				<Source><![CDATA[
+    public boolean mustCalcCostBreakdown()
+    {
+        return false;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    void new()
+    {
+        parentBOMCalc           = null;
+        childBOMCalc            = null;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmBOMCalcFallBack</Name>
+				<Source><![CDATA[
+    BOMCalcFallBack parmBOMCalcFallBack(BOMCalcFallBack _bomCalcFallBack = bomCalcFallBack)
+    {
+        bomCalcFallBack = _bomCalcFallBack;
+        return bomCalcFallBack;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmBOMDependencyManager</Name>
+				<Source><![CDATA[
+    public BOMDependencyManager parmBOMDependencyManager(BOMDependencyManager _bomDependencyManager = bomDependencyManager)
+    {
+        bomDependencyManager = _bomDependencyManager;
+        return bomDependencyManager;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCalculationType</Name>
+				<Source><![CDATA[
+    public ItemCalcType parmCalculationType(ItemCalcType _calculationType = calculationType)
+    {
+        calculationType = _calculationType;
+        return calculationType;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmChildBOMCalc</Name>
+				<Source><![CDATA[
+    BOMCalcBase parmChildBOMCalc(BOMCalcBase _childBOMCalc = childBOMCalc)
+    {
+        childBOMCalc = _childBOMCalc;
+        return childBOMCalc;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCostGroupId</Name>
+				<Source><![CDATA[
+    public CostGroupId parmCostGroupId(CostGroupId _costGroupId = costGroup)
+    {
+        costGroup = _costGroupId;
+        return costGroup;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCostingVersionId</Name>
+				<Source><![CDATA[
+    CostingVersionId parmCostingVersionId(CostingVersionId _costingVersionId = costingVersionId)
+    {
+        costingVersionId = _costingVersionId;
+        return costingVersionId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmFallBackVersionId</Name>
+				<Source><![CDATA[
+    CostingVersionId parmFallBackVersionId(CostingVersionId _fallBackVersionId = fallBackVersionId)
+    {
+        fallBackVersionId = _fallBackVersionId;
+        return fallBackVersionId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmInventDimId</Name>
+				<Source><![CDATA[
+    InventDimId parmInventDimId(InventDimId _inventDimId = inventDimId)
+    {
+        inventDimId = _inventDimId;
+        return inventDimId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmInventUnitId</Name>
+				<Source><![CDATA[
+    public UnitOfMeasureSymbol parmInventUnitId(UnitOfMeasureSymbol _inventUnitId = inventUnitId)
+    {
+        inventUnitId = _inventUnitId;
+        return inventUnitId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmItemId</Name>
+				<Source><![CDATA[
+    ItemId parmItemId(ItemId _itemId = itemId)
+    {
+        itemId = _itemId;
+        return itemId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmLineNum</Name>
+				<Source><![CDATA[
+    LineNum parmLineNum(LineNum _lineNum = lineNum)
+    {
+        lineNum = _lineNum;
+        return lineNum;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmParentBOMCalc</Name>
+				<Source><![CDATA[
+    BOMCalcBase parmParentBOMCalc(BOMCalcBase _parentBOMCalc = parentBOMCalc)
+    {
+        parentBOMCalc = _parentBOMCalc;
+        return parentBOMCalc;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPmfRecycledBpConsumptionCalc</Name>
+				<Source><![CDATA[
+    public IPmfRecycledBpConsumptionCalc parmPmfRecycledBpConsumptionCalc(IPmfRecycledBpConsumptionCalc _pmfRecycledBpConsumptionCalc = pmfRecycledBpConsumptionCalc)
+    {
+        pmfRecycledBpConsumptionCalc = _pmfRecycledBpConsumptionCalc;
+
+        return pmfRecycledBpConsumptionCalc;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmSiteId</Name>
+				<Source><![CDATA[
+    InventSiteId parmSiteId(InventSiteId _siteId = siteId)
+    {
+        siteId = _siteId;
+        return siteId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>pmfBurdenAmount</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Calculates and returns the burden cost.
+    /// </summary>
+    /// <returns>
+    /// Burden cost.  In this case, defaulted to return 0
+    /// as this is class does not handel burden items.
+    /// </returns>
+    public CostPrice pmfBurdenAmount()
+    {
+        return 0;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>pmfIsBurden</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Determines if the class is representing burden.
+    /// </summary>
+    /// <returns>
+    /// true if the class is representing burden; otherwise, false.
+    /// </returns>
+    public boolean pmfIsBurden()
+    {
+        return false;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setLineNum</Name>
+				<Source><![CDATA[
+    void setLineNum()
+    {
+        lineNum = parentBOMCalc.getLineNum();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateCalcData</Name>
+				<Source><![CDATA[
+    protected void updateCalcData()
+    {
+        // update trade agreements fields
+        if (costPriceModel == BOMCalcCostPrice::PriceDisc)
+        {
+            this.updateTradeAgreements(vendAccount, tradeAgreementQty, this.bufferCalcTrans());
+        }
+
+        // update cost price model field
+        this.updateCostPriceModelUsed(costPriceModel, this.bufferCalcTrans());
+
+        // update sales price model field
+        this.updateSalesPriceModelUsed(salesPriceModel, this.bufferCalcTrans());
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateCostPriceModelUsed</Name>
+				<Source><![CDATA[
+    protected void updateCostPriceModelUsed(BOMCalcCostPrice _costPriceModel,
+                                            Common           _bufferCalcTrans)
+    {
+        BOMCalcCostPriceUsed    costPriceModelUsed;
+        BOMCalcTrans            bomCalcTrans;
+        ProdCalcTrans           prodCalcTrans;
+        PmfCoByProdCalcTrans    pmfCoByProdCalcTrans;
+
+        costPriceModelUsed = this.getBOMCalcCostPriceUsed(_costPriceModel);
+
+        switch (_bufferCalcTrans.TableId)
+        {
+            case tableNum(BOMCalcTrans):
+                bomCalcTrans                            = _bufferCalcTrans;
+                bomCalcTrans.CostPriceModelUsed         = costPriceModelUsed;
+                break;
+
+            case tableNum(ProdCalcTrans):
+                prodCalcTrans                           = _bufferCalcTrans;
+                prodCalcTrans.CostPriceModelUsed        = costPriceModelUsed;
+                break;
+            case tableNum(PmfCoByProdCalcTrans):
+                pmfCoByProdCalcTrans                    = _bufferCalcTrans;
+                pmfCoByProdCalcTrans.CostPriceModelUsed = costPriceModelUsed;
+                break;
+
+            default:
+                throw error("@SYS16078");
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getBOMCalcCostPriceUsed</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///	   Translates the <c>BOMCalcCostPrice</c> enum value to <c>BOMCalcCostPriceUsed</c> enum value.
+    /// </summary>
+    /// <param name = "_costPriceModel">
+    ///    A <c>BOMCalcCostPrice</c> enumeration type that represents the source of the cost that is used in
+    ///    the calculation.
+    /// </param>
+    /// <returns>
+    ///	   A <c>BOMCalcCostPriceUsed</c> enumeration type.
+    /// </returns>
+    protected BOMCalcCostPriceUsed getBOMCalcCostPriceUsed(BOMCalcCostPrice _costPriceModel)
+    {
+        BOMCalcCostPriceUsed costPriceModelUsed;
+
+        switch (_costPriceModel)
+        {
+            case BOMCalcCostPrice::CostPrice:
+                costPriceModelUsed = BOMCalcCostPriceUsed::CostPrice;
+                break;
+
+            case BOMCalcCostPrice::OnhandPrice:
+                costPriceModelUsed = BOMCalcCostPriceUsed::OnhandPrice;
+                break;
+
+            case BOMCalcCostPrice::PriceDisc:
+                costPriceModelUsed = BOMCalcCostPriceUsed::PriceDisc;
+                break;
+
+            case BOMCalcCostPrice::PurchPrice:
+                costPriceModelUsed = BOMCalcCostPriceUsed::PurchPrice;
+                break;
+        }
+
+        return costPriceModelUsed;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateSalesPriceModelUsed</Name>
+				<Source><![CDATA[
+    protected void updateSalesPriceModelUsed(BOMCalcSalesPrice _salesPriceModel,
+                                             Common            _bufferCalcTrans)
+    {
+        BOMCalcSalesPriceUsed   salesPriceModelUsed;
+        BOMCalcTrans            bomCalcTrans;
+        ProdCalcTrans           prodCalcTrans;
+        PmfCoByProdCalcTrans    pmfCoByProdCalcTrans;
+
+        switch (_salesPriceModel)
+        {
+            case BOMCalcSalesPrice::CostGroup:
+                salesPriceModelUsed = BOMCalcSalesPriceUsed::CostGroup;
+                break;
+
+            case BOMCalcSalesPrice::SalesPrice:
+                salesPriceModelUsed = BOMCalcSalesPriceUsed::SalesPrice;
+                break;
+
+            default:
+                throw error("@SYS105954");
+        }
+
+        switch (_bufferCalcTrans.TableId)
+        {
+            case tablenum(BOMCalcTrans):
+                bomCalcTrans                        = _bufferCalcTrans;
+                bomCalcTrans.SalesPriceModelUsed    = salesPriceModelUsed;
+                break;
+
+            case tablenum(ProdCalcTrans):
+                prodCalcTrans                       = _bufferCalcTrans;
+                prodCalcTrans.SalesPriceModelUsed   = salesPriceModelUsed;
+                break;
+
+            case tablenum(PmfCoByProdCalcTrans):
+                pmfCoByProdCalcTrans                = _bufferCalcTrans;
+                pmfCoByProdCalcTrans.SalesPriceModelUsed= salesPriceModelUsed;
+                break;
+            default:
+                throw error("@SYS16078");
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateTradeAgreements</Name>
+				<Source><![CDATA[
+    protected void updateTradeAgreements(VendAccount  _vendAccount,
+                                         Qty          _tradeAgreementQty,
+                                         Common       _bufferCalcTrans)
+    {
+        BOMCalcTrans    bomCalcTrans;
+        ProdCalcTrans   prodCalcTrans;
+        PmfCoByProdCalcTrans pmfCoByProdCalcTrans;
+
+        switch (_bufferCalcTrans.TableId)
+        {
+            case tablenum(BOMCalcTrans):
+                bomCalcTrans                = _bufferCalcTrans;
+                bomCalcTrans.VendId         = _vendAccount;
+                bomCalcTrans.PriceDiscQty   = _tradeAgreementQty;
+                break;
+
+            case tablenum(ProdCalcTrans):
+                prodCalcTrans               = _bufferCalcTrans;
+                prodCalcTrans.VendId        = _vendAccount;
+                prodCalcTrans.PriceDiscQty  = _tradeAgreementQty;
+                break;
+
+            case tablenum(PmfCoByProdCalcTrans):
+                pmfCoByProdCalcTrans               = _bufferCalcTrans;
+                pmfCoByProdCalcTrans.VendId        = _vendAccount;
+                pmfCoByProdCalcTrans.PriceDiscQty  = _tradeAgreementQty;
+                break;
+
+            default:
+                throw error("@SYS16078");
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validate</Name>
+				<Source><![CDATA[
+    boolean validate()
+    {
+        if (!itemId)
+        {
+            return checkFailed("@SYS25157");
+        }
+
+        if (!parentBOMCalc)
+        {
+            return checkFailed(strfmt("@SYS27147", classId2Name(classidget(this))));
+        }
+
+        return true;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>
