@@ -1,0 +1,1376 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>BomCalcItemLine</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+class BomCalcItemLine extends BOMCalcLine
+{
+    BOM                                         bom;
+
+    BOMCalcExplosionMode                        bomCalcExplosionMode;
+
+    Qty                                         seriesSize;
+
+    Qty                                         calcConsumptionInventQty;
+    Qty                                         calcConsumpVariableQty;
+    Qty                                         calcConsumpConstantQty;
+    Qty                                         calcNetWeightConsumptionInventQty; // excludes scrap
+    private Qty                                 calcConsumpScrapConstInventQty;
+
+    Qty                                         actualConsumptionInventQty;
+    Qty                                         actualConsumpVariableQty;
+    Qty                                         actualConsumpConstantQty;
+    Qty                                         actualNetWeightConsumptionInventQty;
+
+    BOMCalcTrans                                bomCalcTrans;
+    LeanCostingFacadeBase                       leanCostingFacade;
+
+    #ISOCountryRegionCodes
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>bufferCalcTrans</Name>
+				<Source><![CDATA[
+    Common bufferCalcTrans()
+    {
+        return bomCalcTrans;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calc</Name>
+				<Source><![CDATA[
+    public void calc()
+    {
+        BOMCalcItem childBOMCalcItem;
+        BOMCalcItem localChildBOMCalcItem;
+
+        setPrefix("@SYS28550");
+
+        setPrefix(this.getLinePrefix());
+
+        if (!this.validate())
+        {
+            throw Exception::Error;
+        }
+
+        this.init();
+
+        this.calcConsumption();
+
+        if (this.mustExplodePrice())
+        {
+            //calc BOM
+            if (!this.parmChildBOMCalc())
+            {
+                childBOMCalcItem = BOMCalcItem::newBOM(bom,
+                                                       calcConsumptionInventQty,
+                                                       this.parmParentBOMCalc());
+
+                childBOMCalcItem.parmBOMDependencyManager(this.parmBOMDependencyManager());
+                this.parmChildBOMCalc(childBOMCalcItem);
+            }
+
+            localChildBOMCalcItem = this.parmChildBOMCalc() as BOMCalcItem;
+            localChildBOMCalcItem.calc();
+
+            return;
+        }
+
+        if (!this.calcCost(calcConsumptionInventQty))
+        {
+            return;
+        }
+
+        this.updateCalcPrices();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calcBOMTradeAgreements</Name>
+				<Source><![CDATA[
+    protected void calcBOMTradeAgreements()
+    {
+        BOMCalcItem localChildBOMCalcItem;
+
+        if (!this.parmChildBOMCalc())
+        {
+            throw error(Error::wrongUseOfFunction(funcName()));
+        }
+
+        localChildBOMCalcItem = this.parmChildBOMCalc() as BOMCalcItem;
+        localChildBOMCalcItem.calcTradeAgreements();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calcConsumption</Name>
+				<Source><![CDATA[
+    protected void calcConsumption()
+    {
+        BOMCalcConsumption  bomCalcConsumption;
+        Qty                 consumptionBOMQty;
+        Qty                 netWeightConsumptionBOMQty;
+        Percent             calcAccError;
+        BOMCalcItem         localParentBOMCalcItem;
+        PmfFormulaCoBy      pmfFormulaCoBy;
+
+        bomCalcConsumption          = BOMCalcConsumption::construct(bom.Formula, bomCalcData);
+        localParentBOMCalcItem      = this.parmParentBOMCalc() as BOMCalcItem;
+        calcAccError                = Route::accError(localParentBOMCalcItem.parmRouteId(), bom.OprNum);
+
+        if (BOM::isPmfFormula(bom.bomId))
+        {
+            bomCalcConsumption.parmPmfAdjustConsumption(localParentBOMCalcItem.parmPmfCostAllocationPct());
+            bomCalcConsumption.parmApplyAdjConsumption(true);
+            bomCalcConsumption.pmfParmYieldPct(localParentBOMCalcItem.parmPmfYieldPct());
+            bomCalcConsumption.pmfApplyYeildPct(true);
+        }
+
+        consumptionBOMQty           = bomCalcConsumption.calcConsumption(bom, calcAccError);
+
+        if (#PmfEnabled)
+        {
+            pmfFormulaCoBy = localParentBOMCalcItem.parmPmfFormulaCoBy();
+            if (pmfFormulaCoBy)
+            {
+                consumptionBOMQty = consumptionBOMQty / (pmfFormulaCoBy.CoByQty / (pmfFormulaCoBy.CoByQtySerie ? pmfFormulaCoBy.CoByQtySerie : 1));
+            }
+        }
+
+        netWeightConsumptionBOMQty  = bomCalcConsumption.calcConsumption(bom,
+                                                                         1,
+                                                                         NoYes::Yes,
+                                                                         NoYes::No,
+                                                                         NoYes::No); // excludes scrap
+
+        // Calculation is done in inventory units
+        if (bom.UnitId != inventUnitId)
+        {
+            EcoResProductUnitConverter productUnitConverter = EcoResProductUnitConverter::newGivenUnitSymbolsForReleasedProduct(
+                                                                    itemId,
+                                                                    inventDimId,
+                                                                    bom.UnitId,
+                                                                    inventUnitId,
+                                                                    NoYes::Yes);
+            calcConsumptionInventQty            = productUnitConverter.convertValue(consumptionBOMQty);
+            calcConsumpScrapConstInventQty    = productUnitConverter.convertValue(bom.scrapConst());
+            calcNetWeightConsumptionInventQty   = productUnitConverter.convertValue(netWeightConsumptionBOMQty);
+        }
+        else
+        {
+            calcConsumptionInventQty            = consumptionBOMQty;
+            calcConsumpScrapConstInventQty    = bom.scrapConst();
+            calcNetWeightConsumptionInventQty   = netWeightConsumptionBOMQty;
+        }
+
+        calcConsumptionInventQty = this.calculateReducedRecycledBpConsumption(calcConsumptionInventQty);
+
+        [calcConsumpVariableQty, calcConsumpConstantQty] = this.getCalcConsumption();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calcCost</Name>
+				<Source><![CDATA[
+    protected boolean calcCost(
+        Qty     _consumptionInventQty,
+        boolean _calcTradeAgreements = false)
+    {
+        BOMCalcItem     localParentBOMCalcItem = this.parmParentBOMCalc() as BOMCalcItem;
+        boolean         ret;
+
+        if (BOM::isPmfFormula(localParentBOMCalcItem.parmBOMId()))
+        {
+            bomCalcCost.parmPmfRMCostAllocationPct(localParentBOMCalcItem.parmPmfCostAllocationPct());
+        }
+
+        ret = super(_consumptionInventQty, _calcTradeAgreements);
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calcTradeAgreements</Name>
+				<Source><![CDATA[
+    void calcTradeAgreements()
+    {
+        if (this.mustExplodePrice())
+        {
+            this.calcBOMTradeAgreements();
+            return;
+        }
+
+        if (!this.parmParentBOMCalc().hasTradeAgreements(itemId, inventDimId))
+        {
+            return;
+        }
+
+        if (!this.calcCost(calcConsumptionInventQty, true))
+        {
+            return;
+        }
+
+        this.updateCalcPrices();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calculateCostMarkup</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Calculates the markup quantity for the cost breakdown if the consumption is constant.
+    /// </summary>
+    /// <param name="_bomCalcTransBreakdown">
+    ///    The <c>BomCalcTrans</c> record that represents the cost breakdown.
+    /// </param>
+    private void calculateCostMarkup(BOMCalcTrans _bomCalcTransBreakdown)
+    {
+        if (bomCalcTrans.CostPrice && bomCalcTrans.CostMarkupQty)
+        {
+            _bomCalcTransBreakdown.CostMarkupQty = bomCalcTrans.CostMarkupQty * (_bomCalcTransBreakdown.CostPrice / bomCalcTrans.CostPrice);
+        }
+        else
+        {
+            _bomCalcTransBreakdown.CostMarkupQty = 0;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>constructLeanCostingFacade</Name>
+				<Source><![CDATA[
+    protected LeanCostingFacadeBase constructLeanCostingFacade()
+    {
+        return LeanCostingFacade::construct();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getActualConsumption</Name>
+				<Source><![CDATA[
+    protected container getActualConsumption()
+    {
+        Qty     consumpVariable;
+        Qty     consumpConstant;
+        Qty     consumpNetWeight;
+        BOMCalcItem localParentBOMCalcItem = this.parmParentBOMCalc() as BOMCalcItem;
+
+        // actual variable and constant consumption
+        if (this.parmParentBOMCalc().parmLevel() != 0                           &&
+            !localParentBOMCalcItem.parmBOM().type().mustBeDerivedDirectly()  &&
+            localParentBOMCalcItem.parmBomCalcExplosionMode() != BOMCalcExplosionMode::MakeToOrder)
+        {
+            if (seriesSize)
+            {
+                consumpVariable  = (calcConsumptionInventQty / seriesSize) * localParentBOMCalcItem.parmActualConsumptionInventQty();
+            }
+            else
+            {
+                consumpVariable  = 0;
+            }
+
+            consumpConstant  = 0;
+        }
+        else
+        {
+            if (seriesSize)
+            {
+                consumpVariable  = (calcConsumpVariableQty / seriesSize) * localParentBOMCalcItem.parmActualConsumptionInventQty();
+            }
+            else
+            {
+                consumpVariable  = 0;
+            }
+
+            consumpConstant  =  calcConsumpConstantQty;
+        }
+
+        if (localParentBOMCalcItem.parmBOM().bomConsump   == BOMConsumpType::Constant)
+        {
+            consumpConstant  =  consumpVariable + consumpConstant;
+            consumpVariable  =  0;
+        }
+
+        // actual net weight consumption
+        if (seriesSize)
+        {
+            consumpNetWeight  = (calcNetWeightConsumptionInventQty / seriesSize) * localParentBOMCalcItem.parmActualNetWeightConsumptionInventQty();
+        }
+        else
+        {
+            consumpNetWeight  = 0;
+        }
+
+        return [consumpVariable, consumpConstant, consumpNetWeight];
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getCalcConsumption</Name>
+				<Source><![CDATA[
+    protected container getCalcConsumption()
+    {
+        switch (bom.bomConsump)
+        {
+            case BOMConsumpType::Variable:  return [calcConsumptionInventQty - calcConsumpScrapConstInventQty, calcConsumpScrapConstInventQty];
+            case BOMConsumpType::Constant:  return [0, calcConsumptionInventQty];
+        }
+
+        throw error(Error::wrongUseOfFunction(funcName()));
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getCostMarkupQty</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets the cost markup quantity.
+    /// </summary>
+    /// <returns>
+    /// The cost markup quantity.
+    /// </returns>
+    protected CostPriceQtyTotal getCostMarkupQty()
+    {
+        BOMConsumpType bomConsumpType = bom.bomConsump;
+
+        switch (bomConsumpType)
+        {
+            case BOMConsumpType::Variable:
+                return bomCalcCost.costMarkup();
+
+            case BOMConsumpType::Constant:
+                return bomCalcCost.costMarkup() + calcConsumptionInventQty * bomCalcCost.costPrice()  / bomCalcCost.costPriceUnit();
+
+            default:
+                throw error(Error::wrongUseOfFunction(funcName()));
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getCostMarkupQtySecCur_RU</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets the cost markup quantity in secondary currency.
+    /// </summary>
+    /// <returns>
+    /// The cost markup quantity in secondary currency.
+    /// </returns>
+    protected CostPriceQtyTotal getCostMarkupQtySecCur_RU()
+    {
+        BOMConsumpType bomConsumpType = bom.bomConsump;
+
+        if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoRU]))
+        {
+            if (bomConsumpType == BOMConsumpType::Variable)
+            {
+                return bomCalcCost.costMarkupSecCur_RU();
+            }
+
+            if (bomConsumpType == BOMConsumpType::Constant)
+            {
+                return bomCalcCost.costMarkupSecCur_RU() + calcConsumptionInventQty * bomCalcCost.costPriceSecCur_RU()  / bomCalcCost.costPriceUnit();
+            }
+        }
+
+        return 0;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getCostPriceQty</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets the cost price quantity.
+    /// </summary>
+    /// <returns>
+    /// The cost price quantity.
+    /// </returns>
+    protected CostPriceQtyTotal getCostPriceQty()
+    {
+        BOMConsumpType bomConsumpType = bom.bomConsump;
+
+        if (bomConsumpType == BOMConsumpType::Variable &&
+            seriesSize)
+        {
+            return bomCalcCost.costPrice() * (calcConsumptionInventQty / seriesSize) / bomCalcCost.costPriceUnit();
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getCostPriceQtySecCur_RU</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets the cost price quantity in secondary currency.
+    /// </summary>
+    /// <returns>
+    /// The cost price quantity in secondary currency.
+    /// </returns>
+    protected CostPriceQtyTotal getCostPriceQtySecCur_RU()
+    {
+        BOMConsumpType bomConsumpType = bom.bomConsump;
+
+        if (bomConsumpType == BOMConsumpType::Variable &&
+            seriesSize &&
+            SysCountryRegionCode::isLegalEntityInCountryRegion([#isoRU]))
+        {
+            return bomCalcCost.costPriceSecCur_RU() * (calcConsumptionInventQty / seriesSize) / bomCalcCost.costPriceUnit();
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getLinePrefix</Name>
+				<Source><![CDATA[
+    protected str getLinePrefix()
+    {
+        InventDim   inventDim;
+
+        if (inventDimId != InventDim::inventDimIdBlank())
+        {
+            inventDim   = InventDim::find(inventDimId);
+            return strFmt("%1 (%2)", #PreFixField(BOM,ItemId), inventDim.preFixValue());
+        }
+        else
+        {
+            return #PreFixField(BOM,ItemId);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getSalesMarkupQty</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets the sales markup quantity.
+    /// </summary>
+    /// <returns>
+    /// The sales markup quantity.
+    /// </returns>
+    protected CostPriceQtyTotal getSalesMarkupQty()
+    {
+        BOMConsumpType bomConsumpType = bom.bomConsump;
+
+        switch (bomConsumpType)
+        {
+            case BOMConsumpType::Variable:
+                return bomCalcCost.salesMarkup();
+
+            case BOMConsumpType::Constant:
+                return bomCalcCost.salesMarkup() + calcConsumptionInventQty * bomCalcCost.salesPrice() / bomCalcCost.salesPriceUnit();
+
+            default:
+                throw error(Error::wrongUseOfFunction(funcName()));
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getSalesPriceQty</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets the sales price quantity.
+    /// </summary>
+    /// <returns>
+    /// The sales price quantity.
+    /// </returns>
+    protected CostPriceQtyTotal getSalesPriceQty()
+    {
+        BOMConsumpType bomConsumpType = bom.bomConsump;
+
+        if (bomConsumpType == BOMConsumpType::Variable &&
+            seriesSize)
+        {
+            return bomCalcCost.salesPrice() * (calcConsumptionInventQty / seriesSize) / bomCalcCost.salesPriceUnit();
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    void init()
+    {
+        this.initParameters();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initBOMCalcTrans</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Initializes the <c>BOMCalcTrans</c> record that will describe the item line in the calculation
+    ///    hierarchy.
+    /// </summary>
+    protected void initBOMCalcTrans()
+    {
+        BOMCalcItem localParentBOMCalcItem  = this.parmParentBOMCalc() as BOMCalcItem;
+
+        bomCalcTrans.PriceCalcId            = localParentBOMCalcItem.parmPriceCalcId();
+
+        bomCalcTrans.Qty                    = localParentBOMCalcItem.topParentQty();
+        bomCalcTrans.TransDate              = localParentBOMCalcItem.parmCalcDate();
+        bomCalcTrans.Level                  = localParentBOMCalcItem.parmLevel() + 1;
+
+        bomCalcTrans.CalcGroupId            = bomCalcGroup.CalcGroupId;
+        bomCalcTrans.CostGroupId            = costGroup;
+
+        bomCalcTrans.LineNum                = lineNum;
+        bomCalcTrans.CalcType               = calculationType;
+
+        bomCalcTrans.Resource               = itemId;
+        bomCalcTrans.UnitId                 = inventUnitId;
+        bomCalcTrans.OprId                  = '';
+        bomCalcTrans.BOMCalcTransMap::setInventDimStr(inventDimId);
+        bomCalcTrans.InventDimId            = inventDimId;
+
+        bomCalcTrans.bom                    = NoYes::No;
+        bomCalcTrans.NumOfSeries            = bomCalcTrans.NumOfSeries ? bomCalcTrans.NumOfSeries : 1;
+
+        bomCalcTrans.OprNum                 = bom.OprNum;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initParameters</Name>
+				<Source><![CDATA[
+    protected void initParameters()
+    {
+        BOMCalcItem     localParentBOMCalcItem = this.parmParentBOMCalc() as BOMCalcItem;
+        super();
+
+        seriesSize      = this.parmParentBOMCalc().parmSeriesSize();
+
+        if (localParentBOMCalcItem.parmPmfParentCalcId())
+        {
+            bomCalcData =
+                BOMCalcData::newInventTable(localParentBOMCalcItem.parmPmfFormulaSeriesSize(),
+                    localParentBOMCalcItem.parmInventTable());
+        }
+        else
+        {
+            bomCalcData     = BOMCalcData::newInventTable(seriesSize, this.parmParentBOMCalc().parmInventTable());
+        }
+
+        bomCalcCost     = this.constructCalcCost();
+        bomCalcCost.parmResourceConsumption(bom.WrkCtrConsumption);
+
+        vendAccount     = bom.vendId(this.parmParentBOMCalc().parmItemId(),
+                                     InventDim::find(this.parmParentBOMCalc().parmInventDimId()).ConfigId,
+                                     localParentBOMCalcItem.parmRouteId(),
+                                     localParentBOMCalcItem.parmSiteId());
+        bomCalcTrans.clear();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>insertBOMCalcTrans</Name>
+				<Source><![CDATA[
+    void insertBOMCalcTrans()
+    {
+        this.initBOMCalcTrans();
+        bomCalcTrans.insert();
+
+        this.insertBOMCalcTransBreakdown();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>insertBOMCalcTransBreakdown</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Inserts extra records that represent the cost breakdown on a Bill of Material (BOM) calculation
+    ///    line where the price has not been exploded.
+    /// </summary>
+    protected void insertBOMCalcTransBreakdown()
+    {
+        BOMCalcTrans                bomCalcTransBreakdown;
+        LineNum                     lineNumBreakdown;
+        Map                         stdCostBreakdown;
+        MapEnumerator               stdCostBreakdownEnumerator;
+
+        if (bomCalcTrans.CostPrice && !this.mustCalcCostBreakdown())
+            return;
+
+        lineNumBreakdown = bomCalcTrans.LineNum;
+
+        stdCostBreakdown = bomCalcCost.stdCostBreakdown();
+        if (stdCostBreakdown)
+            stdCostBreakdownEnumerator = stdCostBreakdown.getEnumerator();
+
+        while (stdCostBreakdownEnumerator.moveNext())
+        {
+            lineNumBreakdown += 0.00001;
+
+            bomCalcTransBreakdown.PriceCalcId           = bomCalcTrans.PriceCalcId;
+            bomCalcTransBreakdown.CostGroupId           = stdCostBreakdownEnumerator.currentKey();
+            [ bomCalcTransBreakdown.CostPrice,
+              bomCalcTransBreakdown.CostPriceSecCur_RU ]  = stdCostBreakdownEnumerator.currentValue();
+
+            if (bomCalcTrans.CostPrice)
+            {
+                if (bomCalcTrans.CostPriceUnit)
+                {
+                    bomCalcTransBreakdown.CostPriceQty  = bomCalcTrans.CostPriceQty * (bomCalcTransBreakdown.CostPrice / (bomCalcTrans.CostPrice / bomCalcTrans.CostPriceUnit));
+                }
+                else
+                {
+                    bomCalcTransBreakdown.CostPriceQty  = bomCalcTrans.CostPriceQty * (bomCalcTransBreakdown.CostPrice / bomCalcTrans.CostPrice);
+                }
+            }
+            else
+            {
+                bomCalcTransBreakdown.CostPriceQty      = 0;
+            }
+
+            this.calculateCostMarkup(bomCalcTransBreakdown);
+
+            if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoRU]))
+            {
+                if (bomCalcTrans.CostPriceSecCur_RU)
+                {
+                    bomCalcTransBreakdown.CostPriceQtySecCur_RU = bomCalcTrans.CostPriceQtySecCur_RU * (bomCalcTransBreakdown.CostPriceSecCur_RU / bomCalcTrans.CostPriceSecCur_RU);
+                }
+                else
+                {
+                    bomCalcTransBreakdown.CostPriceQtySecCur_RU = 0;
+                }
+            }
+            bomCalcTransBreakdown.Qty                   = bomCalcTrans.Qty;
+            bomCalcTransBreakdown.ConsumptionVariable   = bomCalcTrans.ConsumptionVariable;
+            bomCalcTransBreakdown.ConsumptionConstant   = bomCalcTrans.ConsumptionConstant;
+            bomCalcTransBreakdown.CostPriceUnit         = bomCalcTrans.CostPriceUnit;
+            bomCalcTransBreakdown.TransDate             = bomCalcTrans.TransDate;
+            bomCalcTransBreakdown.Level                 = bomCalcTrans.Level + 1;
+
+            bomCalcTransBreakdown.CalcGroupId           = bomCalcTrans.CalcGroupId;
+
+            bomCalcTransBreakdown.LineNum               = lineNumBreakdown;
+            bomCalcTransBreakdown.CalcType              = ItemCalcType::CostGroup;
+
+            bomCalcTransBreakdown.Resource              = itemId;
+            bomCalcTransBreakdown.UnitId                = '';
+            bomCalcTransBreakdown.OprId                 = '';
+            bomCalcTransBreakdown.InventDimStr          = '';
+
+            bomCalcTransBreakdown.bom                   = NoYes::No;
+            bomCalcTransBreakdown.NumOfSeries           = bomCalcTrans.NumOfSeries;
+
+            bomCalcTransBreakdown.CostPriceModelUsed    = BOMCalcCostPriceUsed::None;
+            bomCalcTransBreakdown.SalesPriceModelUsed   = BOMCalcSalesPriceUsed::None;
+            bomCalcTransBreakdown.CostCalculationMethod = bomCalcCost.bomCostCalculationMethod();
+            bomCalcTransBreakdown.ParentBOMCalcTrans    = bomCalcTrans.RecId;
+
+            bomCalcTransBreakdown.insert();
+        }
+
+        if (bomCalcTrans.LineNum != lineNumBreakdown)
+        {
+            // At least one line breakdown has been entered
+            bomCalcTrans.bom = NoYes::Yes;
+            bomCalcTrans.CostCalculationMethod = bomCalcCost.bomCostCalculationMethod();
+            bomCalcTrans.update();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mustCalcCostBreakdown</Name>
+				<Source><![CDATA[
+    public boolean mustCalcCostBreakdown()
+    {
+        CostBreakdownInsertionRule costBreakdownInsertionRule = CostBreakdownInsertionRule::construct();
+
+        costBreakdownInsertionRule.parmCostingVersionId(costingVersionId);
+        costBreakdownInsertionRule.parmItemId(itemId);
+        costBreakdownInsertionRule.parmIsProduction(this.mustExplodePrice() || !parentBOMCalc.parmIsCostBreakdownAllowed());
+
+        return costBreakdownInsertionRule.mustInsertCostBreakdown();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mustExplodePrice</Name>
+				<Source><![CDATA[
+    protected boolean mustExplodePrice()
+    {
+        boolean             mustExplodePrice;
+        BOMCalcItem         parentBomCalcItem = this.parmParentBOMCalc();
+        InventItemParmData  itemParmData, parentItemParmData;
+        InventTable         inventTable = InventTable::find(itemId);
+
+        itemParmData = InventItemParmData::construct(this.parmItemId(), this.parmInventDimId());
+        parentItemParmData = InventItemParmData::construct(parentBomCalcItem.parmItemId(), parentBOMCalc.parmInventDimId());
+
+        switch (bomCalcExplosionMode)
+        {
+            case BOMCalcExplosionMode::MultiLevel,
+                 BOMCalcExplosionMode::MakeToOrder:
+                if (parentBomCalcItem &&
+                    parentBomCalcItem.parmItemProcurementMode() == ItemProcurementMode::ProductionFlow &&
+                    leanCostingFacade.isItemMadeInProductionFlow(
+                        parentBomCalcItem.parmProductionFlowReferenceRecId(),
+                        itemParmData,
+                        parentItemParmData,
+                        parentBomCalcItem.parmCalcDate()) &&
+                    !leanCostingFacade.isInventoryControlled(
+                        parentBomCalcItem.parmProductionFlowReferenceRecId(),
+                        itemParmData,
+                        parentItemParmData,
+                        parentBomCalcItem.parmCalcDate(),
+                        siteId,
+                        bom.bomId))
+                {
+                    mustExplodePrice = true;
+                }
+                else
+                {
+                    mustExplodePrice = this.mustExplodePriceMultiLevel(inventTable) && !BOMCalcGroup::stopExplodePrice(bomCalcGroup, inventTable, inventDimId, siteId);
+                }
+                break;
+
+            case BOMCalcExplosionMode::SingleLevel:
+                switch (bom.bomType)
+                {
+                    case BOMType::Phantom:
+                        if (parentBomCalcItem)
+                        {
+                            mustExplodePrice = BOMCalcItem::expandItem(
+                                inventTable.ItemType,
+                                itemParmData,
+                                parentItemParmData,
+                                siteId,
+                                parentBomCalcItem.parmItemProcurementMode(),
+                                bom.bomId,
+                                bom.bomType,
+                                parentBomCalcItem.parmProductionFlowReferenceRecId(),
+                                parentBomCalcItem.parmCalcDate());
+                        }
+                        else
+                            mustExplodePrice = true; // This line is needed for non-standard cost models. Standard cost would explode the Phantom anyway.
+
+                        break;
+
+                    default:
+                        mustExplodePrice = false;
+                }
+                break;
+
+            case BOMCalcExplosionMode::AccordingBOMLineType:
+                switch (bom.bomType)
+                {
+                    case BOMType::PeggedSupply,
+                         BOMType::Vendor:
+                        if (parentBomCalcItem &&
+                            parentBomCalcItem.parmItemProcurementMode() == ItemProcurementMode::ProductionFlow &&
+                            leanCostingFacade.isItemMadeInProductionFlow(
+                                parentBomCalcItem.parmProductionFlowReferenceRecId(),
+                                itemParmData,
+                                parentItemParmData,
+                                parentBomCalcItem.parmCalcDate()) &&
+                            !leanCostingFacade.isInventoryControlled(
+                                parentBomCalcItem.parmProductionFlowReferenceRecId(),
+                                itemParmData,
+                                parentItemParmData,
+                                parentBomCalcItem.parmCalcDate(),
+                                siteId,
+                                bom.bomId))
+
+                        {
+                            mustExplodePrice = true;
+                        }
+                        else
+                        {
+                            mustExplodePrice = inventTable.isProducedByDefault() &&
+                                               !BOMCalcGroup::stopExplodePrice(bomCalcGroup, inventTable, inventDimId, siteId);
+                        }
+                        break;
+
+                    case BOMType::Phantom:
+                        mustExplodePrice =  !BOMCalcGroup::stopExplodePrice(bomCalcGroup, inventTable, this.parmInventDimId(), this.parmSiteId())
+                                            && ((parentBomCalcItem && BOMCalcItem::expandItem(inventTable.ItemType,
+                                                                                        itemParmData,
+                                                                                        parentItemParmData,
+                                                                                        siteId,
+                                                                                        parentBomCalcItem.parmItemProcurementMode(),
+                                                                                        bom.bomId,
+                                                                                        bom.bomType,
+                                                                                        parentBomCalcItem.parmProductionFlowReferenceRecId(),
+                                                                                        parentBomCalcItem.parmCalcDate()))
+                                                || !parentBomCalcItem);
+                        break;
+
+                    default :
+                        mustExplodePrice = false;
+                }
+                break;
+
+            default:
+                throw error(Error::wrongUseOfFunction(funcName()));
+        }
+
+        return mustExplodePrice;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    void new()
+    {
+        super();
+
+        leanCostingFacade = this.constructLeanCostingFacade();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmBOM</Name>
+				<Source><![CDATA[
+    BOM parmBOM(BOM _bom = bom)
+    {
+        bom = _bom;
+        return bom;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmBomCalcExplosionMode</Name>
+				<Source><![CDATA[
+    public BOMCalcExplosionMode parmBomCalcExplosionMode(BOMCalcExplosionMode _bomCalcExplosionMode = bomCalcExplosionMode)
+    {
+        bomCalcExplosionMode = _bomCalcExplosionMode;
+
+        return bomCalcExplosionMode;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCalcConsumptionInventQty</Name>
+				<Source><![CDATA[
+    public Qty parmCalcConsumptionInventQty(Qty _calcConsumptionInventQty = calcConsumptionInventQty)
+    {
+        calcConsumptionInventQty = _calcConsumptionInventQty;
+
+        return calcConsumptionInventQty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmChildBOMCalc</Name>
+				<Source><![CDATA[
+    BOMCalcBase parmChildBOMCalc(BOMCalcBase _childBOMCalcItem = childBOMCalc)
+    {
+        BOMCalcItem ret;
+
+        ret = super(_childBOMCalcItem) as BOMCalcItem;
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmLeanCostingFacade</Name>
+				<Source><![CDATA[
+    public LeanCostingFacadeBase parmLeanCostingFacade(LeanCostingFacadeBase _leanCostingFacade = leanCostingFacade)
+    {
+        leanCostingFacade = _leanCostingFacade;
+
+        return leanCostingFacade;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmParentBOMCalc</Name>
+				<Source><![CDATA[
+    BOMCalcBase parmParentBOMCalc(BOMCalcBase _parentBOMCalcItem = parentBOMCalc)
+    {
+        BOMCalcItem ret;
+
+        ret = super(_parentBOMCalcItem) as BOMCalcItem;
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>recalc</Name>
+				<Source><![CDATA[
+    void recalc()
+    {
+        setPrefix("@SYS28550");
+
+        setPrefix(this.getLinePrefix());
+
+        if (this.mustExplodePrice())
+        {
+            this.recalcBOMConsumption();
+            this.recalcBOM();
+            return;
+        }
+
+        this.setLineNum();
+
+        this.updateActualConsumption();
+
+        this.updateActualPrices();
+
+        this.updateNumOfSeries();
+
+        this.updateWarnings();
+
+        this.insertBOMCalcTrans();
+
+        this.updateParent();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mustExplodePriceMultiLevel</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Validates if the multi level price explosion must be done or the like.
+    /// </summary>
+    /// <param name = "_inventTable">The item record.</param>
+    /// <returns>true if conditions are met; otherwise, false.</returns>
+    protected boolean mustExplodePriceMultiLevel(InventTable _inventTable)
+    {
+        return (_inventTable.isProducedByDefault())
+            || (_inventTable.isFormulaOrBOMAllowed()
+                && _inventTable.inventItemSetupSupplyType().DefaultOrderType == ReqPOType::Kanban)
+            || (_inventTable.inventItemType().canHaveBOM()
+                && (_inventTable.inventItemSetupSupplyType().DefaultOrderType == ReqPOType::Production
+                    || _inventTable.inventItemSetupSupplyType().DefaultOrderType == ReqPOType::Kanban)
+                && _inventTable.PmfProductType == PmfProductType::Co_Product 
+                && _inventTable.PmfPlanningItemId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>recalcBOM</Name>
+				<Source><![CDATA[
+    protected void recalcBOM()
+    {
+        CostCalcTransData   childBOMCostCalcTransData;
+        BOMCalcItem         localChildBOMCalcItem;
+        BOMCalcItem         localParentBOMCalcItem;
+
+        if (!this.parmChildBOMCalc())
+        {
+            throw error(Error::wrongUseOfFunction(funcName()));
+        }
+
+        localChildBOMCalcItem = this.parmChildBOMCalc() as BOMCalcItem;
+        localChildBOMCalcItem.parmActualConsumptionInventQty(actualConsumptionInventQty);
+        localChildBOMCalcItem.parmActualNetWeightConsumptionInventQty(actualNetWeightConsumptionInventQty);
+        localChildBOMCalcItem.recalcBOM();
+
+        if (InventParameters::isCostBreakdownActivated())
+        {
+            // Treat the child BOM as a composite - fetch the data accumulated from all sublevels
+            childBOMCostCalcTransData = localChildBOMCalcItem.parmCostCalcTransData();
+        }
+        else
+        {
+            // Treat the child BOM as a single BOMCalcTrans
+            childBOMCostCalcTransData = CostCalcTransData::construct();
+            childBOMCostCalcTransData.addBOMCalcTrans(localChildBOMCalcItem.parmBOMCalcTrans());
+        }
+        localParentBOMCalcItem = this.parmParentBOMCalc() as BOMCalcItem;
+        localParentBOMCalcItem.parmCostCalcTransData().addCostCalcTransData(childBOMCostCalcTransData);
+
+        // Clear memory that we don't need anymore
+        localChildBOMCalcItem.parmCostCalcTransData(null);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>recalcBOMConsumption</Name>
+				<Source><![CDATA[
+    void recalcBOMConsumption()
+    {
+        BOMCalcItem     localParentBOMCalcItem = this.parmParentBOMCalc() as BOMCalcItem;
+
+        if (seriesSize && localParentBOMCalcItem.parmActualConsumptionInventQty())
+        {
+            actualConsumptionInventQty          = (calcConsumptionInventQty / seriesSize) * localParentBOMCalcItem.parmActualConsumptionInventQty();
+            actualNetWeightConsumptionInventQty = (calcNetWeightConsumptionInventQty / seriesSize) * localParentBOMCalcItem.parmActualNetWeightConsumptionInventQty();
+        }
+        else
+        {
+            actualConsumptionInventQty          = 0;
+            actualNetWeightConsumptionInventQty = 0;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateActualConsumption</Name>
+				<Source><![CDATA[
+    void updateActualConsumption()
+    {
+        [actualConsumpVariableQty,
+         actualConsumpConstantQty,
+         actualNetWeightConsumptionInventQty] = this.getActualConsumption();
+
+        actualConsumptionInventQty          = actualConsumpVariableQty + actualConsumpConstantQty;
+
+        bomCalcTrans.ConsumptionVariable    = actualConsumpVariableQty;
+        bomCalcTrans.ConsumptionConstant    = actualConsumpConstantQty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateActualPrices</Name>
+				<Source><![CDATA[
+    void updateActualPrices()
+    {
+        BOMCalcItem localParentBOMCalcItem  = this.parmParentBOMCalc() as BOMCalcItem;
+        Qty         topParentQty            = localParentBOMCalcItem.topParentQty();
+
+        if (topParentQty && calcConsumptionInventQty)
+        {
+            bomCalcTrans.CostPriceQty  = bomCalcTrans.CostPriceQty  * (seriesSize / calcConsumptionInventQty) * (actualConsumptionInventQty / topParentQty);
+            if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoRU]))
+                bomCalcTrans.CostPriceQtySecCur_RU = bomCalcTrans.CostPriceQtySecCur_RU * (seriesSize / calcConsumptionInventQty) * (actualConsumptionInventQty / topParentQty);
+            bomCalcTrans.SalesPriceQty = bomCalcTrans.SalesPriceQty * (seriesSize / calcConsumptionInventQty) * (actualConsumptionInventQty / topParentQty);
+            bomCalcTrans.NetWeightQty  = InventTable::find(itemId).NetWeight * (actualNetWeightConsumptionInventQty / topParentQty);
+        }
+        else
+        {
+            bomCalcTrans.CostPriceQty  = 0;
+            if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoRU]))
+                bomCalcTrans.CostPriceQtySecCur_RU = 0;
+            bomCalcTrans.SalesPriceQty = 0;
+            bomCalcTrans.NetWeightQty  = 0;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateBomCalcTransBeforeUpdCostSheet</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Updates the <c>BomCalcTrans</c> record before passing it to the costing sheet engine.
+    /// </summary>
+    /// <param name="_bomCalcTrans">
+    /// The <c>BomCalcTrans</c> record.
+    /// </param>
+    /// <returns>
+    /// Updated copy of the <c>BomCalcTrans</c> record.
+    /// </returns>
+    /// <remarks>
+    /// This method is used in context of recycled byproduct where overheads ought to be calculated on input amount and quantity.
+    /// Without this method overheads would be calculated on top of quantity and amount that are left after the allocation of recycled byproduct.
+    /// </remarks>
+    private BOMCalcTrans updateBomCalcTransBeforeUpdCostSheet(BOMCalcTrans  _bomCalcTrans)
+    {
+        BOMCalcTrans    localBomCalcTrans;
+
+        localBomCalcTrans.data(_bomCalcTrans);
+
+        if (pmfRecycledBpConsumptionCalc)
+        {
+            pmfRecycledBpConsumptionCalc.updateCalcTransForCostSheetCalc(localBomCalcTrans, seriesSize);
+        }
+
+        return localBomCalcTrans;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateCalcPrices</Name>
+				<Source><![CDATA[
+    void updateCalcPrices()
+    {
+        BOMCalcItem     localParentBOMCalcItem;
+
+        bomCalcTrans.CostPriceQty           = this.getCostPriceQty();
+        bomCalcTrans.SalesPriceQty          = this.getSalesPriceQty();
+        bomCalcTrans.CostPriceQtySecCur_RU  = this.getCostPriceQtySecCur_RU();
+        bomCalcTrans.CostMarkupQty          = this.getCostMarkupQty();
+        bomCalcTrans.CostMarkupQtySecCur_RU = this.getCostMarkupQtySecCur_RU();
+        bomCalcTrans.SalesMarkupQty         = this.getSalesMarkupQty();
+
+        // Constant costs are added to variable ones if the parent BOM has linetype 'Item'. When BOM level==0 it is the same as linetype Production.
+        localParentBOMCalcItem = this.parmParentBOMCalc() as BOMCalcItem;
+        if (this.parmParentBOMCalc().parmLevel() != 0                           &&
+            !localParentBOMCalcItem.parmBOM().type().mustBeDerivedDirectly()  &&
+            localParentBOMCalcItem.parmBomCalcExplosionMode() != BOMCalcExplosionMode::MakeToOrder)
+        {
+            bomCalcTrans.CostPriceQty    = bomCalcTrans.CostPriceQty  + (bomCalcTrans.CostMarkupQty / (seriesSize ? seriesSize : 1));
+            bomCalcTrans.SalesPriceQty   = bomCalcTrans.SalesPriceQty + (bomCalcTrans.SalesMarkupQty / (seriesSize ? seriesSize : 1));
+
+            if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoRU]))
+            {
+                bomCalcTrans.CostPriceQtySecCur_RU = bomCalcTrans.CostPriceQtySecCur_RU + (bomCalcTrans.CostMarkupQtySecCur_RU / (seriesSize ? seriesSize : 1));
+            }
+
+            bomCalcTrans.CostMarkupQty   = 0;
+            bomCalcTrans.SalesMarkupQty  = 0;
+
+            if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoRU]))
+            {
+                bomCalcTrans.CostMarkupQtySecCur_RU = 0;
+            }
+        }
+
+        localParentBOMCalcItem.updateCalcPrices(bomCalcTrans);
+
+        bomCalcTrans.CostPrice                  = bomCalcCost.costPrice();
+        bomCalcTrans.CostMarkup                 = bomCalcCost.costMarkup();
+        if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoRU]))
+        {
+            bomCalcTrans.CostPriceSecCur_RU         = bomCalcCost.costPriceSecCur_RU();
+            bomCalcTrans.CostMarkupSecCur_RU        = bomCalcCost.costMarkupSecCur_RU();
+        }
+        bomCalcTrans.CostPriceUnit              = bomCalcCost.costPriceUnit();
+        bomCalcTrans.CostPriceFallBackVersion   = bomCalcCost.costPriceFallBackVersion();
+
+        bomCalcTrans.SalesPrice                 = bomCalcCost.salesPrice();
+        bomCalcTrans.SalesMarkup                = bomCalcCost.salesMarkup();
+        bomCalcTrans.SalesPriceUnit             = bomCalcCost.salesPriceUnit();
+        bomCalcTrans.SalesPriceFallBackVersion  = bomCalcCost.salesPriceFallBackVersion();
+
+        bomCalcTrans.ConsistOfPrice             = bomCalcCost.parmPriceCalcIdOfPriceUsed();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateNumOfSeries</Name>
+				<Source><![CDATA[
+    void updateNumOfSeries()
+    {
+        BOMCalcItem     localParentBOMCalcItem = this.parmParentBOMCalc() as BOMCalcItem;
+
+        if (this.parmParentBOMCalc().parmLevel() == 0                                                ||
+            localParentBOMCalcItem.parmBOM().type().mustBeDerivedDirectly()                        ||
+            localParentBOMCalcItem.parmBomCalcExplosionMode() == BOMCalcExplosionMode::MakeToOrder ||
+            !bomCalcTrans.CostMarkup)
+        {
+            return;
+        }
+
+        if (actualConsumptionInventQty && calcConsumptionInventQty)
+        {
+            bomCalcTrans.NumOfSeries = actualConsumptionInventQty / calcConsumptionInventQty;
+        }
+        else
+        {
+            bomCalcTrans.NumOfSeries = 0;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateParent</Name>
+				<Source><![CDATA[
+    public void updateParent()
+    {
+        BOMCalcTrans        bomCalcTransBreakdown,
+                            updatedBomCalcTrans;
+        boolean             breakdownExists = false;
+        BOMCalcItem         localParentBOMCalcItem = this.parmParentBOMCalc();
+        BOMCalcTrans        breakdownBOMCalcTrans;
+
+        localParentBOMCalcItem.updateActualPrices(bomCalcTrans);
+
+        // If a breakdown has been inserted, add this for the calculation of the indirect cost
+        while select * from bomCalcTransBreakdown
+            where bomCalcTransBreakdown.PriceCalcId        == bomCalcTrans.PriceCalcId
+               && bomCalcTransBreakdown.Resource           == bomCalcTrans.Resource
+               && bomCalcTransBreakdown.Level              == bomCalcTrans.Level + 1
+               && bomCalcTransBreakdown.CalcType           == ItemCalcType::CostGroup
+               && bomCalcTransBreakdown.LineNum            >  bomCalcTrans.LineNum
+               && bomCalcTransBreakdown.LineNum            <  bomCalcTrans.LineNum + 1
+        {
+            updatedBomCalcTrans = this.updateBomCalcTransBeforeUpdCostSheet(bomCalcTransBreakdown);
+            localParentBOMCalcItem.updateCostCalcTransData(updatedBomCalcTrans);
+            breakdownExists = true;
+        }
+
+        updatedBomCalcTrans = this.updateBomCalcTransBeforeUpdCostSheet(bomCalcTrans);
+
+        if (!breakdownExists)
+        {
+            localParentBOMCalcItem.updateCostCalcTransData(updatedBomCalcTrans);
+        }
+        else
+        {
+            breakdownBOMCalcTrans.data(updatedBomCalcTrans);
+            breakdownBomCalcTrans.CostMarkup = 0;
+            breakdownBomCalcTrans.CostMarkupQty = 0;
+            breakdownBomCalcTrans.CostPrice = 0;
+            breakdownBomCalcTrans.CostPriceQty = 0;
+            breakdownBomCalcTrans.CostPriceUnit = 0;
+            breakdownBomCalcTrans.CalcType = ItemCalcType::Item;
+            localParentBOMCalcItem.updateCostCalcTransData(breakdownBomCalcTrans);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateWarnings</Name>
+				<Source><![CDATA[
+    void updateWarnings()
+    {
+        BOMCalcCheck bomCalcCheck;
+
+        bomCalcCheck = BOMCalcCheck::newBOMCalcItemLine(this);
+
+		if (!this.parmParentBOMCalc().parmOverrideGroupWarnings())
+        {
+			bomCalcCheck.parmCheckNoBOM(bomCalcGroup.CheckNoBOM);
+            bomCalcCheck.parmCheckNoRoute(bomCalcGroup.CheckNoRoute);
+			bomCalcCheck.parmCheckNoResource(bomCalcGroup.CheckNoResource);
+			bomCalcCheck.parmCheckNoConsump(bomCalcGroup.CheckNoConsump);
+			bomCalcCheck.parmCheckNoCostPrice(bomCalcGroup.CheckNoCostPrice);
+			bomCalcCheck.parmCheckAgeCostPrice(bomCalcGroup.CheckAgeCostPrice);
+			bomCalcCheck.parmCheckMinContribution(bomCalcGroup.CheckMinContribution);
+        }
+
+        if (calcConsumptionInventQty)
+        {
+            bomCalcCheck.checkNoConsumption(bomCalcTrans.ConsumptionVariable + bomCalcTrans.ConsumptionConstant);
+        }
+
+        bomCalcCheck.checkZeroCostPrice(bomCalcTrans.CostPrice, bomCalcCost.costFound());
+        bomCalcCheck.checkNoCostPrice(bomCalcCost.costFound());
+        bomCalcCheck.checkSubBomWarnings(bomCalcCost.subBomWarningLink());
+        bomCalcCheck.checkAgeCostPrice(bomCalcCost.costPriceDate(), costPriceModel);
+        bomCalcCheck.checkMinContribution(bomCalcTrans.contributionRatio());
+        bomCalcCheck.checkUseFallBack(bomCalcTrans.CostPriceFallBackVersion, bomCalcTrans.SalesPriceFallBackVersion);
+
+        if (bomCalcCheck.hasMessages())
+        {
+            bomCalcTrans.Infolog = bomCalcCheck.getMessages();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validate</Name>
+				<Source><![CDATA[
+    boolean validate(boolean _checkBOM = true)
+    {
+        boolean ret;
+
+        ret = super();
+
+        if (_checkBOM && !bom)
+        {
+            ret = checkFailed(strFmt("@SYS29104", classStr(BOMCalcItemLine)));
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>construct</Name>
+				<Source><![CDATA[
+    static BOMCalcItemLine construct()
+    {
+        return new BOMCalcItemLine();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>newBOMCalcItem</Name>
+				<Source><![CDATA[
+    static BOMCalcItemLine newBOMCalcItem(
+        BOM                     _bom,
+        BOMCalcItem             _parentBOMCalcItem,
+        CostingVersionId        _costingVersionId       = '',
+        BOMCalcFallBack         _bomCalcFallBack        = BOMCalcFallBack::None,
+        CostingVersionId        _fallBackVersionId      = '',
+        InventSiteId            _siteId                 = '',
+        BOMCalcExplosionMode    _bomCalcExplosionMode   = BOMCalcExplosionMode::MultiLevel
+        )
+    {
+        BOMCalcItemLine bomCalcItemLine = BOMCalcItemLine::construct();
+
+        bomCalcItemLine.parmItemId(_bom.ItemId);
+        bomCalcItemLine.parmInventDimId(_bom.InventDimId);
+        bomCalcItemLine.parmBOM(_bom.data());
+        bomCalcItemLine.parmParentBOMCalc(_parentBOMCalcItem);
+        bomCalcItemLine.parmCostingVersionId(_costingVersionId);
+        bomCalcItemLine.parmBOMCalcFallBack(_bomCalcFallBack);
+        bomCalcItemLine.parmFallBackVersionId(_fallBackVersionId);
+        bomCalcItemLine.parmSiteId(_siteId);
+        bomCalcItemLine.parmBomCalcExplosionMode(_bomCalcExplosionMode);
+
+        if (_parentBOMCalcItem)
+        {
+            bomCalcItemLine.parmLeanCostingFacade(_parentBOMCalcItem.parmLeanCostingFacade());
+            bomCalcItemLine.parmBOMDependencyManager(_parentBOMCalcItem.parmBOMDependencyManager());
+        }
+
+        return bomCalcItemLine;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

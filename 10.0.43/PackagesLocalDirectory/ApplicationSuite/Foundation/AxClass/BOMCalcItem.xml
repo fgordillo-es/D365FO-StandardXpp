@@ -1,0 +1,2159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>BomCalcItem</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+class BomCalcItem extends BOMCalcBase
+{
+    BOMId                       bomId;
+    RouteId                     routeId;
+    RecId                       costingVersionRecId;
+    RecId                       inventTableRecId;
+    BOMRouteVersionSelect       bomRouteVersionSelect;
+    BOMCalcType                 bomCalcType;
+    CostingVersionId            costingVersionId;
+    BOMCalcCostingVersionUpdate calcCostingVersionUpdate;
+    BOMCalcFallBack             bomCalcFallBack;
+    CostingVersionId            fallBackVersionId;
+
+    Qty                         calcConsumptionInventQty;
+    Qty                         actualConsumptionInventQty;
+    Qty                         actualNetWeightConsumptionInventQty;
+
+    BOMCalcExplosionMode        bomCalcExplosionMode;
+
+    PriceCalcId                 priceCalcId;
+
+    BOMCalcTable                bomCalcTable;
+    BOMCalcTrans                bomCalcTrans;
+
+    BOM                         bom;
+    Exception                   exceptionType;
+
+    InventSiteId                siteId;
+    CostCalcTransData           costCalcTransData;
+
+    NoYes                       costPriceTransfer;
+    NoYes                       salesPriceTransfer;
+
+    BOMRoutePhantomData         phantomData;
+    PmfPriceCalcId              pmfParentCalcId;
+    PmfCostAllocationPct        pmfCostAllocationPct;
+    Qty                         formSeriesSize;
+    PmfYieldPct                 pmfYieldPct;
+    PmfFormulaCoBy              pmfFormulaCoBy;
+
+    ItemProcurementMode         itemProcurementMode;
+    RefRecId                    productionFlowReferenceRecId;
+    List                        listProdFlowResourcesUsage;
+    List                        listProdFlowSubcontractedServicesUsage;
+    LeanCostingFacadeBase       leanCostingFacade;
+
+    PurchPriceModel             purchPriceModel;
+
+    // cached BOMDependencyManager instance for eventual circularity checks
+    BOMDependencyManager        bomDependencyManager;
+
+    private CostManagementInstrumentationLogger logger;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>instrumentationLogger</Name>
+				<Source><![CDATA[
+    final internal CostManagementInstrumentationLogger instrumentationLogger()
+    {
+        if (!logger)
+        {
+            logger = CostManagementInstrumentationLogger::createLogger(classStr(BOMCalcItem));
+        }
+
+        return logger;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>addListProdFlowResourcesUsage</Name>
+				<Source><![CDATA[
+    public void addListProdFlowResourcesUsage(
+        ItemId  _itemId,
+        Qty     _qty)
+    {
+        Map             resourceUsageMap;
+        MapEnumerator   en;
+
+        resourceUsageMap = leanCostingFacade.getResourcesUsage(productionFlowReferenceRecId, _itemId, InventDim::clearInventLocationId(inventDimId), calcDate, _qty);
+        en = resourceUsageMap.getEnumerator();
+
+        while (en.moveNext())
+        {
+            listProdFlowResourcesUsage.addEnd(BOMProdFlowResourceUsage::construct(en.currentKey(), en.currentValue(), _qty));
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>addListProdFlowSubcontServicesUsage</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///     Registers the quantities of subcontracted service items used for producing the specified quantity of an item.
+    /// </summary>
+    /// <param name="_itemId">
+    ///     The ID of the produced item.
+    /// </param>
+    /// <param name="_qty">
+    ///     The produced quantity.
+    /// </param>
+    /// <param name="_includeProcess">
+    ///     A boolean value indicating if service usage related to process activities should be included.
+    /// </param>
+    /// <param name="_includeTransfer">
+    ///     A boolean value indicating if service usage related to transfer activities should be included.
+    /// </param>
+    /// <remarks>
+    ///     Uses the lean costing facade to retrieve the list and quantites of the subcontracted service items.
+    /// </remarks>
+    public void addListProdFlowSubcontServicesUsage(
+        ItemId  _itemId,
+        Qty     _qty,
+        boolean _includeProcess = true,
+        boolean _includeTransfer = true)
+    {
+        Map             serviceMap;
+        MapEnumerator   en;
+        container       itemContainer;
+
+        serviceMap = leanCostingFacade.getSubcontractedServicesUsage(
+                        productionFlowReferenceRecId,
+                        _itemId,
+                        inventDimId,
+                        calcDate,
+                        _qty,
+                        _includeProcess,
+                        _includeTransfer);
+
+        en = serviceMap.getEnumerator();
+
+        while (en.moveNext())
+        {
+            itemContainer = en.currentKey();
+            Debug::assert(2 == conLen(itemContainer));
+
+            listProdFlowSubcontractedServicesUsage.addEnd(
+                BOMProdFlowSubcontractedServicesUsage::construct(
+                    conPeek(itemContainer, 1),
+                    conPeek(itemContainer, 2),
+                    en.currentValue()));
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>bufferCalcTrans</Name>
+				<Source><![CDATA[
+    Common bufferCalcTrans()
+    {
+        return bomCalcTrans;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calc</Name>
+				<Source><![CDATA[
+    public void calc()
+    {
+        ListEnumerator  listEnumerator;
+        BOMCalcItemLine bomCalcItemLine;
+
+        using (var activityContext =  this.instrumentationLogger().calculationActivities().BOMCalc(this.getCostingVersionRecId(), this.getInventTableRecId(), inventDimId, funcName()))
+        {
+            try
+            {
+                setPrefix(BOMCalcItem::description());
+
+                if (inventDimId != InventDim::inventDimIdBlank())
+                {
+                    setPrefix(strFmt("%1 (%2)", strFmt("@SYS24300", itemId), inventDim.preFixValue()));
+                }
+                else
+                {
+                    setPrefix(strFmt("@SYS24300", itemId));
+                }
+
+                if (!this.validate())
+                {
+                    throw Exception::Error;
+                }
+
+                this.init();
+
+                //calc BOM
+                setPrefix("@SYS28550");
+
+                listEnumerator = listBOM.getEnumerator();
+
+                // Calculate BOM lines (do not insert transactions now)
+                while (listEnumerator.moveNext())
+                {
+                    bomCalcItemLine = listEnumerator.current();
+                    bomCalcItemLine.calc();
+                }
+
+                if (level == 0)
+                {
+                    if (this.parmExistTradeAgreements())
+                    {
+                        this.calcTradeAgreements();
+                    }
+
+                    this.setProgressTotals();
+                    this.recalcBOM();
+
+                    this.insertBOMCalcTable();
+                }
+            }
+            catch (Exception::Error)
+            {
+                throw error("@SYS19457");
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calcCostSheet</Name>
+				<Source><![CDATA[
+    protected void calcCostSheet()
+    {
+        using (var activityContext =  this.instrumentationLogger().calculationActivities().BOMCalc(this.getCostingVersionRecId(), this.getInventTableRecId(), inventDimId, funcName()))
+        {
+            costCalcTransData.setLevel(this.parmLevel() + 1);
+
+            CostSheet costSheet = CostSheetFactory::construct().createCostSheet(CostSheetModeStrategyCalculate::newParameter(CostPriceType::COGM, costCalcTransData));
+            boolean costSheetCalculated = costSheet.calc(costCalcTransData);
+
+            if (costSheetCalculated)
+            {
+                ListEnumerator calculationNodeEnumerator = costSheet.getNodeEnumerator(CostSheetNodeListType::IndirectCalculation);
+                while (calculationNodeEnumerator.moveNext())
+                {
+                    CostSheetNodeCalculation calculationNode = calculationNodeEnumerator.current();
+                    BOMCalcTrans indirectBomCalcTrans = calculationNode.toBOMCalcTrans(profitSet, calcDate);
+
+                    if (indirectBomCalcTrans.Infolog != conNull() // Include lines if they contain warnings even if they don't have cost
+                        || ((indirectBomCalcTrans.variableCost() + indirectBomCalcTrans.constantCost()) != 0.00)
+                        || (indirectBomCalcTrans.consumptionSum() != 0.00))
+                    {
+                        if (FeatureStateProvider::isFeatureEnabled(CostBOMCalcConvertConst2VarianceFactorToggle::instance()))
+                        {
+                            if ((indirectBomCalcTrans.CostMarkupQty != 0.00 || indirectBomCalcTrans.CostMarkupQty != 0.00)
+                                && this.parmActualConsumptionInventQty()
+                                && this.parmSeriesSize()
+                                && this.topParentQty()
+                                && this.parmLevel() != 0
+                                && !(this.parmBOM() && this.parmBOM().type().mustBeDerivedDirectly())
+                                && this.parmBomCalcExplosionMode() != BOMCalcExplosionMode::MakeToOrder)
+                            {
+                                indirectBomCalcTrans.CostPriceQty   = indirectBomCalcTrans.CostPriceQty  + (indirectBomCalcTrans.CostMarkupQty * this.parmActualConsumptionInventQty() / this.parmSeriesSize() / this.topParentQty());
+                                indirectBomCalcTrans.SalesPriceQty  = indirectBomCalcTrans.SalesPriceQty + (indirectBomCalcTrans.SalesMarkupQty * this.parmActualConsumptionInventQty() / this.parmSeriesSize() / this.topParentQty());
+                                indirectBomCalcTrans.CostMarkupQty  = 0;
+                                indirectBomCalcTrans.SalesMarkupQty = 0;
+                            }
+                        }
+
+                        this.insertIndirectBOMCalcTrans(indirectBomCalcTrans);
+                        this.updateCalcPrices(indirectBomCalcTrans);
+                        this.updateActualPrices(indirectBomCalcTrans);
+                        this.updateCostCalcTransData(indirectBomCalcTrans);
+                    }
+                }
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>insertIndirectBOMCalcTrans</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Inserts an initialized <c>BOMCalcTrans</c> record.
+    /// </summary>
+    /// <param name = "_indirectBomCalcTrans">The record to insert</param>
+    protected void insertIndirectBOMCalcTrans(BOMCalcTrans _indirectBomCalcTrans)
+    {
+        _indirectBomCalcTrans.LineNum = this.getLineNum();
+        _indirectBomCalcTrans.PriceCalcId = priceCalcId;
+        _indirectBomCalcTrans.insert();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calcProdFlowResourcesUsage</Name>
+				<Source><![CDATA[
+    protected void calcProdFlowResourcesUsage()
+    {
+        ListEnumerator              listEnumerator;
+        BOMProdFlowResourceUsage    bomProdFlowResourceUsage;
+
+        using (var activityContext =  this.instrumentationLogger().calculationActivities().BOMCalc(this.getCostingVersionRecId(), this.getInventTableRecId(), inventDimId, funcName()))
+        {
+            setPrefix("@SYS189866");
+
+            listEnumerator = listProdFlowResourcesUsage.getEnumerator();
+
+            if (listEnumerator)
+            {
+                while (listEnumerator.moveNext())
+                {
+                    bomProdFlowResourceUsage = listEnumerator.current();
+                    bomProdFlowResourceUsage.calc(this);
+                }
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calcProdFlowSubcontractedServicesUsage</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Calculates the cost of the used subcontracted service items.
+    /// </summary>
+    protected void calcProdFlowSubcontractedServicesUsage()
+    {
+        ListEnumerator                          listEnumerator;
+        BOMProdFlowSubcontractedServicesUsage   bomProdFlowServicesUsage;
+
+        using (var activityContext =  this.instrumentationLogger().calculationActivities().BOMCalc(this.getCostingVersionRecId(), this.getInventTableRecId(), inventDimId, funcName()))
+        {
+            setPrefix("@SYS332359");
+
+            listEnumerator = listProdFlowSubcontractedServicesUsage.getEnumerator();
+
+            if (listEnumerator)
+            {
+                while (listEnumerator.moveNext())
+                {
+                    bomProdFlowServicesUsage = listEnumerator.current();
+                    bomProdFlowServicesUsage.calc(this);
+                }
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calcProductionFlow</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Calculates the costs that is related to production flows.
+    /// </summary>
+    protected void calcProductionFlow()
+    {
+        using (var activityContext =  this.instrumentationLogger().calculationActivities().BOMCalc(this.getCostingVersionRecId(), this.getInventTableRecId(), inventDimId, funcName()))
+        {
+            this.calcProdFlowResourcesUsage();
+            this.calcProdFlowSubcontractedServicesUsage();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calcTradeAgreements</Name>
+				<Source><![CDATA[
+    void calcTradeAgreements()
+    {
+        using (var activityContext =  this.instrumentationLogger().calculationActivities().BOMCalc(this.getCostingVersionRecId(), this.getInventTableRecId(), inventDimId, funcName()))
+        {
+            ListEnumerator  listEnumerator;
+
+            listEnumerator = listBOM.getEnumerator();
+
+            // Calculate prices for trade agreements
+            if (listEnumerator)
+            {
+                if (listEnumerator.moveNext())
+                {
+                    listEnumerator.current().calcTradeAgreements();
+                    while (listEnumerator.moveNext())
+                    {
+                        listEnumerator.current().calcTradeAgreements();
+                    }
+                }
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>constructCostCalcTransData</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Constructs a new instance of the <c>CostCalcTransData</c> class for this item.
+    /// </summary>
+    /// <returns>A new instance of the <c>CostCalcTransData</c> class.</returns>
+    protected CostCalcTransData constructCostCalcTransData()
+    {
+        return CostCalcTransData::construct(itemId, this.topParentQty());
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>constructLeanCostingFacade</Name>
+				<Source><![CDATA[
+    protected LeanCostingFacadeBase constructLeanCostingFacade()
+    {
+        return LeanCostingFacade::construct();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createBomCalcItemAndAddToListBom</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Creates a <c>BomCalcItemLine</c> class instance for a specified <c>Bom</c> record.
+    /// </summary>
+    /// <param name="_bom">
+    /// The <c>Bom</c> record.
+    /// </param>
+    private void createBomCalcItemAndAddToListBom(Bom _bom)
+    {
+        if (this.mustCreateBomCalcItemAndAddToListBom(_bom))
+        {
+            BOMCalcItemLine bomCalcItemLine = BOMCalcItemLine::newBOMCalcItem(_bom,
+                                                              this,
+                                                              costingVersionId,
+                                                              bomCalcFallBack,
+                                                              fallBackVersionId,
+                                                              siteId,
+                                                              bomCalcExplosionMode);
+
+            bomCalcItemLine.parmPmfRecycledBpConsumptionCalc(this.createRecycledBpConsumptionCalc(bomCalcItemLine));
+
+            listBOM.addEnd(bomCalcItemLine);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mustCreateBomCalcItemAndAddToListBom</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Determines if the <c>BomCalcItemLine</c> class must be created for the given <c>Bom</c> record.
+    /// </summary>
+    /// <param name = "_bom">A bill of materials record.</param>
+    /// <returns>true if the <c>BomCalcItemLine</c> class must be created; otherwise, false.</returns>
+    protected boolean mustCreateBomCalcItemAndAddToListBom(BOM _bom)
+    {
+        return _bom.Calculation;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createBomCalcItemAndAddToListBomWhenExpandingPhantom</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Creates a <c>BomCalcItemLine</c> class instance for a specified <c>Bom</c> record when expanding phantom BOM line.
+    /// </summary>
+    /// <param name="_bom">
+    /// A BOM line to calculate cost for.
+    /// </param>
+    protected void createBomCalcItemAndAddToListBomWhenExpandingPhantom(Bom _bom)
+    {
+        this.createBomCalcItemAndAddToListBom(_bom);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createRecycledBpConsumptionCalc</Name>
+				<Source><![CDATA[
+    public IPmfRecycledBpConsumptionCalc createRecycledBpConsumptionCalc(BOMCalcLine _bomCalcLine)
+    {
+        PmfRecycledBpConsumptionCalc_Bom calc           = PmfRecycledBpConsumptionCalc_Bom::construct();
+        PmfRecycledBpBomCalcCreator      bomCalcCreator = PmfRecycledBpBomCalcCreator::construct();
+
+        calc.parmParentState(pmfRecycledBpParentCalcState);
+
+        calc.parmBomCalcItemLine(_bomCalcLine);
+
+        bomCalcCreator.parmParentBomCalc(this);
+
+        calc.parmBomCalcCreator(bomCalcCreator);
+
+        return calc;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getCostGroupId</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Returns the cost group id that should be used for level 0 <c>BomCalcTrans</c> record.
+    /// </summary>
+    /// <returns>
+    /// The <c>CostGroupId</c> value.
+    /// </returns>
+    protected CostGroupId getCostGroupId()
+    {
+        return  this.parmInventTable().costGroup();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getItemCalcType</Name>
+				<Source><![CDATA[
+    protected ItemCalcType getItemCalcType()
+    {
+        if (level == 0)
+        {
+            return ItemCalcType::Production;
+        }
+
+        return ItemCalcType::BOM;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getInventTableRecId</Name>
+				<Source><![CDATA[
+    private RecId getInventTableRecId()
+    {
+        if (!inventTableRecId)
+        {
+            inventTableRecId = this.parmInventTable().RecId;
+        }
+
+        return inventTableRecId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getCostingVersionRecId</Name>
+				<Source><![CDATA[
+    private RecId getCostingVersionRecId()
+    {
+        if (!costingVersionRecId)
+        {
+            CostingVersion costingVersion = CostingVersion::find(costingVersionId);
+            costingVersionRecId = costingVersion.RecId;
+        }
+
+        return costingVersionRecId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    public void init()
+    {
+        CostingVersion costingVersion;
+
+        this.initParameters();
+
+        costingVersion = CostingVersion::find(costingVersionId);
+        if (costingVersion.CostingType == CostingVersionCostingType::Standard ||
+            costingVersion.CostingType == CostingVersionCostingType::Conversion ||
+            itemProcurementMode == ItemProcurementMode::ProductionFlow)
+        {
+            this.initBOMRoutePhantomData();
+        }
+
+        this.initListBOM();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initBOMRoutePhantomData</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Initializes the <c>BOMRoutePhantomExpand</c> class for this calculation.
+    /// </summary>
+    protected void initBOMRoutePhantomData()
+    {
+        phantomData = BOMRoutePhantomExpand::expandFromBomCalc(this, leanCostingFacade);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initCostCalcTransData</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Initializes the <c>costCalcTransData</c> class.
+    /// </summary>
+    /// <remarks>
+    /// This class consumes a significant amount of memory, and thus should only be kept for the shortest period of time.
+    /// </remarks>
+    private void initCostCalcTransData()
+    {
+        if (costCalcTransData == null)
+        {
+            costCalcTransData = this.constructCostCalcTransData();
+            costCalcTransData.setCostSheetCalculationQuantity(actualConsumptionInventQty);
+            costCalcTransData.setBOMCalcItem(this);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initListBOM</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Initializes a list of BOM calculation items when perform BOM calculation.
+    /// </summary>
+    protected void initListBOM()
+    {
+        MapEnumerator     bomMapEnumerator;
+        BOM               currentBOM;
+        BOMSearch   bomSearch;
+
+        if (listBOM.elements())
+            return;
+
+        if (phantomData)
+        {
+            bomMapEnumerator = phantomData.parmBOMMap().getEnumerator();
+            while (bomMapEnumerator.moveNext())
+            {
+                currentBOM = bomMapEnumerator.currentValue();
+
+                this.createBomCalcItemAndAddToListBomWhenExpandingPhantom(currentBOM);
+            }
+        }
+        else
+        {
+            bomSearch = BOMSearch::newBOMCalc(bomId, calcDate, itemId, InventDim::find(inventDimId).ConfigId, this.parmBOMDependencyManager());
+
+            while (bomSearch && bomSearch.next())
+            {
+                this.createBomCalcItemAndAddToListBom(bomSearch.bom());
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initListRoute</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Creates a list of Route operations current production order.
+    /// </summary>
+    /// <returns>
+    /// The initialized list.
+    /// </returns>
+    protected List initListRoute()
+    {
+        MapEnumerator     routeMapEnumerator;
+        Route             currentRoute;
+        BOM               phantomBOM;
+        RouteSearch       routeSearch;
+        Factor            phantomUnitFactor;
+        List              listRoute = new List(Types::Class);
+
+        if (phantomData)
+        {
+            routeMapEnumerator = phantomData.parmRouteMap().getEnumerator();
+
+            while (routeMapEnumerator.moveNext())
+            {
+                currentRoute = routeMapEnumerator.currentValue();
+
+                phantomBOM = phantomData.getRouteParentBOM(routeMapEnumerator.currentKey());
+
+                if (phantomBOM)
+                {
+                    phantomUnitFactor = phantomBOM.BOMMap::phantomUnitFactor(this.parmSeriesSize());
+
+                    listRoute.addEnd(BOMCalcItemOperPhantom::newRoutePhantom(currentRoute,
+                                                               this,
+                                                               phantomBOM.ItemId,
+                                                               phantomBOM.inventDim(),
+                                                               phantomBOM.bomQty * phantomUnitFactor,
+                                                               phantomBOM.bomQtySerie,
+                                                               phantomData,
+                                                              (phantomBOM.bomQty/this.parmSeriesSize()) * phantomUnitFactor));
+                }
+                else
+                {
+                    listRoute.addEnd(BOMCalcItemOper::newRoute(currentRoute, this));
+                }
+            }
+        }
+        else
+        {
+            routeSearch = RouteSearch::newBOMCalc(routeId);
+
+            while (routeSearch && routeSearch.next())
+            {
+                listRoute.addEnd(BOMCalcItemOper::newRoute(routeSearch.route(), this));
+            }
+        }
+
+        return listRoute;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initParameters</Name>
+				<Source><![CDATA[
+    protected void initParameters()
+    {
+        NumberSeq   numberSeq;
+        InventTable inventTable = this.parmInventTable();
+
+        super();
+
+        this.initSeriesSize();
+
+        if (!bomId)
+        {
+            bomId = inventTable.bomIdConstruction(bomRouteVersionSelect, calcDate, seriesSize, this.parmInventDim());
+        }
+
+        if (itemProcurementMode == ItemProcurementMode::ProductionOrder && !routeId)
+        {
+            routeId = inventTable.routeIdConstruction(bomRouteVersionSelect, calcDate, seriesSize, this.parmInventDim());
+        }
+
+        if (!priceCalcId)
+        {
+            if (bomCalcTable.PriceCalcId)
+            {
+                priceCalcId = bomCalcTable.PriceCalcId;
+            }
+            else
+            {
+                numberSeq   = NumberSeq::newGetNum(BOMParameters::numRefPriceCalcId());
+                priceCalcId = numberSeq.num();
+            }
+        }
+
+        this.initProgressBar();
+        this.incProgressTotals();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initSeriesSize</Name>
+				<Source><![CDATA[
+    void initSeriesSize()
+    {
+        if (level == 0)
+        {
+            seriesSize = calcConsumptionInventQty;
+        }
+        else if (bom)
+        {
+            // Line type = Item
+            if (bomCalcExplosionMode != BOMCalcExplosionMode::MakeToOrder && !bom.type().mustBeDerivedDirectly()) // makeToOrder forces linetype Item to be Production
+            {
+                seriesSize = InventItemInventSetup::find(itemId, this.parmInventDimId()).getStandardQty();
+                this.parmUseStandardQty(true);
+            }
+            // Line types : Production, Vendor, Phantom
+            else
+            {
+                seriesSize = calcConsumptionInventQty;
+                this.parmUseStandardQty(false);
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initializeBOMCalcTable</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Initializes the BOM calculation record.
+    /// </summary>
+    protected void initializeBOMCalcTable()
+    {
+        #ISOCountryRegionCodes
+
+        bomCalcTable.ItemId           = this.key1();
+        bomCalcTable.InventDimId      = this.key2();
+
+        bomCalcTable.PmfBomVersion    = pmfBOMVersion.RecId;
+        bomCalcTable.PriceCalcId      = priceCalcId;
+        bomCalcTable.bomId            = bomId;
+        bomCalcTable.RouteId          = routeId;
+        bomCalcTable.TransDate        = calcDate;
+        bomCalcTable.Qty              = this.parmCalcConsumptionInventQty();
+        bomCalcTable.ProfitSet        = profitSet;
+        bomCalcTable.UnitId           = inventUnitId;
+        bomCalcTable.bomCalcType      = bomCalcType;
+
+        bomCalcTable.CostPrice        = bomCalcTrans.CostPriceQty * this.parmCalcConsumptionInventQty();
+        bomCalcTable.CostMarkup       = bomCalcTrans.CostMarkupQty;
+        if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoRU]))
+        {
+            bomCalcTable.CostPriceSecCur_RU  = bomCalcTrans.CostPriceQtySecCur_RU * this.parmCalcConsumptionInventQty();
+            bomCalcTable.CostMarkupSecCur_RU = bomCalcTrans.CostMarkupQtySecCur_RU;
+        }
+        bomCalcTable.SalesPrice       = bomCalcTrans.SalesPriceQty * this.parmCalcConsumptionInventQty();
+        bomCalcTable.SalesMarkup      = bomCalcTrans.SalesMarkupQty;
+        bomCalcTable.NetWeight        = bomCalcTrans.NetWeightQty * this.parmCalcConsumptionInventQty();
+
+        if (pmfParentCalcId != '')
+        {
+            bomCalcTable.PmfParentCalcId = pmfParentCalcId;
+        }
+
+        bomCalcTable.LeanProductionFlowReference = productionFlowReferenceRecId;
+
+        bomCalcTable.CostCalculationMethod = BOMCalcTable::getCostCalculationMethod(itemProcurementMode);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>insertBOMCalcTable</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Inserts or updates an initialized <c>BOMCalcTable</c> record.
+    /// </summary>
+    public void insertBOMCalcTable()
+    {
+        this.initializeBOMCalcTable();
+
+        if (bomCalcTable.RecId)
+        {
+            bomCalcTable.update();
+        }
+        else
+        {
+            bomCalcTable.insert();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initializeBOMCalcTrans</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Initializes the BOM calculation transaction record.
+    /// </summary>
+    protected void initializeBOMCalcTrans()
+    {
+        InventTable inventTable = this.parmInventTable();
+
+        bomCalcTrans.PriceCalcId            = priceCalcId;
+
+        bomCalcTrans.Qty                    = this.topParentQty();
+        bomCalcTrans.TransDate              = calcDate;
+        bomCalcTrans.Level                  = this.parmLevel();
+        bomCalcTrans.LineNum                = lineNum;
+        bomCalcTrans.CalcGroupId            = bomCalcGroup.CalcGroupId;
+        bomCalcTrans.CostGroupId            = this.getCostGroupId();
+
+        bomCalcTrans.CostPriceUnit          = 1;
+        bomCalcTrans.SalesPriceUnit         = 1;
+
+        bomCalcTrans.CalcType               = this.getItemCalcType();
+
+        if (!BOMCalcGroup::stopExplodePrice(bomCalcGroup, inventTable, inventDimId, siteId))
+        {
+            bomCalcTrans.CostPriceModelUsed = BOMCalcCostPriceUsed::None;
+            bomCalcTrans.SalesPriceModelUsed = BOMCalcSalesPriceUsed::None;
+        }
+
+        bomCalcTrans.Resource               = this.key1();
+        bomCalcTrans.InventDimId            = this.key2();
+        bomCalcTrans.UnitId                 = inventUnitId;
+        bomCalcTrans.OprId                  = '';
+        bomCalcTrans.BOMCalcTransMap::setInventDimStr(inventDimId);
+
+        bomCalcTrans.bom                    = NoYes::Yes;
+
+        bomCalcTrans.OprNum                 = bom.OprNum;
+
+        bomCalcTrans.NumOfSeries            = bomCalcTrans.NumOfSeries ? bomCalcTrans.NumOfSeries : 1;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>insertBOMCalcTrans</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Initializes and inserts the BOM calculation transaction record.
+    /// </summary>
+    public void insertBOMCalcTrans()
+    {
+        this.initializeBOMCalcTrans();
+
+        bomCalcTrans.insert();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>key1</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Retrieves the <c>ItemId</c>.
+    /// </summary>
+    /// <returns>
+    /// An <c>ItemId</c>.
+    /// </returns>
+    protected KeyValue key1()
+    {
+        return itemId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>key2</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Retrieves the <c>InventDimId</c>.
+    /// </summary>
+    /// <returns>
+    /// An <c>InventDimId</c>.
+    /// </returns>
+    protected KeyValue key2()
+    {
+        return inventDimId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    void new()
+    {
+        super();
+
+        bomCalcExplosionMode = BOMCalcExplosionMode::MultiLevel;
+        exceptionType = Exception::Warning;
+
+        listProdFlowResourcesUsage = new List(Types::Class);
+        listProdFlowSubcontractedServicesUsage = new List(Types::Class);
+
+        leanCostingFacade = this.constructLeanCostingFacade();
+        pmfParentCalcId = '';
+        pmfCostAllocationPct = 100;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmActualConsumptionInventQty</Name>
+				<Source><![CDATA[
+    Qty parmActualConsumptionInventQty(Qty _actualConsumptionInventQty = actualConsumptionInventQty)
+    {
+        actualConsumptionInventQty = _actualConsumptionInventQty;
+        return actualConsumptionInventQty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmActualNetWeightConsumptionInventQty</Name>
+				<Source><![CDATA[
+    Qty parmActualNetWeightConsumptionInventQty(Qty _actualNetWeightConsumptionInventQty = actualNetWeightConsumptionInventQty)
+    {
+        actualNetWeightConsumptionInventQty = _actualNetWeightConsumptionInventQty;
+        return actualNetWeightConsumptionInventQty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmBOM</Name>
+				<Source><![CDATA[
+    BOM parmBOM(BOM _bom = bom)
+    {
+        bom = _bom;
+        return bom;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmBomCalcExplosionMode</Name>
+				<Source><![CDATA[
+    public BOMCalcExplosionMode parmBomCalcExplosionMode(BOMCalcExplosionMode _bomCalcExplosionMode = bomCalcExplosionMode)
+    {
+        bomCalcExplosionMode = _bomCalcExplosionMode;
+
+        return bomCalcExplosionMode;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmBOMCalcFallBack</Name>
+				<Source><![CDATA[
+    BOMCalcFallBack parmBOMCalcFallBack(BOMCalcFallBack _bomCalcFallBack = bomCalcFallBack)
+    {
+        bomCalcFallBack = _bomCalcFallBack;
+        return bomCalcFallBack;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmBOMCalcTable</Name>
+				<Source><![CDATA[
+    BOMCalcTable parmBOMCalcTable(BOMCalcTable _bomCalcTable = bomCalcTable)
+    {
+        bomCalcTable = _bomCalcTable;
+        return bomCalcTable;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmBOMCalcTrans</Name>
+				<Source><![CDATA[
+    BOMCalcTrans parmBOMCalcTrans(BOMCalcTrans _bomCalcTrans = bomCalcTrans)
+    {
+        bomCalcTrans = _bomCalcTrans;
+        return bomCalcTrans;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmBOMCalcType</Name>
+				<Source><![CDATA[
+    BOMCalcType parmBOMCalcType(BOMCalcType _bomCalcType = bomCalcType)
+    {
+        bomCalcType = _bomCalcType;
+        return bomCalcType;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmBOMDependencyManager</Name>
+				<Source><![CDATA[
+    public BOMDependencyManager parmBOMDependencyManager(BOMDependencyManager _bomDependencyManager = bomDependencyManager)
+    {
+        bomDependencyManager = _bomDependencyManager;
+        return bomDependencyManager;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmBOMId</Name>
+				<Source><![CDATA[
+    BOMId parmBOMId(BOMId _bomId = bomId)
+    {
+        bomId = _bomId;
+        return bomId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmBOMRouteVersionSelect</Name>
+				<Source><![CDATA[
+    BOMRouteVersionSelect parmBOMRouteVersionSelect(BOMRouteVersionSelect _bomRouteVersionSelect = bomRouteVersionSelect)
+    {
+        bomRouteVersionSelect = _bomRouteVersionSelect;
+        return bomRouteVersionSelect;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCalcConsumptionInventQty</Name>
+				<Source><![CDATA[
+    Qty parmCalcConsumptionInventQty(Qty _calcConsumptionInventQty = calcConsumptionInventQty)
+    {
+        calcConsumptionInventQty = _calcConsumptionInventQty;
+        return calcConsumptionInventQty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCalcCostingVersionUpdate</Name>
+				<Source><![CDATA[
+    BOMCalcCostingVersionUpdate parmCalcCostingVersionUpdate(BOMCalcCostingVersionUpdate _calcCostingVersionUpdate = calcCostingVersionUpdate)
+    {
+        calcCostingVersionUpdate = _calcCostingVersionUpdate;
+        return calcCostingVersionUpdate;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCostCalcTransData</Name>
+				<Source><![CDATA[
+    public CostCalcTransData parmCostCalcTransData(CostCalcTransData _costCalcTransData = costCalcTransData)
+    {
+        costCalcTransData = _costCalcTransData;
+
+        return costCalcTransData;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCostingVersionId</Name>
+				<Source><![CDATA[
+    CostingVersionId parmCostingVersionId(CostingVersionId _costingVersionId = costingVersionId)
+    {
+        costingVersionId = _costingVersionId;
+        return costingVersionId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCostPriceTransfer</Name>
+				<Source><![CDATA[
+    NoYes parmCostPriceTransfer(NoYes _costPriceTransfer = costPriceTransfer)
+    {
+        costPriceTransfer = _costPriceTransfer;
+        return costPriceTransfer;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCreatePendingPriceRecord</Name>
+				<Source><![CDATA[
+    public boolean parmCreatePendingPriceRecord()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmExceptionType</Name>
+				<Source><![CDATA[
+    Exception parmExceptionType(Exception _exceptionType = exceptionType)
+    {
+        exceptionType = _exceptionType;
+        return exceptionType;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmFallBackVersionId</Name>
+				<Source><![CDATA[
+    CostingVersionIdOpen parmFallBackVersionId(CostingVersionIdOpen _fallBackVersionId = fallBackVersionId)
+    {
+        fallBackVersionId = _fallBackVersionId;
+        return fallBackVersionId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmItemProcurementMode</Name>
+				<Source><![CDATA[
+    public ItemProcurementMode parmItemProcurementMode(ItemProcurementMode _itemProcurementMode = itemProcurementMode)
+    {
+        itemProcurementMode = _itemProcurementMode;
+
+        return itemProcurementMode;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmLeanCostingFacade</Name>
+				<Source><![CDATA[
+    public LeanCostingFacadeBase parmLeanCostingFacade(LeanCostingFacadeBase _leanCostingFacade = leanCostingFacade)
+    {
+        leanCostingFacade = _leanCostingFacade;
+
+        return leanCostingFacade;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmParentBOMCalc</Name>
+				<Source><![CDATA[
+    public BOMCalcBase parmParentBOMCalc(BOMCalcBase _parentBOMCalcItem = parentBOMCalc)
+    {
+        BOMCalcItem ret;
+
+        ret = super(_parentBOMCalcItem) as BOMCalcItem;
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPmfCostAllocationPct</Name>
+				<Source><![CDATA[
+    public PmfCostAllocationPct parmPmfCostAllocationPct(
+        PmfCostAllocationPct    _pmfCostAllocationPct = pmfCostAllocationPct )
+    {
+        pmfCostAllocationPct = _pmfCostAllocationPct;
+        return pmfCostAllocationPct;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPmfFormulaCoBy</Name>
+				<Source><![CDATA[
+    public PmfFormulaCoBy parmPmfFormulaCoBy(PmfFormulaCoBy _pmfFormulaCoBy = pmfFormulaCoBy)
+    {
+        pmfFormulaCoBy = _pmfFormulaCoBy;
+
+        return pmfFormulaCoBy;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPmfFormulaSeriesSize</Name>
+				<Source><![CDATA[
+    public Qty parmPmfFormulaSeriesSize(Qty _formSeriesSize = formSeriesSize)
+    {
+        formSeriesSize = _formSeriesSize;
+        return formSeriesSize;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPmfParentCalcId</Name>
+				<Source><![CDATA[
+    public PmfPriceCalcId parmPmfParentCalcId(
+        PmfPriceCalcId _pmfParentCalcId = pmfParentCalcId)
+    {
+        pmfParentCalcId = _pmfParentCalcId;
+        return pmfParentCalcId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPmfYieldPct</Name>
+				<Source><![CDATA[
+    public PmfYieldPct parmPmfYieldPct(PmfYieldPct _pmfYieldPct = pmfYieldPct)
+    {
+        pmfYieldPct = _pmfYieldPct;
+        return pmfYieldPct;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPriceCalcId</Name>
+				<Source><![CDATA[
+    PriceCalcId parmPriceCalcId(PriceCalcId _priceCalcId = priceCalcId)
+    {
+        priceCalcId = _priceCalcId;
+        return priceCalcId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmProductionFlowReferenceRecId</Name>
+				<Source><![CDATA[
+    public RefRecId parmProductionFlowReferenceRecId(RefRecId _productionFlowReferenceRecId = productionFlowReferenceRecId)
+    {
+        productionFlowReferenceRecId = _productionFlowReferenceRecId;
+
+        return productionFlowReferenceRecId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPurchPriceModel</Name>
+				<Source><![CDATA[
+    public PurchPriceModel parmPurchPriceModel(PurchPriceModel _purchPriceModel = purchPriceModel)
+    {
+        purchPriceModel = _purchPriceModel;
+
+        return purchPriceModel;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmRouteId</Name>
+				<Source><![CDATA[
+    RouteId parmRouteId(RouteId _routeId = routeId)
+    {
+        routeId = _routeId;
+        return routeId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmSalesPriceTransfer</Name>
+				<Source><![CDATA[
+    NoYes parmSalesPriceTransfer(NoYes _salesPriceTransfer = salesPriceTransfer)
+    {
+        salesPriceTransfer = _salesPriceTransfer;
+        return salesPriceTransfer;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmSiteId</Name>
+				<Source><![CDATA[
+    InventSiteId parmSiteId(InventSiteId _siteId = siteId)
+    {
+        siteId = _siteId;
+        return siteId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>pmfCalcBurden</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// This method spawns the burden calc
+    /// </summary>
+    protected void pmfCalcBurden()
+    {
+        PmfFormulaCoBy              burdenItems;
+        BomCalcItemLine_PmfBurden   burden;
+
+        //return if PMF is not enabled or this BOM/Formula has no active version
+        if (pmfBOMVersion.RecId)
+        {
+            while select burdenItems
+                where  burdenItems.bomVersionRefRecId == pmfBOMVersion.RecId
+                    && burdenItems.ProductType        == PmfProductType::By_Product
+                    && burdenItems.BurdenType         != PmfBurdenType::None
+                    //recycled byproducts don't generate burden
+                    && burdenItems.BurdenType         != PmfBurdenType::Recycled
+            {
+                burden = BomCalcItemLine_PmfBurden::newBurdenCalcItem(
+                            burdenItems,
+                            this,
+                            costingVersionId,
+                            bomCalcFallBack,
+                            fallBackVersionId,
+                            siteId,
+                            bomCalcExplosionMode);
+
+                burden.calc();
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>recalcBOM</Name>
+				<Source><![CDATA[
+    void recalcBOM()
+    {
+        using (var activityContext =  this.instrumentationLogger().calculationActivities().BOMCalc(this.getCostingVersionRecId(), this.getInventTableRecId(), inventDimId, funcName()))
+        {
+            ListEnumerator  listEnumerator;
+            BOMCalcItemLine bomCalcItemLine;
+
+            this.setLineNum();
+
+            this.updateProgress();
+
+            //Init CostCalcTransData to allow child items to access it.
+            this.initCostCalcTransData();
+
+            listEnumerator = listBOM.getEnumerator();
+
+            // Calculate actual consumption for BOM lines (insert transactions)
+            if (listEnumerator)
+            {
+                while (listEnumerator.moveNext())
+                {
+                    bomCalcItemLine = listEnumerator.current();
+                    bomCalcItemLine.recalc();
+                }
+            }
+
+            if (itemProcurementMode == ItemProcurementMode::ProductionFlow)
+            {
+                this.calcProductionFlow();
+            }
+            else
+            {
+                this.calcRoute();
+            }
+
+            this.pmfCalcBurden();
+
+            this.calcCostSheet();
+
+            this.updateBOMCalcTrans();
+
+            this.insertBOMCalcTrans();
+
+            if (phantomData && phantomData.parmPhantomExpanded() == true)
+            {
+                BOMCalcTrans::updateReNumberOprNum(priceCalcId, this.parmLevel() + 1);
+            }
+
+            //Clear up member variables we don't need anymore to free memory.
+            listBOM             = null;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>showInfolog</Name>
+				<Source><![CDATA[
+    void showInfolog()
+    {
+        if (bomCalcTable)
+        {
+            bomCalcTable.showInfolog(false);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>topParentQty</Name>
+				<Source><![CDATA[
+    Qty topParentQty()
+    {
+        Qty     topParentQty;
+        BOMCalcItem localParentBOMCalcItem;
+
+        if (level == 0)
+        {
+            topParentQty = this.parmCalcConsumptionInventQty();
+        }
+        else
+        {
+            if (!this.parmParentBOMCalc())
+            {
+                throw error(strFmt("@SYS27147", classStr(BOMCalcItem)));
+            }
+            localParentBOMCalcItem = this.parmParentBOMCalc() as BOMCalcItem;
+            topParentQty = localParentBOMCalcItem.topParentQty(); // recursive call to the top level
+        }
+
+        return topParentQty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateActualPrices</Name>
+				<Source><![CDATA[
+    void updateActualPrices(BOMCalcTrans _bomCalcTrans)
+    {
+        bomCalcTrans.CostPriceQty          += _bomCalcTrans.CostPriceQty;
+        bomCalcTrans.CostMarkupQty         += _bomCalcTrans.CostMarkupQty;
+        bomCalcTrans.CostPriceQtySecCur_RU  += _bomCalcTrans.CostPriceQtySecCur_RU;
+        bomCalcTrans.CostMarkupQtySecCur_RU += _bomCalcTrans.CostMarkupQtySecCur_RU;
+        bomCalcTrans.SalesPriceQty         += _bomCalcTrans.SalesPriceQty;
+        bomCalcTrans.SalesMarkupQty        += _bomCalcTrans.SalesMarkupQty;
+
+        bomCalcTrans.NetWeightQty          += _bomCalcTrans.NetWeightQty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateBOMCalcTrans</Name>
+				<Source><![CDATA[
+    void updateBOMCalcTrans()
+    {
+        this.updateConsumption();
+
+        this.updateNumOfSeries();
+
+        this.updateWarnings();
+
+        this.updateParent();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateCalcPrices</Name>
+				<Source><![CDATA[
+    void updateCalcPrices(BOMCalcTrans _bomCalcTrans)
+    {
+        bomCalcTrans.CostPrice      += _bomCalcTrans.CostPriceQty;
+        bomCalcTrans.CostMarkup     += _bomCalcTrans.CostMarkupQty;
+        bomCalcTrans.CostPriceSecCur_RU  += _bomCalcTrans.CostPriceQtySecCur_RU;
+        bomCalcTrans.CostMarkupSecCur_RU += _bomCalcTrans.CostMarkupQtySecCur_RU;
+        bomCalcTrans.SalesPrice     += _bomCalcTrans.SalesPriceQty;
+        bomCalcTrans.SalesMarkup    += _bomCalcTrans.SalesMarkupQty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateConsumption</Name>
+				<Source><![CDATA[
+    void updateConsumption()
+    {
+        BOMMap      bomMap;
+        Constant    scrapConst = 0;
+        Qty         consumptionVariable;
+        Qty         consumptionConstant;
+
+        bomMap      = bom.data();
+        scrapConst  = bomMap.scrapConst();
+
+        consumptionVariable  = this.parmActualConsumptionInventQty() - scrapConst;
+        consumptionConstant  = scrapConst;
+
+        if (bom.bomConsump == BOMConsumpType::Constant)
+        {
+            consumptionConstant  =  consumptionVariable + consumptionConstant;
+            consumptionVariable  =  0;
+        }
+
+        bomCalcTrans.ConsumptionVariable    = consumptionVariable;
+        bomCalcTrans.ConsumptionConstant    = consumptionConstant;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateCostCalcTransData</Name>
+				<Source><![CDATA[
+    void updateCostCalcTransData(BOMCalcTrans _bomCalcTrans)
+    {
+        costCalcTransData.addBOMCalcTrans(_bomCalcTrans);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateNumOfSeries</Name>
+				<Source><![CDATA[
+    void updateNumOfSeries()
+    {
+        if (level == 0                                      ||
+            this.parmBOM().type().mustBeDerivedDirectly()   ||
+            this.parmBomCalcExplosionMode() == BOMCalcExplosionMode::MakeToOrder)
+        {
+            return;
+        }
+
+        if (seriesSize)
+        {
+            bomCalcTrans.NumOfSeries = actualConsumptionInventQty / seriesSize;
+        }
+        else
+        {
+            bomCalcTrans.NumOfSeries = 0;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateParent</Name>
+				<Source><![CDATA[
+    void updateParent()
+    {
+        BOMCalcItem localParentBOMCalcItem;
+
+        if (level == 0)
+        {
+            return;
+        }
+
+        localParentBOMCalcItem = this.parmParentBOMCalc() as BOMCalcItem;
+        localParentBOMCalcItem.updateCalcPrices(bomCalcTrans);
+        localParentBOMCalcItem.updateActualPrices(bomCalcTrans);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateWarnings</Name>
+				<Source><![CDATA[
+    void updateWarnings()
+    {
+        BOMCalcCheck bomCalcCheck;
+
+        bomCalcCheck = BOMCalcCheck::newBOMCalcBase(this);
+
+        //Forward the exception type
+        bomCalcCheck.parmExceptionType(this.parmExceptionType());
+
+        bomCalcCheck.checkNoBOM(this.parmBOMId());
+        bomCalcCheck.checkNoRoute(this.parmRouteId());
+        bomCalcCheck.checkNoConsumption(bomCalcTrans.ConsumptionVariable + bomCalcTrans.ConsumptionConstant);
+        bomCalcCheck.checkZeroCostPrice(bomCalcTrans.CostPrice);
+        bomCalcCheck.checkMinContribution(bomCalcTrans.contributionRatio());
+        bomCalcCheck.checkMissingUpdates(itemId,
+                                         inventDimId,
+                                         calcDate,
+                                         costingVersionId,
+                                         siteId,
+                                         calcCostingVersionUpdate,
+                                         salesPriceTransfer,
+                                         costPriceTransfer);
+        bomCalcCheck.checkUseFallBack(bomCalcTrans.CostPriceFallBackVersion, bomCalcTrans.SalesPriceFallBackVersion);
+
+        if (bomCalcCheck.hasMessages())
+        {
+            bomCalcTrans.Infolog = bomCalcCheck.getMessages();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validate</Name>
+				<Source><![CDATA[
+    boolean validate()
+    {
+        boolean ret;
+        InventTable inventTable = this.parmInventTable();
+
+        using (var activityContext =  this.instrumentationLogger().calculationActivities().BOMCalc(this.getCostingVersionRecId(), this.getInventTableRecId(), inventDimId, funcName()))
+        {
+            ret = super();
+
+            if (level != 0)
+            {
+                if (!bom)
+                {
+                    ret = checkFailed(strFmt("@SYS29104", classStr(BOMCalcItem))) && ret;
+                }
+            }
+
+            // check item configuration
+            if (inventDim && inventTable)
+            {
+                if (inventTable.configActive() && !inventDim.ConfigId)
+                {
+                    ret = checkFailed(strFmt("@SYS25768", itemId)) && ret;
+                }
+                else
+            if (inventDim.ConfigId && !EcoResProductVariantDimValue::newProductVariantDim_ConfigId().exist(InventTable::itemProduct(itemId), inventDim.ConfigId))
+                {
+                    ret = checkFailed(strFmt("@SYS21853", inventDim.ConfigId, itemId)) && ret;
+                }
+            }
+
+            // check item dimensions
+            if (inventTable.ItemDimCostPrice && !InventDimCombination::existByInventDim(inventTable.ItemId, inventDim))
+            {
+                ret = checkFailed(strFmt("@SYS113229", inventTable.ItemId)) && ret;
+            }
+
+            var productValidator = EcoResProductValidator::construct(inventTable);
+            if (!productValidator.isEssentialFieldValuesSet())
+            {
+                ret = checkFailed(strFmt("@SYS4000187", productValidator.getErrorFieldList(), inventTable.ItemId));
+            }
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>construct</Name>
+				<Source><![CDATA[
+    static BOMCalcItem construct()
+    {
+        return new BOMCalcItem();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>description</Name>
+				<Source><![CDATA[
+    static ClassDescription description()
+    {
+        return "@SYS5681";
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>expandItem</Name>
+				<Source><![CDATA[
+    public static boolean expandItem(
+        ItemType                _itemType,
+        InventItemParmData      _itemParmData,
+        InventItemParmData      _parentItemParmData,
+        InventSiteId            _siteId,
+        ItemProcurementMode     _parentItemProcurementMode,
+        BOMId                   _bomId,
+        BOMType                 _bomType,
+        RefRecId                _leanProductionFlowReference,
+        date                    _date,
+        LeanCostingFacadeBase   _leanCostingFacade = LeanCostingFacade::construct())
+    {
+        InventTable inventTable = InventTable::find(_itemParmData.parmItemId());
+
+        if (!inventTable.isFormulaOrBOMAllowed())
+        {
+            return false;
+        }
+
+        if (_parentItemProcurementMode == ItemProcurementMode::ProductionFlow)
+        {
+            if (_itemParmData.equals(_parentItemParmData))
+            {
+                return true;
+            }
+
+            if (_leanCostingFacade.isItemMadeInProductionFlow(_leanProductionFlowReference, _itemParmData, _parentItemParmData, _date))
+            {
+                return (!_leanCostingFacade.isInventoryControlled(_leanProductionFlowReference, _itemParmData, _parentItemParmData, _date, _siteId, _bomId));
+            }
+            return false;
+        }
+        return (_bomType == BOMType::Phantom);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findItemProcurementMode</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Finds the item's procurement mode.
+    /// </summary>
+    /// <param name="_itemId">
+    /// An item ID.
+    /// </param>
+    /// <param name="_inventDimId">
+    /// An inventory dimension ID.
+    /// </param>
+    /// <returns>
+    /// An item procurement mode.
+    /// </returns>
+    public static ItemProcurementMode findItemProcurementMode(ItemId _itemId, InventDimId _inventDimId)
+    {
+        switch (ReqSetupDim::newInventTable(InventTable::find(_itemId), _inventDimId).plannedOrderTypeReq(NoYes::No, true))
+        {
+            case ReqRefType::ItemPlannedOrder:
+                return ItemProcurementMode::PurchaseOrder;
+            case ReqRefType::PlannedKanban:
+                return ItemProcurementMode::ProductionFlow;
+            case ReqRefType::TransferPlannedOrder:
+                return ItemProcurementMode::TransferOrder;
+            case ReqRefType::BOMPlannedOrder:
+            case ReqRefType::PmfPlannedProdBatch:
+            default:
+                return ItemProcurementMode::ProductionOrder;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>inventDimMerged</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Merges two inventory dimension records.
+    /// </summary>
+    /// <param name="_inventDimParent">
+    ///    An <c>inventDim</c> record that holds the inventory dimensions for the parent calculation.
+    /// </param>
+    /// <param name="_inventDimBOMLine">
+    ///    An <c>inventDim</c> record that holds the inventory dimensions for a bills of materials line.
+    /// </param>
+    /// <returns>
+    ///    An<c> inventDim</c> record that holds the merged inventory dimensions.
+    /// </returns>
+    protected static InventDim inventDimMerged(
+        InventDim   _inventDimParent,
+        InventDim   _inventDimBOMLine)
+    {
+        InventDim   inventDim = _inventDimBOMLine.data();
+
+        if (     _inventDimParent.InventSiteId
+            && ! _inventDimBOMLine.InventSiteId)
+        {
+            inventDim.InventSiteId = _inventDimParent.InventSiteId;
+            inventDim = InventDim::findOrCreate(inventDim);
+        }
+
+        return inventDim;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>newBOM</Name>
+				<Source><![CDATA[
+    static BOMCalcItem newBOM(BOM                    _bom,
+                                     Qty                    _consumptionQty,
+                                     BOMCalcItem            _parentBOMCalcItem)
+    {
+        BOMCalcItem         bomCalcItem;
+        InventDim           inventDimCalc;
+        BOMVersion          bomVersion;
+        RouteId             routeId;
+        BOMId               bomId;
+        BomCalcItem_PmfCoProduct bomCalcItem_PmfCoProduct;
+        InventTable         coProdInventTable = InventTable::find(_bom.ItemId);
+        PmfFormulaCoBy      pmfFormulaCoBy;
+
+        if ((isConfigurationkeyEnabled(configurationKeyNum(Req))
+            && ReqSetupDim::newInventTable(_bom.inventTable(), _bom.InventDimId).plannedOrderTypeReq() == ReqRefType::ItemPlannedOrder))
+        {
+            return PurchCalcItem::newBOM(_bom, _consumptionQty, _parentBOMCalcItem);
+        }
+
+        inventDimCalc = BOMCalcItem::inventDimMerged(_parentBOMCalcItem.parmInventDim(),InventDim::find(_bom.InventDimId));
+        if (coProdInventTable.PmfProductType == PmfProductType::Co_Product && coProdInventTable.PmfPlanningItemId)
+        {
+            [bomVersion, routeId, pmfFormulaCoBy] = coProdInventTable.findBomAndRouteForCoProd(_parentBOMCalcItem.parmBOMRouteVersionSelect(), _parentBOMCalcItem.parmCalcDate(), _consumptionQty, inventDimCalc);
+        }
+        if (pmfFormulaCoBy && bomVersion)
+        {
+            bomCalcItem_PmfCoProduct = BomCalcItem_PmfCoProduct::construct();
+            bomCalcItem_PmfCoProduct.parmCoProductItemId(coProdInventTable.ItemId);
+            bomCalcItem_PmfCoProduct.parmItemId(coProdInventTable.PmfPlanningItemId);
+            bomCalcItem_PmfCoProduct.parmInventTable(InventTable::find(coProdInventTable.PmfPlanningItemId));
+
+            bomCalcItem = bomCalcItem_PmfCoProduct;
+        }
+        else
+        {
+            if (FeatureStateProvider::IsFeatureEnabled(KittingFeature::instance()))
+            {
+                bomCalcItem = KittingClassDelegateHelper::BOMCalcItem_constructFromBomCalcItem(_parentBOMCalcItem);
+            }
+            else
+            {
+                bomCalcItem = BOMCalcItem::construct();
+            }
+
+            bomCalcItem.parmItemId(_bom.ItemId);
+            bomCalcItem.parmInventTable(InventTable::find(_bom.ItemId));
+
+            bomCalcItem.parmBOMId(_bom.ItemBOMId);
+            bomCalcItem.parmRouteId(_bom.ItemRouteId);
+        }
+
+        bomCalcItem.parmBOM(_bom.data());
+        bomCalcItem.parmCalcConsumptionInventQty(_consumptionQty);
+        bomCalcItem.parmParentBOMCalc(_parentBOMCalcItem);
+
+        bomCalcItem.parmInventDimId(inventDimCalc.InventDimId);
+        bomCalcItem.parmInventDim(inventDimCalc);
+
+        bomCalcItem.parmProfitSet(_parentBOMCalcItem.parmProfitSet());
+
+        bomCalcItem.parmBomCalcExplosionMode(_parentBOMCalcItem.parmBomCalcExplosionMode());
+
+        bomCalcItem.parmPriceCalcId(_parentBOMCalcItem.parmPriceCalcId());
+
+        bomCalcItem.parmCalcDate(_parentBOMCalcItem.parmCalcDate());
+
+        bomCalcItem.parmBOMRouteVersionSelect(_parentBOMCalcItem.parmBOMRouteVersionSelect());
+
+        bomCalcItem.parmProgressBar(_parentBOMCalcItem.parmProgressBar());
+
+        bomCalcItem.parmBOMCalcType(_parentBOMCalcItem.parmBOMCalcType());
+
+        bomCalcItem.parmLevel(_parentBOMCalcItem.parmLevel() + 1);
+
+        bomCalcItem.parmCostingVersionId(_parentBOMCalcItem.parmCostingVersionId());
+
+        bomCalcItem.parmBOMCalcFallBack(_parentBOMCalcItem.parmBOMCalcFallBack());
+        bomCalcItem.parmFallBackVersionId(_parentBOMCalcItem.parmFallBackVersionId());
+        bomCalcItem.parmCostPriceModel(_parentBOMCalcItem.parmCostPriceModel());
+        bomCalcItem.parmPurchPriceModel(_parentBOMCalcItem.parmPurchPriceModel());
+        bomCalcItem.parmSiteId(_parentBOMCalcItem.parmSiteId());
+
+        // Override warnings
+        bomCalcItem.parmOverrideGroupWarnings(_parentBOMCalcItem.parmOverrideGroupWarnings());
+        bomCalcItem.parmCheckNoBOM(_parentBOMCalcItem.parmCheckNoBOM());
+        bomCalcItem.parmCheckNoRoute(_parentBOMCalcItem.parmCheckNoRoute());
+        bomCalcItem.parmCheckNoResource(_parentBOMCalcItem.parmCheckNoResource());
+        bomCalcItem.parmCheckNoConsump(_parentBOMCalcItem.parmCheckNoConsump());
+        bomCalcItem.parmCheckNoCostPrice(_parentBOMCalcItem.parmCheckNoCostPrice());
+        bomCalcItem.parmCheckAgeCostPrice(_parentBOMCalcItem.parmCheckAgeCostPrice());
+        bomCalcItem.parmCheckMinContribution(_parentBOMCalcItem.parmCheckMinContribution());
+
+        bomCalcItem.parmCheckMissingUpdates(_parentBOMCalcItem.parmCheckMissingUpdates());
+        bomCalcItem.parmCheckUseFallBack(_parentBOMCalcItem.parmCheckUseFallBack());
+
+        bomCalcItem.parmItemProcurementMode(_parentBOMCalcItem.parmItemProcurementMode());
+        bomCalcItem.parmProductionFlowReferenceRecId(_parentBOMCalcItem.parmProductionFlowReferenceRecId());
+
+        bomCalcItem.parmLeanCostingFacade(_parentBOMCalcItem.parmLeanCostingFacade());
+
+        if (_bom.ItemBOMId)
+        {
+            bomId = _bom.ItemBOMId;
+        }
+        else
+        {
+            bomId = _bom.inventTable().bomIdConstruction(bomCalcItem.parmBOMRouteVersionSelect(), bomCalcItem.parmCalcDate(), _consumptionQty, bomCalcItem.parmInventDim());
+        }
+
+        if (pmfFormulaCoBy && bomVersion)
+        {
+            bomCalcItem_PmfCoProduct.parmPmfFormulaCoBy(pmfFormulaCoBy);
+            bomCalcItem_PmfCoProduct.parmBOMId(bomVersion.bomId);
+            bomCalcItem_PmfCoProduct.parmRouteId(routeId);
+            bomCalcItem_PmfCoProduct.parmPmfBomVersion(bomVersion);
+            bomCalcItem_PmfCoProduct.parmInventDimId(bomVersion.InventDimId);
+            bomCalcItem_PmfCoProduct.parmInventDim(InventDim::find(bomVersion.InventDimId));
+            bomCalcItem_PmfCoProduct.parmPmfYieldPct(bomVersion.PmfYieldPct);
+            bomCalcItem_PmfCoProduct.parmPmfCostAllocationPct(pmfFormulaCoBy.CostAllocationPct);
+        }
+        else if (BOM::isPmfFormula(bomId))
+        {
+            FromQty fromQty = max(_consumptionQty, _bom.bomQty);
+            bomVersion    = BOMVersion::find(
+                            _bom.ItemId,
+                            bomId,
+                            true,
+                            _parentBOMCalcItem.parmCalcDate(),
+                            _parentBOMCalcItem.parmCalcDate(),
+                            fromQty);
+
+            bomCalcItem.parmPmfBomVersion(bomVersion);
+            bomCalcItem.parmPmfYieldPct(bomVersion.PmfYieldPct);
+            bomCalcItem.parmPmfCostAllocationPct(BOMCalcItem::pmfUnallocated(bomVersion));
+        }
+
+        return bomCalcItem;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>newItem</Name>
+				<Source><![CDATA[
+    static BOMCalcItem newItem(
+        ItemId                      _itemId,
+        InventDimId                 _inventDimId,
+        Qty                         _calcQty,
+        BOMId                       _bomId,
+        RouteId                     _routeId,
+        CostProfitSet               _profitSet,
+        BOMCalcExplosionMode        _bomCalcExplosionMode,
+        PriceCalcId                 _priceCalcId              = '',
+        TransDate                   _calcDate                 = DateTimeUtil::getSystemDate(DateTimeUtil::getUserPreferredTimeZone()),
+        BOMRouteVersionSelect       _bomRouteVersionSelect    = BOMRouteVersionSelect::Active,
+        boolean                     _showProgress             = false,
+        BOMCalcType                 _bomCalcType              = BOMCalcType::Order,
+        CostingVersionId              _costingVersionId           = '',
+        BOMCalcCostingVersionUpdate   _calcCostingVersionUpdate   = BOMCalcCostingVersionUpdate::Overwrite,
+        NoYes                       _costPriceTransfer        = NoYes::No,
+        NoYes                       _salesPriceTransfer       = NoYes::No,
+        BOMCalcFallBack             _bomCalcFallBack          = BOMCalcFallBack::None,
+        CostingVersionId              _fallBackVersionId        = '',
+        BOMCostPriceModel           _costPriceModel           = BOMCostPriceModel::BOMCalcGroup,
+        PurchPriceModel             _purchPriceModel          = PurchPriceModel::PurchPrice,
+        boolean                     _findItemProcurementMode   = false,
+        RefRecId                    _productionFlowReferenceRecId = 0,
+        ItemProcurementMode         _itemProcurementMode = ItemProcurementMode::ProductionOrder,
+        LeanCostingFacadeBase       _leanCostingFacade = LeanCostingFacade::construct()
+        )
+    {
+        BOMCalcItem     bomCalcItem;
+        InventDim       foundInventDim;
+        RefRecId        defaultProductionFlowReferenceRecId;
+
+        if (_leanCostingFacade == null)
+        {
+            _leanCostingFacade = LeanCostingFacade::construct();
+        }
+
+        if (_findItemProcurementMode && isConfigurationkeyEnabled(configurationKeyNum(Req)))
+        {
+            _itemProcurementMode = BOMCalcItem::findItemProcurementMode(_itemId, _inventDimId);
+        }
+
+        // Purchase Overheads calculation is needed, construct PurchCalcItem instead.
+        if (_itemProcurementMode == ItemProcurementMode::PurchaseOrder)
+        {
+            return PurchCalcItem::newItem(_itemId,
+                                   _inventDimId,
+                                   _calcQty,
+                                   _profitSet,
+                                   _priceCalcId,
+                                   _calcDate,
+                                   _showProgress,
+                                   _bomCalcType,
+                                   _costingVersionId,
+                                   _calcCostingVersionUpdate,
+                                   _costPriceTransfer,
+                                   _salesPriceTransfer,
+                                   _bomCalcFallBack,
+                                   _fallBackVersionId,
+                                   _purchPriceModel);
+        }
+        else if (_itemProcurementMode == ItemProcurementMode::TransferOrder)
+        {
+            return null;
+        }
+
+        if (FeatureStateProvider::IsFeatureEnabled(KittingFeature::instance()))
+        {
+            bomCalcItem = KittingClassDelegateHelper::BOMCalcItem_constructFromBomId(_bomId);
+        }
+        else
+        {
+            bomCalcItem = BOMCalcItem::construct();
+        }
+
+        bomCalcItem.parmItemId(_itemId);
+
+        foundInventDim = InventDim::find(_inventDimId);
+        bomCalcItem.parmInventDimId(_inventDimId);
+        bomCalcItem.parmInventDim(foundInventDim);
+        if (foundInventDim)
+            bomCalcItem.parmSiteId(foundInventDim.InventSiteId);
+
+        bomCalcItem.parmCalcConsumptionInventQty(_calcQty);
+        bomCalcItem.parmActualConsumptionInventQty(_calcQty);
+        bomCalcItem.parmActualNetWeightConsumptionInventQty(_calcQty);
+
+        bomCalcItem.parmBOMId(_bomId);
+        bomCalcItem.parmRouteId(_routeId);
+        bomCalcItem.parmProductionFlowReferenceRecId(_productionFlowReferenceRecId);
+
+        bomCalcItem.parmItemProcurementMode(_itemProcurementMode);
+
+        if (_findItemProcurementMode)
+        {
+            if (!_routeId)
+            {
+                // Make sure we look for an existing active route before deciding
+                // the procurement mode. This is needed for the case when calculation is
+                // started for a costing version. In this case the logic of finding an active route
+                // was not trigered from BomCalcDialog.
+                _routeId = RouteVersion::findActive(_itemId, _calcDate, _calcQty, foundInventDim).RouteId;
+            }
+
+            if (_itemProcurementMode == ItemProcurementMode::ProductionFlow || (!(_routeId) && !isConfigurationkeyEnabled(configurationKeyNum(Req))))
+            {
+                // There is item coverage configuration set to production flow,
+                // or there is no item coverage setting and there is no route.
+                bomCalcItem.parmRouteId('');
+                bomCalcItem.parmItemProcurementMode(ItemProcurementMode::ProductionFlow);
+                if (!bomCalcItem.parmProductionFlowReferenceRecId())
+                {
+                    defaultProductionFlowReferenceRecId = _leanCostingFacade.getActiveProductionFlow(
+                                                                InventItemParmData::construct(_itemId, _inventDimId),
+                                                                bomCalcItem.parmSiteId(),
+                                                                _calcDate);
+                    bomCalcItem.parmProductionFlowReferenceRecId(defaultProductionFlowReferenceRecId);
+                    if (_leanCostingFacade.isDefaultProductionFlowActive() == UnknownNoYes::No)
+                        warning(strFmt("@SYS329775",
+                            PlanReference::find(defaultProductionFlowReferenceRecId).PlanName,
+                            _itemId,
+                            bomCalcItem.parmSiteId(),
+                            _calcDate));
+                }
+            }
+            else
+            {
+                // There is item coverage configuration set to production order,
+                // or there is no item coverage setting but there is a route.
+                bomCalcItem.parmProductionFlowReferenceRecId(0);
+            }
+        }
+
+        bomCalcItem.parmProfitSet(_profitSet);
+
+        bomCalcItem.parmBomCalcExplosionMode(_bomCalcExplosionMode);
+
+        bomCalcItem.parmPriceCalcId(_priceCalcId);
+
+        bomCalcItem.parmCalcDate(_calcDate);
+
+        bomCalcItem.parmBOMRouteVersionSelect(_bomRouteVersionSelect);
+
+        bomCalcItem.parmShowProgress(_showProgress);
+
+        bomCalcItem.parmBOMCalcType(_bomCalcType);
+        bomCalcItem.parmCostingVersionId(_costingVersionId);
+        bomCalcItem.parmCalcCostingVersionUpdate(_calcCostingVersionUpdate);
+
+        bomCalcItem.parmCostPriceTransfer(_costPriceTransfer);
+        bomCalcItem.parmSalesPriceTransfer(_salesPriceTransfer);
+
+        bomCalcItem.parmBOMCalcFallBack(_bomCalcFallBack);
+        bomCalcItem.parmFallBackVersionId(_fallBackVersionId);
+
+        bomCalcItem.parmCostPriceModel(_costPriceModel);
+        bomCalcItem.parmPurchPriceModel(_purchPriceModel);
+
+        bomCalcItem.parmLeanCostingFacade(_leanCostingFacade);
+
+        return bomCalcItem;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>pmfUnallocated</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// This method returns the percent not allocated to co/products of the formula
+    /// </summary>
+    /// <param name="_version">BOMVersion to use</param>
+    /// <returns>returns cost allocation of the main item</returns>
+    public static PmfCostAllocationPct pmfUnallocated(BOMVersion _version)
+    {
+        PmfFormulaCoBy  coBy;
+
+        select sum(CostAllocationPct)
+            from coBy
+            where  coBy.bomVersionRefRecId  == _version.RecId
+                && coBy.ProductType         == PmfProductType::Co_Product;
+
+        return 100 - coBy.CostAllocationPct;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>
