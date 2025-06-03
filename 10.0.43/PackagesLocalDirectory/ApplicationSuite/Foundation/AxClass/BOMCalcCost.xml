@@ -1,0 +1,1361 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>BomCalcCost</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+public class BomCalcCost
+{
+    TransDate                   calcDate;
+
+    ItemId                      itemId;
+    InventTable                 inventTable;
+
+    InventDimId                 inventDimId;
+    InventDim                   inventDim;
+
+    Qty                         consumptionInvent;
+
+    Qty                         tradeAgreementInventQty;
+    VendAccount                 vendAccount;
+
+    CurrencyCode                currencyCode;
+
+    BOMCalcGroup                bomCalcGroup;
+
+    CostPrice                   costPrice;
+    PriceCalcId                 subBomWarningLink;
+
+    PriceUnit                   costPriceUnit;
+    CostMarkup                  costMarkup;
+    CostPrice                   costPriceSecCur;
+    CostMarkup                  costMarkupSecCur;
+    #ISOCountryRegionCodes
+    PriceDate                   costPriceDate;
+    PriceCalcId                 costPriceCalcId;
+
+    CostProfitSet               profitSet;
+
+    InventSalesPrice            salesPrice;
+    PriceUnit                   salesPriceUnit;
+    InventSalesMarkup           salesMarkup;
+    PriceDate                   salesPriceDate;
+    CostingVersionId            costingVersionId;
+    BOMCalcFallBack             bomCalcFallBack;
+    CostingVersionId            fallBackVersionId;
+
+    CostingVersionId            costPriceFallBackVersion;
+    CostingVersionId            salesPriceFallBackVersion;
+    InventSiteId                siteId;
+
+    BOMCostPriceModel           costPriceModel;
+    boolean                     costFound;
+
+    Map                         stdCostBreakdown;
+    CostPrice                   burden;
+    boolean                     useBurden;
+    PmfCostAllocationPct        pmfRMCostAllocationPct;
+    boolean                     applyCostAllocationPct;
+    boolean                     resourceConsumption;
+
+    BOMCalcConsistOf            consistOfPrice;
+    BOMCostCalculationMethod    bomCostCalculationMethod;
+
+    private boolean isBomCalcCostFindCostForBurdenFlightEnabled = BomCalcCostFindCostForBurdenFlight::instance().isEnabled();
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>addToStdCostBreakdown</Name>
+				<Source><![CDATA[
+    protected void addToStdCostBreakdown(CostGroupId    _costGroupId,
+                                         CostAmountStd  _costAmountStd,
+                                         CostAmountStd  _costAmountStdSecCur,
+                                         InventQty      _qty)
+    {
+        CostAmount                      currentCostAmount;
+        CostAmount                      currentCostAmountSecCur;
+        CostAmount                      previousCostAmount       = 0;
+        CostAmount                      previousCostAmountSecCur = 0;
+        if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoRU]))
+        {
+            currentCostAmountSecCur  = _qty ? _costAmountStdSecCur / _qty : 0;
+        }
+        currentCostAmount = _qty ? _costAmountStd / _qty : 0;
+
+        if (stdCostBreakdown.exists(_costGroupId))
+        {
+            [ previousCostAmount, previousCostAmountSecCur ] = stdCostBreakdown.lookup(_costGroupId);
+        }
+
+        stdCostBreakdown.insert(_costGroupId,
+                                [ previousCostAmount       + currentCostAmount,
+                                  previousCostAmountSecCur + currentCostAmountSecCur ]);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>bomCostCalculationMethod</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///   Get the used BOM cost calculation method.
+    /// </summary>
+    /// <returns>
+    ///   Return the BOM cost calculation method.
+    /// </returns>
+    public BOMCostCalculationMethod bomCostCalculationMethod()
+    {
+        return bomCostCalculationMethod;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calc</Name>
+				<Source><![CDATA[
+    void calc()
+    {
+        try
+        {
+            if (!this.validate())
+            {
+                throw Exception::Error;
+            }
+
+            this.cleanUpCostPrice();
+            this.cleanUpSalesPrice();
+
+            this.calcCostModel(bomCalcGroup.getCostPriceModel(costPriceModel));
+
+            // Alt. cost price calculation
+            if (!costPrice && bomCalcGroup.getCostPriceModelAlt(costPriceModel) != bomCalcGroup.getCostPriceModel(costPriceModel))
+            {
+                this.calcCostModel(bomCalcGroup.getCostPriceModelAlt(costPriceModel));
+            }
+
+            this.calcSalesModel(bomCalcGroup.getSalesPriceModel(costPriceModel));
+        }
+        catch(Exception::Error)
+        {
+            throw error("@SYS19457");
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calcAlternativeCostModel</Name>
+				<Source><![CDATA[
+    void calcAlternativeCostModel()
+    {
+        try
+        {
+            if (! this.validate())
+            {
+                throw Exception::Error;
+            }
+
+            this.cleanUpCostPrice();
+            this.calcCostModel(bomCalcGroup.getCostPriceModelAlt(costPriceModel));
+        }
+        catch(Exception::Error)
+        {
+            throw error("@SYS19457");
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updatePmfCostMarkup</Name>
+				<Source><![CDATA[
+    private void updatePmfCostMarkup()
+    {
+        const int Percent = 100;
+
+        if (#PmfEnabled && applyCostAllocationPct && costMarkup)
+        {
+            costMarkup = costMarkup * pmfRMCostAllocationPct / Percent;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calculateItemCostPrice</Name>
+				<Source><![CDATA[
+    private void calculateItemCostPrice(InventDim _inventDim)
+    {
+        InventPriceMap				inventPriceMap;
+        BOMCalcTrans				bomCalcTrans;
+        InventItemPrice				inventItemPrice;
+        boolean						simulated;
+        RecId						priceRecId;
+        InventItemPriceSim          inventItemPriceSim;
+
+        switch (costPriceModel)
+        {
+            case BOMCostPriceModel::BOMCalcGroup:
+                    inventPriceMap = inventTable.inventCostPriceMap(_inventDim.inventDimId,
+                                                                    _inventDim,
+                                                                    null,
+                                                                    DateTimeUtil::getSystemDate(DateTimeUtil::getUserPreferredTimeZone()),
+                                                                    siteId);
+                    
+                    // Moving average items will always have a cost
+                    costFound = inventTable.modelGroup().InventModel == InventModel::MovingAverage;
+                break;
+            case BOMCostPriceModel::ItemCostPrice:
+                inventPriceMap = this.findInventItemPrice(CostingVersionPriceType::Cost);
+                break;
+
+            default:
+                throw error("@SYS94318");
+        }
+
+        costPrice = inventPriceMap.price();
+
+        if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoRU]))
+        {
+            costPriceSecCur = inventPriceMap.priceSecCur_RU();
+        }
+
+        costFound           = costFound || inventPriceMap.RecId != 0;
+        subBomWarningLink   = '';
+        consistOfPrice      = inventPriceMap.InventPriceMap::priceCalcId();
+
+
+        if (BomCalcCostSingleSelectOptimizationFlight::instance().isEnabled())
+        {
+            select firstonly PriceCalcId from bomCalcTrans
+                where bomCalcTrans.PriceCalcId == consistOfPrice
+                   && bomCalcTrans.Infolog != conNull();
+        
+            subBomWarningLink = bomCalcTrans.PriceCalcId;
+        
+        }
+        else
+        {
+            while select bomCalcTrans where bomCalcTrans.PriceCalcId == inventPriceMap.InventPriceMap::priceCalcId()
+            {
+                if (conLen(bomCalcTrans.Infolog) > 0)
+                {
+                    subBomWarningLink = bomCalcTrans.PriceCalcId;
+                    break;
+                }
+            }
+        }
+
+        if (costPrice)
+        {
+            costPriceUnit   = inventPriceMap.priceUnit();
+            costMarkup      = inventPriceMap.markup();
+            if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoRU]))
+            {
+                costMarkupSecCur = inventPriceMap.markupSecCur_RU();
+            }
+            costPriceDate   = inventPriceMap.PriceDate ? inventPriceMap.PriceDate : dateNull();
+
+            switch (inventPriceMap.TableId)
+            {
+                case tableNum(InventItemPrice):
+                    inventItemPrice = inventPriceMap;
+                    costPriceCalcId = inventItemPrice.PriceCalcId;
+                    simulated = false;
+                    priceRecId = inventItemPrice.RecId;
+                    break;
+
+                case tableNum(InventItemPriceSim):
+                    simulated = true;
+                    inventItemPriceSim = inventPriceMap;
+                    costPriceCalcId = inventItemPriceSim.PriceCalcId;
+                    priceRecId = inventItemPriceSim.RecId;
+                    break;
+
+                default:
+                    inventItemPrice = InventItemPrice::findCurrent(inventTable.ItemId, CostingVersionPriceType::Cost, inventDimId, DateTimeUtil::getSystemDate(DateTimeUtil::getUserPreferredTimeZone()), siteId);
+                    costPriceCalcId = inventItemPrice.PriceCalcId;
+                    simulated = false;
+                    priceRecId = inventItemPrice.RecId;
+            }
+
+            bomCostCalculationMethod = BOMCalcTable::find(costPriceCalcId).CostCalculationMethod;
+            this.stdCostBreakdownCalcRollup(priceRecId, simulated);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calculateCostPrice</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Calculates the cost price based on enumeration type <c>BOMCalcCostPrice</c>.
+    /// </summary>
+    /// <param name = "_calcModel">
+    /// A <c>BOMCalcCostPrice</c> enumeration type.
+	/// </param>
+    /// <param name = "_inventDim">
+    /// A record with the inventory dimension fields set.
+	/// </param>
+    protected void calculateCostPrice(BOMCalcCostPrice _calcModel, InventDim _inventDim)
+    {
+        InventTableModule   inventTableModuleInvent = inventTable.inventTableModuleInvent();
+        InventTableModule   inventTableModulePurch  = inventTable.inventTableModulePurch();
+        InventPriceMap      inventPriceMapPurch;
+
+        date                        priceDiscFromDate;
+        date                        priceDiscToDate;
+
+        InventOnhand                inventOnhand;
+        InventDimParm               inventDimParmFinancial;
+        InventDimParm               inventDimParmActive;
+        InventDimGroupSetup         inventDimGroupSetup;
+        InventItemPrice             inventItemPrice;
+        InventItemPriceSim          inventItemPriceSim;
+
+        switch (_calcModel)
+        {
+            // Item cost price
+            case BOMCalcCostPrice::CostPrice:
+                this.calculateItemCostPrice(_inventDim);
+                this.updatePmfCostMarkup();
+                return;
+
+            // Item purchase price
+            case BOMCalcCostPrice::PurchPrice:
+                if (costingVersionId)
+                {
+                    inventPriceMapPurch = this.findInventItemPrice(CostingVersionPriceType::Purch);
+                }
+
+                if (!inventPriceMapPurch)
+                {
+                    inventPriceMapPurch = inventTableModulePurch;
+                }
+
+                this.calculateCostPriceForPurchasePrice(inventPriceMapPurch);
+
+                costFound = (costPrice != 0);
+
+                if (costPrice)
+                {
+                    costPriceUnit   = inventPriceMapPurch.priceUnit();
+                    costMarkup      = inventPriceMapPurch.markup();
+                    if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoRU]))
+                        costMarkupSecCur = inventPriceMapPurch.markupSecCur_RU();
+                    costPriceDate   = inventPriceMapPurch.PriceDate ? inventPriceMapPurch.PriceDate : dateNull();
+
+                    // convert price from purchase to inventory unit (the opposite logic than for quantity)
+                    switch (inventPriceMapPurch.TableId)
+                    {
+                        case tableNum(InventItemPrice):
+                            inventItemPrice = inventPriceMapPurch;
+                            this.convertPrices(inventTableModuleInvent.UnitId, inventItemPrice.UnitID);
+                            break;
+
+                        case tableNum(InventItemPriceSim):
+                            inventItemPriceSim = inventPriceMapPurch;
+                            this.convertPrices(inventTableModuleInvent.UnitId, inventItemPriceSim.UnitID);
+                            break;
+
+                        default:
+                            this.convertPrices(inventTableModuleInvent.UnitId, inventTableModulePurch.UnitId);
+                    }
+                }
+
+                break;
+
+            // Trade agreement
+            case BOMCalcCostPrice::PriceDisc:
+
+                    [costPrice,
+                     costPriceUnit,
+                     costMarkup,
+                     priceDiscFromDate,
+                     priceDiscToDate,
+                     costPriceSecCur,
+                     costMarkupSecCur] = inventTable.purchPriceAgreement(calcDate,
+                                                                        _inventDim,
+                                                                        tradeAgreementInventQty,
+                                                                        inventTableModuleInvent.UnitId,
+                                                                        vendAccount,
+                                                                        currencyCode);
+
+                costFound = (costPrice != 0);
+
+                if (costPrice)
+                {
+                    costPriceDate = priceDiscFromDate ? priceDiscFromDate : dateNull();
+
+                    // convert price from purchase to inventory unit (the opposite logic than for quantity)
+                    this.convertPrices(inventTableModuleInvent.UnitId, inventTableModulePurch.UnitId);
+                }
+
+                // Divide misc.charges between BOM lines
+                if (costMarkup)
+                {
+                    costMarkup = costMarkup * (consumptionInvent / (tradeAgreementInventQty ? tradeAgreementInventQty : 1));
+                }
+                costMarkupSecCur = costMarkupSecCur * (consumptionInvent / (tradeAgreementInventQty ? tradeAgreementInventQty : 1));
+
+                break;
+
+            // Inventory price
+            case BOMCalcCostPrice::OnhandPrice:
+                inventDimGroupSetup = InventDimGroupSetup::newItemId(itemId);
+                inventDimGroupSetup.inventDimParmActiveFinancialInventory(inventDimParmFinancial);
+                inventDimGroupSetup.inventDimParmActive(inventDimParmActive);
+
+                // Warehouse won't be considered when bom is a resource consumption
+                if (this.parmResourceConsumption() && inventDim.InventLocationId == '')
+                {
+                    inventDimParmFinancial.InventLocationIdFlag = NoYes::No;
+                    inventDimParmActive.InventLocationIdFlag = NoYes::No;
+                    _inventDim.InventDimId = '';
+                }
+
+                inventOnhand = InventOnhand::newParametersActive(itemId,
+                                                                 _inventDim,
+                                                                 inventDimParmFinancial,
+                                                                 inventDimParmActive);
+                if (inventOnhand)
+                {
+                    costPrice = inventOnhand.costPricePcs(true);
+
+                    costFound = (costPrice != 0);
+
+                    if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoRU]))
+                        costPriceSecCur = inventOnhand.costPriceSecPcs_RU(true);
+                    if (costPrice)
+                    {
+                        costPriceUnit   = 1;
+                        costMarkup      = 0;
+
+                        if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoRU]))
+                            costMarkupSecCur = 0;
+                        costPriceDate   = DateTimeUtil::getSystemDate(DateTimeUtil::getUserPreferredTimeZone());
+                    }
+                }
+
+                break;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calcCostModel</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Calculates price for a cost model.
+    /// </summary>
+    /// <param name = "_calcModel">
+    /// A <c>BOMCalcCostPrice</c> enumeration type.
+    /// </param>
+    protected void calcCostModel(BOMCalcCostPrice _calcModel)
+    {
+        InventDim localInventDim;
+
+        if (this.mustCalculateCostPrice())
+        {
+            localInventDim.data(inventDim);
+            if (!localInventDim.InventSiteId)
+            {
+                localInventDim.InventSiteId = siteId;
+                localInventDim = inventDim::findOrCreate(localInventDim);
+            }
+
+            this.calculateCostPrice(_calcModel, localInventDim);
+        }
+        else
+        {
+            costPrice       = burden;
+
+            if (isBomCalcCostFindCostForBurdenFlightEnabled)
+            {
+                costFound = (costPrice != 0);
+            }
+
+            costPriceUnit   = 1;
+            costMarkup      = 0;
+            costPriceDate   = DateTimeUtil::getSystemDate(DateTimeUtil::getUserPreferredTimeZone());
+        }
+
+        this.updatePmfCostMarkup();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mustCalculateCostPrice</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///     Determines whether cost price needs to be calculated.
+    /// </summary>
+    /// <returns>
+    ///     true if cost price needs to be calculated; otherwise, false.
+    /// </returns>
+    protected boolean mustCalculateCostPrice()
+    {
+        return !useBurden;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calculateCostPriceForPurchasePrice</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///     Cost price calculation for item purchase price.
+    /// </summary>
+    /// <param name = "_inventPriceMapPurch">
+    ///     A <c>InventPriceMap</c> buffer.
+    /// </param>
+    protected void calculateCostPriceForPurchasePrice(InventPriceMap _inventPriceMapPurch)
+    {
+        costPrice = _inventPriceMapPurch.price();
+
+        if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoRU]))
+        {
+            costPriceSecCur = _inventPriceMapPurch.priceSecCur_RU();
+        }
+
+        consistOfPrice = _inventPriceMapPurch.InventPriceMap::priceCalcId();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canCallFallBackVersion</Name>
+				<Source><![CDATA[
+    protected boolean canCallFallBackVersion(CostingVersionPriceType _priceType)
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calcPrimaryCostModel</Name>
+				<Source><![CDATA[
+    void calcPrimaryCostModel()
+    {
+        try
+        {
+            if (! this.validate())
+            {
+                throw Exception::Error;
+            }
+
+            this.cleanUpCostPrice();
+            this.calcCostModel(bomCalcGroup.getCostPriceModel(costPriceModel));
+        }
+        catch(Exception::Error)
+        {
+            throw error("@SYS19457");
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calcSalesModel</Name>
+				<Source><![CDATA[
+    protected void calcSalesModel(BOMCalcSalesPrice _calcModel)
+    {
+        InventTableModule   inventTableModuleInvent;
+        InventTableModule   inventTableModuleSales;
+        InventPriceMap      inventPriceMapSales;
+
+        InventItemPrice     inventItemPrice;
+        InventItemPriceSim  inventItemPriceSim;
+
+        switch (_calcModel)
+        {
+            // Cost group
+            case BOMCalcSalesPrice::CostGroup:
+                salesPrice  = BOMCostProfit::calcSalesPrice(this.costPrice(),
+                                                            this.parmProfitSet(),
+                                                            inventTable.costGroup());
+
+                salesMarkup = BOMCostProfit::calcSalesMarkup(this.costMarkup(),
+                                                             this.parmProfitSet(),
+                                                             inventTable.costGroup());
+
+                salesPriceUnit  = this.costPriceUnit();
+                salesPriceDate  = this.costPriceDate();
+
+                return;
+
+            // Item sales price
+            case BOMCalcSalesPrice::SalesPrice:
+
+                inventTableModuleSales  = inventTable.inventTableModuleSales();
+                if (costingVersionId)
+                {
+                    inventPriceMapSales = this.findInventItemPrice(CostingVersionPriceType::Sales);
+                }
+                else
+                {
+                    inventPriceMapSales = inventTableModuleSales;
+                }
+                salesPrice              = inventPriceMapSales.price();
+
+                if (salesPrice)
+                {
+                    salesPriceUnit   = inventPriceMapSales.priceUnit();
+                    salesMarkup      = inventPriceMapSales.markup();
+                    salesPriceDate   = inventPriceMapSales.PriceDate ? inventPriceMapSales.PriceDate : dateNull();
+
+                    // convert price from sales to inventory unit (the opposite logic than for quantity)
+                    inventTableModuleInvent = inventTable.inventTableModuleInvent();
+                    switch (inventPriceMapSales.TableId)
+                    {
+                        case tableNum(InventItemPrice):
+                            inventItemPrice = inventPriceMapSales;
+                            this.convertPrices(inventTableModuleInvent.UnitId, inventItemPrice.UnitID, false);
+                            break;
+
+                        case tableNum(InventItemPriceSim):
+                            inventItemPriceSim = inventPriceMapSales;
+                            this.convertPrices(inventTableModuleInvent.UnitId, inventItemPriceSim.UnitID, false);
+                            break;
+
+                        default:
+                            this.convertPrices(inventTableModuleInvent.UnitId, inventTableModuleSales.UnitId, false);
+                    }
+                }
+
+                break;
+
+            // Unknown sales price model
+            default:
+                throw error(strFmt("@SYS89080", _calcModel));
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calcSalesPrice</Name>
+				<Source><![CDATA[
+    void calcSalesPrice()
+    {
+        try
+        {
+            if (! this.validate())
+            {
+                throw Exception::Error;
+            }
+
+            this.cleanUpSalesPrice();
+            this.calcSalesModel(bomCalcGroup.getSalesPriceModel(costPriceModel));
+        }
+        catch(Exception::Error)
+        {
+            throw error("@SYS19457");
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>cleanUpCostPrice</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Clears the cost price calculation.
+    /// </summary>
+    protected void cleanUpCostPrice()
+    {
+        costPrice       = 0;
+        costMarkup      = 0;
+        if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoRU]))
+        {
+            costPriceSecCur  = 0;
+            costMarkupSecCur = 0;
+        }
+        costPriceUnit   = 1;
+
+        costPriceDate   = dateNull();
+
+        consistOfPrice  = '';
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>cleanUpSalesPrice</Name>
+				<Source><![CDATA[
+    protected void cleanUpSalesPrice()
+    {
+        salesPrice      = 0;
+        salesMarkup     = 0;
+        salesPriceUnit  = 1;
+
+        salesPriceDate  = dateNull();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>convertPrices</Name>
+				<Source><![CDATA[
+    void convertPrices(UnitOfMeasureSymbol  _unitFrom,
+                       UnitOfMeasureSymbol  _unitTo,
+                       boolean              _costPriceConversion = true) // if false, then it's sales price
+    {
+        EcoResProductUnitConverter productConverter = EcoResProductUnitConverter::newGivenUnitSymbolsForReleasedProduct(itemId, inventDimId, _unitFrom, _unitTo, NoYes::Yes, NoYes::No);
+
+        // cost price conversion
+        if (_costPriceConversion)
+        {
+            if (costPrice)
+            {
+                costPrice = productConverter.convertValue(costPrice);
+            }
+
+            if (costMarkup)
+            {
+                costMarkup = productConverter.convertValue(costMarkup);
+            }
+
+            if (costPriceSecCur)
+            {
+                costPriceSecCur = productConverter.convertValue(costPriceSecCur);
+            }
+
+            if (costMarkupSecCur)
+            {
+                costMarkupSecCur = productConverter.convertValue(costMarkupSecCur);
+            }
+        }
+        // sales price conversion
+        else
+        {
+            if (salesPrice)
+            {
+                salesPrice = productConverter.convertValue(salesPrice);
+            }
+
+            if (salesMarkup)
+            {
+                salesMarkup = productConverter.convertValue(salesMarkup);
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>costAmount</Name>
+				<Source><![CDATA[
+    Amount costAmount()
+    {
+        return consumptionInvent * costPrice / this.costPriceUnit();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>costFound</Name>
+				<Source><![CDATA[
+    public boolean costFound()
+    {
+        return costFound;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>costMarkup</Name>
+				<Source><![CDATA[
+    CostMarkup costMarkup()
+    {
+        return costMarkup;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>costMarkupSecCur_RU</Name>
+				<Source><![CDATA[
+    public CostMarkup costMarkupSecCur_RU()
+    {
+        return costMarkupSecCur;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>costPrice</Name>
+				<Source><![CDATA[
+    CostPrice costPrice()
+    {
+        return costPrice;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>costPriceDate</Name>
+				<Source><![CDATA[
+    PriceDate costPriceDate()
+    {
+        return costPriceDate;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>costPriceFallBackVersion</Name>
+				<Source><![CDATA[
+    CostingVersionId costPriceFallBackVersion()
+    {
+        return costPriceFallBackVersion;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>costPriceSecCur_RU</Name>
+				<Source><![CDATA[
+    public CostPrice costPriceSecCur_RU()
+    {
+        return costPriceSecCur;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>costPriceUnit</Name>
+				<Source><![CDATA[
+    PriceUnit costPriceUnit()
+    {
+        return costPriceUnit ? costPriceUnit : 1;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>retrieveInventPrice</Name>
+				<Source><![CDATA[
+    protected InventPriceMap retrieveInventPrice(CostingVersionPriceType _priceType)
+    {
+        return InventItemPrice::findCostingVersion(itemId, costingVersionId, calcDate, _priceType, inventDimId, siteId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>retrieveInventPriceFromFallBack</Name>
+				<Source><![CDATA[
+    protected InventPriceMap retrieveInventPriceFromFallBack(CostingVersionPriceType _priceType, InventPriceMap _inventPrice)
+    {
+        InventItemPrice inventItemPrice;
+        InventPriceMap inventPrice = _inventPrice;
+
+        switch (bomCalcFallBack)
+        {
+            case BOMCalcFallBack::None:
+                // Do not fetch a price from the fallback system
+                break;
+
+            case BOMCalcFallBack::CurrentActive:
+                inventItemPrice = InventItemPrice::findCurrent(itemId,
+                                                               _priceType,
+                                                               inventDimId,
+                                                               DateTimeUtil::getSystemDate(DateTimeUtil::getUserPreferredTimeZone()),
+                                                               siteId,
+                                                               CostingVersion::findBOMCalcCostingType(costingVersionId,costPriceModel));
+                inventPrice     = inventItemPrice;
+                if (inventPrice)
+                {
+                    this.setFallBackVersion(_priceType, inventItemPrice.VersionId);
+                }
+
+                if (!inventPrice.RecId && (_priceType != CostingVersionPriceType::Cost ||
+                                               CostingVersion::find(costingVersionId).CostingType == CostingVersionCostingType::Normal))
+                {
+                    // When looking for purchase/sales price or non-standard(!) cost, allow fetching
+                    // the amount from InventTableModule table as the last "resort"
+                    inventPrice = InventTableModule::find(itemId, InventItemPrice::convPriceTypeToModuleInventPurchSales(_priceType));
+                    if (inventPrice && this.canCallFallBackVersion(_priceType))
+                    {
+                        this.setFallBackVersion(_priceType, ' ');
+                    }
+                }
+                break;
+
+            case BOMCalcFallBack::Simulated:
+                inventPrice = InventItemPrice::findCostingVersion(itemId, fallBackVersionId, calcDate, _priceType, inventDimId, siteId);
+                if (inventPrice && this.canCallFallBackVersion(_priceType))
+                {
+                    this.setFallBackVersion(_priceType, fallBackVersionId);
+                }
+                break;
+
+            default:
+                throw error(Error::wrongUseOfFunction(funcName()));
+        }
+
+        return inventPrice;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findInventItemPrice</Name>
+				<Source><![CDATA[
+    protected InventPriceMap findInventItemPrice(CostingVersionPriceType _priceType)
+    {
+        InventPriceMap  inventPrice = this.retrieveInventPrice(_priceType);
+
+        if (! inventPrice)
+        {
+            inventPrice = this.retrieveInventPriceFromFallBack(_priceType, inventPrice);
+        }
+
+        return inventPrice;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initCalc</Name>
+				<Source><![CDATA[
+    void initCalc(
+        TransDate         _calcDate,
+        ItemId            _itemId,
+        InventDimId       _inventDimId,
+        Qty               _consumptionInvent,
+        Qty               _tradeAgreementInventQty,
+        VendAccount       _vendAccount,
+        CostProfitSet     _profitSet,
+        CostingVersionId    _costingVersionId             = '',
+        BOMCalcFallBack   _bomCalcFallBack            = BOMCalcFallBack::None,
+        CostingVersionId    _fallBackVersionId          = '',
+        BOMCostPriceModel _costPriceModel             = BOMCostPriceModel::BOMCalcGroup,
+        InventSiteId      _siteId                     = ''
+        )
+    {
+        calcDate                = _calcDate;
+
+        itemId                  = _itemId;
+        inventTable             = InventTable::find(_itemId);
+
+        inventDimId             = _inventDimId;
+        inventDim               = InventDim::find(_inventDimId);
+
+        consumptionInvent       = _consumptionInvent;
+
+        tradeAgreementInventQty = _tradeAgreementInventQty;
+        vendAccount             = _vendAccount ? _vendAccount : inventTable.primaryVendorId(_inventDimId,inventDim);
+
+        currencyCode            = vendAccount ? VendTable::find(vendAccount).Currency : CompanyInfoHelper::standardCurrency();
+
+        profitSet               = _profitSet;
+
+        costingVersionId          = _costingVersionId;
+        bomCalcFallBack         = _bomCalcFallBack;
+        fallBackVersionId       = _fallBackVersionId;
+
+        costPriceModel          = _costPriceModel;
+        siteId                  = _siteId;
+
+        stdCostBreakdown        = new Map(typeName2Type(extendedTypeStr(CostGroupId)), Types::Container);
+
+        this.initValue();
+        burden = 0;
+        useBurden = false;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initValue</Name>
+				<Source><![CDATA[
+    protected void initValue()
+    {
+        bomCalcGroup = inventTable.bomCalcGroup();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    public void new()
+    {
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCostPriceModel</Name>
+				<Source><![CDATA[
+    public BOMCostPriceModel parmCostPriceModel(BOMCostPriceModel _costPriceModel = costPriceModel)
+    {
+        costPriceModel = _costPriceModel;
+
+        return costPriceModel;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmInventDimId</Name>
+				<Source><![CDATA[
+    InventDimId parmInventDimId(InventDimId _inventDimId = inventDimId)
+    {
+        inventDimId = _inventDimId;
+        return inventDimId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmItemId</Name>
+				<Source><![CDATA[
+    ItemId parmItemId(ItemId _itemId = itemId)
+    {
+        itemId = _itemId;
+        return itemId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPmfRMCostAllocationPct</Name>
+				<Source><![CDATA[
+    public PmfCostAllocationPct parmPmfRMCostAllocationPct(PmfCostAllocationPct _pmfRMCostAllocationPct = pmfRMCostAllocationPct)
+    {
+        if (!prmisDefault(_pmfRMCostAllocationPct))
+        {
+            pmfRMCostAllocationPct = _pmfRMCostAllocationPct;
+            applyCostAllocationPct = true;
+        }
+
+        return pmfRMCostAllocationPct;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPriceCalcIdOfPriceUsed</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets the identifier for the price used for calculating the cost price.
+    /// </summary>
+    /// <returns>
+    /// The <c>BOMCalcConsistOf</c> value identifying the cost price calculation.
+    /// </returns>
+    public BOMCalcConsistOf parmPriceCalcIdOfPriceUsed()
+    {
+        return consistOfPrice;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPriceVersionId</Name>
+				<Source><![CDATA[
+    CostingVersionId parmPriceVersionId(CostingVersionId _costingVersionId = costingVersionId)
+    {
+        costingVersionId = _costingVersionId;
+        return costingVersionId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmProfitSet</Name>
+				<Source><![CDATA[
+    CostProfitSet parmProfitSet(CostProfitSet _profitSet = profitSet)
+    {
+        profitSet = _profitSet;
+        return profitSet;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmResourceConsumption</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Get or Set the resource consumption.
+    /// </summary>
+    /// <param name="_resourceConsumption">
+    /// Consumption on resource
+    /// </param>
+    /// <returns>
+    /// Consumption on resource
+    /// </returns>
+    public boolean parmResourceConsumption(boolean _resourceConsumption = resourceConsumption)
+    {
+        resourceConsumption = _resourceConsumption;
+
+        return resourceConsumption;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>salesAmount</Name>
+				<Source><![CDATA[
+    Amount salesAmount()
+    {
+        return consumptionInvent * salesPrice / this.salesPriceUnit();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>salesMarkup</Name>
+				<Source><![CDATA[
+    InventSalesMarkup salesMarkup()
+    {
+        return salesMarkup;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>salesPrice</Name>
+				<Source><![CDATA[
+    InventSalesPrice salesPrice()
+    {
+        return salesPrice;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>salesPriceFallBackVersion</Name>
+				<Source><![CDATA[
+    CostingVersionId salesPriceFallBackVersion()
+    {
+        return salesPriceFallBackVersion;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>salesPriceUnit</Name>
+				<Source><![CDATA[
+    PriceUnit salesPriceUnit()
+    {
+        return salesPriceUnit ? salesPriceUnit : 1;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setBurden</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Sets the burden related options.
+    /// </summary>
+    /// <param name="_useBurden">Indicates if the burden cost should be used directly.</param>
+    /// <param name="_burden">The burden amount; optional.</param>
+    public void setBurden(boolean _useBurden, CostPrice _burden = 0)
+    {
+        useBurden = _useBurden;
+        burden = _burden;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setFallBackVersion</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///     Registers the costing version that was used as fallback.
+    /// </summary>
+    /// <param name="_priceType">
+    ///     The type of the price that needs to be found.
+    /// </param>
+    /// <param name="_costingVersionId">
+    ///     The ID of the costing version that was used as fallback.
+    /// </param>
+    /// <exception cref="Exception::Error">
+    ///     The price type is not valid.
+    /// </exception>
+    protected void setFallBackVersion(
+        CostingVersionPriceType _priceType,
+        CostingVersionId        _costingVersionId
+        )
+    {
+        switch (_priceType)
+        {
+            case CostingVersionPriceType::Cost:
+            case CostingVersionPriceType::Purch:
+                costPriceFallBackVersion = _costingVersionId;
+                break;
+
+            case CostingVersionPriceType::Sales:
+                salesPriceFallBackVersion = _costingVersionId;
+                break;
+
+            default:
+                throw error(Error::wrongUseOfFunction(funcName()));
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>stdCostBreakdown</Name>
+				<Source><![CDATA[
+    public Map stdCostBreakdown()
+    {
+        return stdCostBreakdown;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>stdCostBreakdownAmount</Name>
+				<Source><![CDATA[
+    public Map stdCostBreakdownAmount(Qty       _consumptionInvent = consumptionInvent)
+    {
+        Map             stdCostBreakdownAmount;
+        MapEnumerator   stdCostBreakdownEnumerator;
+        CostPrice       costElement;
+        CostPrice       costElementSecCur;
+
+        stdCostBreakdownAmount = Map::create(stdCostBreakdown.pack());
+
+        stdCostBreakdownEnumerator = stdCostBreakdown.getEnumerator();
+
+        while (stdCostBreakdownEnumerator.moveNext())
+        {
+            [ costElement, costElementSecCur ] = stdCostBreakdownEnumerator.currentValue();
+
+            stdCostBreakdownAmount.insert(stdCostBreakdownEnumerator.currentKey(),
+                                          [ _consumptionInvent * costElement,
+                                            _consumptionInvent * costElementSecCur ]);
+        }
+
+        return stdCostBreakdownAmount;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>stdCostBreakdownCalcRollup</Name>
+				<Source><![CDATA[
+    protected void stdCostBreakdownCalcRollup(RecId     _priceRecId,
+                                              boolean   _simulated)
+    {
+        InventItemCostGroupRollup       inventItemCostGroupRollup;
+        InventItemCostGroupRollupSim    inventItemCostGroupRollupSim;
+        if (_simulated)
+        {
+            while select CostGroupId, CostAmountStd, Qty, CostAmountSecCur_RU
+                from inventItemCostGroupRollupSim
+                where inventItemCostGroupRollupSim.InventItemPriceSimRefRecId == _priceRecId
+                   && inventItemCostGroupRollupSim.CostLevel                  >  InventCostLevel::Total
+                   && inventItemCostGroupRollupSim.Split                      == NoYes::No
+
+            {
+                this.addToStdCostBreakdown(inventItemCostGroupRollupSim.CostGroupId,
+                                           inventItemCostGroupRollupSim.CostAmountStd,
+                                           inventItemCostGroupRollupSim.CostAmountSecCur_RU,
+                                           inventItemCostGroupRollupSim.Qty);
+            }
+        }
+        else
+        {
+            while select CostGroupId, CostAmountStd, Qty, CostAmountSecCur_RU
+                from inventItemCostGroupRollup
+                where inventItemCostGroupRollup.InventItemPriceRefRecId == _priceRecId
+                   && inventItemCostGroupRollup.CostLevel                  >  InventCostLevel::Total
+                   && inventItemCostGroupRollup.Split                      == NoYes::No
+
+            {
+                this.addToStdCostBreakdown(inventItemCostGroupRollup.CostGroupId,
+                                           inventItemCostGroupRollup.CostAmountStd,
+                                           inventItemCostGroupRollup.CostAmountSecCur_RU,
+                                           inventItemCostGroupRollup.Qty);
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>stdCostBreakDownCalcRollupExt</Name>
+				<Source><![CDATA[
+    public void stdCostBreakDownCalcRollupExt(RecId _inventItemPriceRefRecId)
+    {
+        stdCostBreakdown = new Map(typeName2Type(extendedTypeStr(CostGroupId)), Types::Container);
+
+        this.stdCostBreakdownCalcRollup(_inventItemPriceRefRecId, false);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>subBomWarningLink</Name>
+				<Source><![CDATA[
+    public PriceCalcId subBomWarningLink()
+    {
+        return subBomWarningLink;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validate</Name>
+				<Source><![CDATA[
+    boolean validate()
+    {
+        if (!calcDate)
+        {
+            return checkFailed("@SYS24455");
+        }
+
+        if (!itemId)
+        {
+            return checkFailed("@SYS25157");
+        }
+
+        if (!inventTable)
+        {
+            throw error(strFmt(InventTable::txtNotExist(),itemId));
+        }
+
+        if (!inventDimId)
+        {
+            return checkFailed("@SYS54831");
+        }
+
+        if (!inventDim)
+        {
+            return checkFailed(strFmt("@SYS72900", inventDimId));
+        }
+
+        if (!bomCalcGroup)
+        {
+            return checkFailed("@SYS94311", '', BOMParameters::infoActionBOMCalcGroup());
+        }
+
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>construct</Name>
+				<Source><![CDATA[
+    public static BOMCalcCost construct()
+    {
+        return new BOMCalcCost();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>
