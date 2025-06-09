@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxMenuItemDisplay xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V1">
+	<Name>VendMobileInvoiceLineDistributionTreeNoParents</Name>
+	<AllowRootNavigation>Yes</AllowRootNavigation>
+	<ConfigurationKey>LedgerBasic</ConfigurationKey>
+	<EnumParameter>AllLinesLeafNodesOnly</EnumParameter>
+	<EnumTypeParameter>VendMobileAccountingDistributionDisplayMode</EnumTypeParameter>
+	<Label>@AccountsPayableMobile:HeaderDistributions</Label>
+	<MaintainUserLicense>Enterprise</MaintainUserLicense>
+	<Object>VendMobileInvoiceLineDistributionTree</Object>
+	<ViewUserLicense>Universal</ViewUserLicense>
+</AxMenuItemDisplay>

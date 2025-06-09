@@ -1,0 +1,120 @@
+﻿AllDistributions=Allar dreifingar
+ ;All distributions view label
+Amount=Upphæð
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=Upphæð til birtingar
+ ;Label for Amount for display.
+AttachmentCount=Talning viðhengja
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=Viðhengi
+ ;Label for mobile attachments link
+DistributionDetails=Dreifingarupplýsingar
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=Gerð á hnúti dreifingartrés
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=Lýsingarhnútur
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=Dreifingarhnútur
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=Yfirhnútur
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=Undirhnútur
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=Fyrirsagnadreifingar
+ ;Header level distributions view label
+HeaderLine=Dreifing fyrirsagnar eða línu
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=Reikningssamþykktir
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=Dreifingartré reikninga
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=Upplýsingar dreifingartrés reikninga lánardrottins
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=Vinna með gögn dreifingartrés reikninga
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=Fyrirsögn reiknings
+ ;Label for the invoice header group
+InvoiceHeaderDetails=Upplýsingar í fyrirsögn reiknings
+ ;Label for the invoice header details form
+InvoiceLineDescription=Lýsing reikningslínu
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=Upplýsingar um reikningslínur
+ ;Label for the invoice line details page
+InvoiceLines=Reikningslínur
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=Reikningar til samþykkis
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=Heildarupphæð reiknings í gjaldmiðli fyrirtækis
+ ;Invoice total in MST label
+LedgerAccount=Fjárhagslykill
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=Hlutar fjárhagslykla
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=Forskoðun fjárhagsvíddar
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=Fjárhagsvíddargildi birt í töflu
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=Línudreifingarstig 1
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=Upprunaskjalslínustig 1
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=Línudreifingarstig 2
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=Upprunaskjalslínustig 2
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=Línudreifingarstig 3
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=Upprunaskjalslínustig 3
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=Línudreifingar
+ ;Line level distributions view label
+MobileWorkflowStatus=Staða fartækjaverkflæðis
+ ;Label for the state of vendor invoice mobile workflow enum
+More=Meira
+ ;Label for the mobile button labelled "More"
+NewVersion=Ný útgáfa nauðsynleg
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=Þetta vinnusvæði krefst nýrri útgáfu forritsins. Forritið er sótt í verslunina.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=Fjöldi reikningslína
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=Unnið
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=Þessi hnútur er eingöngu til tilvísunar
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=Sýna samþykkt verkefni
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=Sýna samþykkisverkefni
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=Sýna verkefni sem er lokið
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=Sýna úthlutað verkefni
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=Sýna verkefni sem var neitað
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=Sýna fyrirsagnardreifingu
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=Sýna afturkallað verkefni
+ ;Label for show recall task for current invoice value
+ShowRejectTask=Sýna hafnað verkefni
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=Sýna verkbeiðni um breytingu
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=Sýna endursent verkefni
+ ;Label for show resubmit task for current invoice value
+Unprocessed=Óunnið
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=Reikningslína
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=Fyrirsögn reiknings
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=Vinna með lista yfir reikninga frá lánardrottni fyrir fartæki
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=Skoða lista yfir reikninga frá lánardrottni fyrir fartæki
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=Vinna með reikninga frá lánardrottni í bið á fartæki
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=Skoða verkflæðisnotendur fyrir farmsal eða beiðni um breytingu á verkflæðisaðgerðum
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=Verkflæðisnotendur
+ ;Label for the lookup form for valid workflow users for a given workflow item

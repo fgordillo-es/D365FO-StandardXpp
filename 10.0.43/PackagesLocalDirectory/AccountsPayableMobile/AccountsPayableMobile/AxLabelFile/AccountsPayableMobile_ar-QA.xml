@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxLabelFile xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>AccountsPayableMobile_ar-QA</Name>
+	<LabelContentFileName>AccountsPayableMobile.ar-QA.label.txt</LabelContentFileName>
+	<LabelFileId>AccountsPayableMobile</LabelFileId>
+	<Language>ar-QA</Language>
+	<RelativeUriInModelStore>AccountsPayableMobile\AccountsPayableMobile\AxLabelFile\LabelResources\ar-QA\AccountsPayableMobile.ar-QA.label.txt</RelativeUriInModelStore>
+</AxLabelFile>

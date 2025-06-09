@@ -1,0 +1,120 @@
+﻿AllDistributions=Visas sadales
+ ;All distributions view label
+Amount=Summa
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=Parādāmā summa
+ ;Label for Amount for display.
+AttachmentCount=Pielikumu skaits
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=Pielikumi
+ ;Label for mobile attachments link
+DistributionDetails=Informācija par sadalēm
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=Sadales koka zara veids
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=Apraksta zars
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=Sadales zars
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=Pamatzars
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=Apakšmezgls
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=Virsraksta sadales
+ ;Header level distributions view label
+HeaderLine=Virsraksta vai rindas sadale
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=Rēķina apstiprinājumi
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=Rēķinu sadales koks
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=Kreditoru rēķinu sadales koka informācija
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=Uzturēt rēķinu sadales koka datus
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=Rēķina virsraksts
+ ;Label for the invoice header group
+InvoiceHeaderDetails=Rēķina virsraksta informācija
+ ;Label for the invoice header details form
+InvoiceLineDescription=Rēķina rindas apraksts
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=Rēķina rindas informācija
+ ;Label for the invoice line details page
+InvoiceLines=Rēķina rindas
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=Rēķini apstiprināšanai
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=Rēķina kopsumma uzņēmuma valūtā
+ ;Invoice total in MST label
+LedgerAccount=Virsgrāmatas konts
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=Virsgrāmatas kontu segmenti
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=Virsgrāmatas dimensiju priekšskatījums
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=Virsgrāmatas dimensiju vērtības sakārtotas tabulā
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=1. līmeņa rindu sadalījumi
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=1. līmeņa pirmdokumenta rinda
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=2. līmeņa rindu sadalījumi
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=2. līmeņa pirmdokumenta rinda
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=3. līmeņa rindu sadalījumi
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=3. līmeņa pirmdokumenta rinda
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=Rindu sadalījumi
+ ;Line level distributions view label
+MobileWorkflowStatus=Mobilās darbplūsmas statuss
+ ;Label for the state of vendor invoice mobile workflow enum
+More=Vairāk
+ ;Label for the mobile button labelled "More"
+NewVersion=Nepieciešama jauna versija
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=Šai darbvietai nepieciešama jaunāka lietojumprogrammas versija. Lūdzu, veikalā instalējiet lietojumprogrammu.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=Rēķina rindu skaits
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=Apstrādāts
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=Šis zars ir tikai atsaucei
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=Rādīt pieņemšanas uzdevumu
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=Rādīt apstiprināšanas uzdevumu
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=Rādīt pabeigšanas uzdevumu
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=Rādīt deleģēšanas uzdevumu
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=Rādīt liegšanas uzdevumu
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=Rādīt virsraksta sadales
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=Rādīt atsaukšanas uzdevumu
+ ;Label for show recall task for current invoice value
+ShowRejectTask=Rādīt noraidīšanas uzdevumu
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=Rādīt izmaiņu pieprasīšanas uzdevumu
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=Rādīt atkārtotas iesniegšanas uzdevumu
+ ;Label for show resubmit task for current invoice value
+Unprocessed=Neapstrādāts
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=Rēķina rinda
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=Rēķina virsraksts
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=Uzturēt neizlemto kreditoru rēķinu saraksta lapu mobilajai versijai
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=Skatīt neizlemto kreditoru rēķinu saraksta lapu mobilajai versijai
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=Uzturēt neizlemtos kreditoru rēķinus mobilajā ierīcē
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=Skatīt darbplūsmas lietotājus deleģēšanai vai darbplūsmas darbību maiņas pieprasīšanai
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=Darbplūsmas lietotāji
+ ;Label for the lookup form for valid workflow users for a given workflow item

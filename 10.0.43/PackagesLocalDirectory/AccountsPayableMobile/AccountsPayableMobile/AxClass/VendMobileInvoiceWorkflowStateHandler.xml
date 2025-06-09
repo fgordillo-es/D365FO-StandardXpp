@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>VendMobileInvoiceWorkflowStateHandler</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Contains event handlers for handling state changes for the mobile workflow status of a vendor invoice when processing workflow actions from the
+/// invoice approval mobile application.
+/// </summary>
+public class VendMobileInvoiceWorkflowStateHandler
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>VendorInvoiceWorkflowDropDialog_Post_updateWorkflowControls</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Update the mobile workflow status for the current document in order to reflect a state change for the invoice for the
+    /// invoice approval mobile application.
+    /// </summary>
+    /// <param name="args">Pre/Post event handlers.</param>
+    [PostHandlerFor(formStr(VendorInvoiceWorkflowDropDialog), formMethodStr(VendorInvoiceWorkflowDropDialog, updateWorkflowControls))]
+    public static void VendorInvoiceWorkflowDropDialog_Post_updateWorkflowControls(XppPrePostArgs args)
+    {
+        if (SysAppMobile::isMobileMode())
+        {
+            FormRun workflowDropDialog = args.getThis() as FormRun;
+            WorkflowWorkItemTable workflowWorkItemTable = workflowDropDialog.getActiveWorkflowWorkItem() as WorkflowWorkItemTable;
+
+            if (WorkflowWorkItemTable)
+            {
+                VendInvoiceInfoTable vendInvoiceInfoTable;
+                
+                vendInvoiceInfoTable.skipDataMethods(true);
+
+                update_recordset vendInvoiceInfoTable
+                    setting MobileWorkflowStatus = VendMobileInvoiceWorkflowStatus::Processed
+                        where vendInvoiceInfoTable.RecId == workflowWorkItemTable.RefRecId;
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

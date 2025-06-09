@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTable xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>VendMobileInvoiceDistributionTree</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+public class VendMobileInvoiceDistributionTree extends common
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>populateTempBuffer</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Populates the provided buffer with descriptions for all the records linked to the specified header and line.
+    /// </summary>
+    /// <param name = "_vendMobileInvoiceDistributionTree">An instance of the <c>VendMobileInvoiceDistributionTree</c> temporary buffer to populate.</param>
+    /// <param name = "_header">RecId of the <c>SourceDocumentHeader</c> that requires the data.</param>
+    /// <param name = "_line">RecId of the <c>SourceDocumentLine</c> that requires the data. All lines are included if the value is 0.</param>
+    /// <param name = "_processParentNodes">Controls whether parent nodes building the tree structure should also be created.</param>
+    /// <param name = "_tableToSkip">When specified, forces all source document lines linked to a record of a given <c>TableId</c> to be ignored.</param>
+    public static void populateTempBuffer(VendMobileInvoiceDistributionTree _vendMobileInvoiceDistributionTree,
+        SourceDocumentHeaderRefRecId _header,
+        SourceDocumentLineRefRecId _line,
+        boolean _processParentNodes,
+        TableId _tableToSkip = 0)
+    {
+        VendMobileInvoiceAllDistributionsView distributionWithParents;
+        SourceDocumentLine sourceDocumentLine, rootSourceDocumentLine;
+        RefRecId previousSourceDocumentLine, previousAccountingDistributionRecId;
+        DimensionAttributeValueCombination dimensionAttributeValueCombination;
+        SourceDocumentAmountFormTreeBuildHelper helper;
+
+        str previousDescription;
+        boolean differentSourceDocumentLines;
+
+        ttsbegin;
+
+        while select distributionWithParents
+            order by distributionWithParents.HeaderLine, distributionWithParents.L1SourceDocumentLine, distributionWithParents.L2SourceDocumentLine, 
+                distributionWithParents.L3SourceDocumentLine, distributionWithParents.AccountingDistributionRecId
+                where distributionWithParents.SourceDocumentHeader == _header
+                   && (_line == 0 || distributionWithParents.L1SourceDocumentLine == _line)
+            join SourceDocumentLine
+                where distributionWithParents.SourceDocumentLineRecId == sourceDocumentLine.RecId
+                   && sourceDocumentLine.SourceDocumentHeader == _header
+            join TableId from rootSourceDocumentLine
+                where distributionWithParents.L1SourceDocumentLine == rootSourceDocumentLine.RecId
+                   && rootSourceDocumentLine.SourceDocumentHeader == _header
+                   && rootSourceDocumentLine.SourceRelationType != _tableToSkip
+            outer join dimensionAttributeValueCombination
+                where distributionWithParents.LedgerDimension == dimensionAttributeValueCombination.RecId
+        {
+            if (distributionWithParents.AccountingDistributionRecId != previousAccountingDistributionRecId)
+            {
+                SourceDocumentLineItem sourceDocumentLineItem = SourceDocumentLineItem::newFromSourceDocumentLine(sourceDocumentLine);
+
+                SourceDocumentAmount sourceDocumentAmount = sourceDocumentLineItem.parmSourceDocumentAmountMap().lookup(distributionWithParents.MonetaryAmount);
+            
+                if (!helper)
+                {
+                    helper = SourceDocumentAmountFormTreeBuildHelper::construct();
+                }
+
+                helper.parmSourceDocumentAmount(sourceDocumentAmount);
+
+                differentSourceDocumentLines = (SourceDocumentLine.RecId != previousSourceDocumentLine);
+            
+                str currentDescription = VendMobileInvoiceDistributionTree::populateForCurrentAccountingDistribution(_vendMobileInvoiceDistributionTree,
+                    (differentSourceDocumentLines && _processParentNodes),
+                    distributionWithParents,
+                    dimensionAttributeValueCombination.DisplayValue,
+                    helper,
+                    previousDescription);
+
+                if (differentSourceDocumentLines)
+                {
+                    previousDescription = '';
+                }
+                else if (currentDescription != '')
+                {
+                    previousDescription = currentDescription;
+                }
+        
+                previousSourceDocumentLine = sourceDocumentLine.RecId;
+                previousAccountingDistributionRecId = distributionWithParents.AccountingDistributionRecId;
+            }
+        }
+
+        ttscommit;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>populateForCurrentAccountingDistribution</Name>
+				<Source><![CDATA[
+    private static str populateForCurrentAccountingDistribution(VendMobileInvoiceDistributionTree _vendMobileInvoiceDistributionTree,
+        boolean _processParentNodes,
+        VendMobileInvoiceAllDistributionsView _vendMobileInvoiceAllDistributionsView,
+        DimensionDisplayValue _dimensionDisplayValue,
+        SourceDocumentAmountFormTreeBuildHelper _helper,
+        str _previousDescription = '')
+    {
+        str returnValue = _previousDescription;
+
+        if (_processParentNodes)
+        {
+            if (_helper.needToCreateParentNode())
+            {
+                str currentDescription = _helper.getParentNodeLabel();
+
+                _vendMobileInvoiceDistributionTree.clear();
+                _vendMobileInvoiceDistributionTree.InvoiceRecId = _vendMobileInvoiceAllDistributionsView.InvoiceRecId;
+                _vendMobileInvoiceDistributionTree.AccountingDistribution = _vendMobileInvoiceAllDistributionsView.AccountingDistributionRecId;
+                _vendMobileInvoiceDistributionTree.SourceDocumentLine = _vendMobileInvoiceAllDistributionsView.SourceDocumentLineRecId;
+                _vendMobileInvoiceDistributionTree.TopLevelSourceDocumentLine = _vendMobileInvoiceAllDistributionsView.L1SourceDocumentLine;
+                _vendMobileInvoiceDistributionTree.Description = currentDescription;
+                _vendMobileInvoiceDistributionTree.TreeNodeType = VendMobileInvoiceDistributionTreeType::ParentNode;
+                _vendMobileInvoiceDistributionTree.insert();
+            }
+
+            if (_helper.needToCreateSubNode())
+            {
+                str currentDescription = _helper.getSubNodeLabel();
+
+                _vendMobileInvoiceDistributionTree.clear();
+                _vendMobileInvoiceDistributionTree.InvoiceRecId = _vendMobileInvoiceAllDistributionsView.InvoiceRecId;
+                _vendMobileInvoiceDistributionTree.AccountingDistribution = _vendMobileInvoiceAllDistributionsView.AccountingDistributionRecId;
+                _vendMobileInvoiceDistributionTree.SourceDocumentLine = _vendMobileInvoiceAllDistributionsView.SourceDocumentLineRecId;
+                _vendMobileInvoiceDistributionTree.TopLevelSourceDocumentLine = _vendMobileInvoiceAllDistributionsView.L1SourceDocumentLine;
+                _vendMobileInvoiceDistributionTree.Description = currentDescription;
+                _vendMobileInvoiceDistributionTree.TreeNodeType = VendMobileInvoiceDistributionTreeType::SubNode;
+                _vendMobileInvoiceDistributionTree.insert();
+            }
+
+            str currentDescription = _helper.getNodeLabel();
+                      
+            if (_previousDescription != currentDescription)
+            {
+                returnValue = currentDescription;
+                _vendMobileInvoiceDistributionTree.clear();
+                _vendMobileInvoiceDistributionTree.InvoiceRecId = _vendMobileInvoiceAllDistributionsView.InvoiceRecId;
+                _vendMobileInvoiceDistributionTree.AccountingDistribution = _vendMobileInvoiceAllDistributionsView.AccountingDistributionRecId;
+                _vendMobileInvoiceDistributionTree.SourceDocumentLine = _vendMobileInvoiceAllDistributionsView.SourceDocumentLineRecId;
+                _vendMobileInvoiceDistributionTree.TopLevelSourceDocumentLine = _vendMobileInvoiceAllDistributionsView.L1SourceDocumentLine;
+                _vendMobileInvoiceDistributionTree.Description = currentDescription;
+                _vendMobileInvoiceDistributionTree.TreeNodeType = VendMobileInvoiceDistributionTreeType::DescriptionNode;
+                _vendMobileInvoiceDistributionTree.insert();
+            }
+        }
+
+        str currentDescription = strFmt('%1: %2', _helper.getNodeLabel(true), _vendMobileInvoiceAllDistributionsView.TransactionCurrencyAmount);
+        
+        _vendMobileInvoiceDistributionTree.clear();
+        _vendMobileInvoiceDistributionTree.InvoiceRecId = _vendMobileInvoiceAllDistributionsView.InvoiceRecId;
+        _vendMobileInvoiceDistributionTree.AccountingDistribution = _vendMobileInvoiceAllDistributionsView.AccountingDistributionRecId;
+        _vendMobileInvoiceDistributionTree.SourceDocumentLine = _vendMobileInvoiceAllDistributionsView.SourceDocumentLineRecId;
+        _vendMobileInvoiceDistributionTree.TopLevelSourceDocumentLine = _vendMobileInvoiceAllDistributionsView.L1SourceDocumentLine;
+        _vendMobileInvoiceDistributionTree.Description = currentDescription;
+        _vendMobileInvoiceDistributionTree.AmountForDisplay = strFmt('%1', _vendMobileInvoiceAllDistributionsView.TransactionCurrencyAmount);
+        _vendMobileInvoiceDistributionTree.TransactionCurrency = _vendMobileInvoiceAllDistributionsView.TransactionCurrency;
+        _vendMobileInvoiceDistributionTree.LedgerDimension = _vendMobileInvoiceAllDistributionsView.LedgerDimension;
+        _vendMobileInvoiceDistributionTree.DimensionDisplayValue = _dimensionDisplayValue;
+        _vendMobileInvoiceDistributionTree.TreeNodeType = VendMobileInvoiceDistributionTreeType::DistributionNode;
+        _vendMobileInvoiceDistributionTree.insert();
+
+        return returnValue;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<DeveloperDocumentation>@AccountsPayableMobile:InvoiceDistributionTreeDeveloperDocumentation</DeveloperDocumentation>
+	<Label>@AccountsPayableMobile:InvoiceDistributionTree</Label>
+	<TitleField1>Description</TitleField1>
+	<TitleField2>AmountForDisplay</TitleField2>
+	<TableType>InMemory</TableType>
+	<DeleteActions />
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>AutoReport</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>InvoiceRecId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>InvoiceHeaderOnlyRecId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>InvoiceLineRecId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>Description</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>SourceDocumentLine</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>AccountingDistribution</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>AmountForDisplay</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoLookup</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoIdentification</Name>
+			<AutoPopulate>Yes</AutoPopulate>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoSummary</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoBrowse</Name>
+			<Fields />
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>InvoiceRecId</Name>
+			<AssetClassification>System Metadata</AssetClassification>
+			<ExtendedDataType>VendInvoiceInfoTableRecId</ExtendedDataType>
+			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>InvoiceHeaderOnlyRecId</Name>
+			<AssetClassification>System Metadata</AssetClassification>
+			<ExtendedDataType>VendInvoiceInfoTableRecId</ExtendedDataType>
+			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>InvoiceLineRecId</Name>
+			<AssetClassification>System Metadata</AssetClassification>
+			<ExtendedDataType>VendInvoiceInfoLineRefRecId</ExtendedDataType>
+			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>Description</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>Description255</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>SourceDocumentLine</Name>
+			<AssetClassification>System Metadata</AssetClassification>
+			<ExtendedDataType>SourceDocumentLineRecId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>AccountingDistribution</Name>
+			<AssetClassification>System Metadata</AssetClassification>
+			<ExtendedDataType>AccountingDistributionRecId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>TransactionCurrency</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>CurrencyCode</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>AmountForDisplay</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>string20</ExtendedDataType>
+			<Label>@AccountsPayableMobile:AmountForDisplay</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>DimensionDisplayValue</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>DimensionDisplayValue</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>LedgerDimension</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>LedgerDimensionAccount</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>TopLevelSourceDocumentLine</Name>
+			<AssetClassification>System Metadata</AssetClassification>
+			<ExtendedDataType>SourceDocumentLineRecId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>TreeNodeType</Name>
+			<AssetClassification>Customer Content </AssetClassification>
+			<EnumType>VendMobileInvoiceDistributionTreeType</EnumType>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes />
+	<Mappings />
+	<Relations>
+		<AxTableRelation>
+			<Name>VendMobileInvoiceAllDistributionsView</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<RelatedTable>VendMobileInvoiceAllDistributionsView</RelatedTable>
+			<RelatedTableCardinality>ExactlyOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>AccountingDistribution</Name>
+					<Field>AccountingDistribution</Field>
+					<RelatedField>AccountingDistributionRecId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>AccountingDistribution</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<RelatedTable>AccountingDistribution</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>AccountingDistribution</Name>
+					<Field>AccountingDistribution</Field>
+					<RelatedField>RecId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation xmlns=""
+			i:type="AxTableRelationForeignKey">
+			<Name>LedgerDimension</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<RelatedTable>DimensionAttributeValueCombination</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelatedTableRole>LedgerDimension</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>SourceDocumentDistribution</Role>
+			<UseDefaultRoleNames>No</UseDefaultRoleNames>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>LedgerDimension</Name>
+					<Field>LedgerDimension</Field>
+					<RelatedField>RecId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+			<Index>RecId</Index>
+		</AxTableRelation>
+	</Relations>
+	<StateMachines />
+</AxTable>

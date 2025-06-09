@@ -1,0 +1,120 @@
+﻿AllDistributions=Všechny distribuce
+ ;All distributions view label
+Amount=Částka
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=Zobrazovaná částka
+ ;Label for Amount for display.
+AttachmentCount=Počet příloh
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=Přílohy
+ ;Label for mobile attachments link
+DistributionDetails=Podrobnosti distribuce
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=Typ uzlu stromu distribuce
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=Uzel popisu
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=Uzel distribuce
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=Nadřazený uzel
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=Podřízený uzel
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=Distribuce záhlaví
+ ;Header level distributions view label
+HeaderLine=Distribuce záhlaví nebo řádku
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=Schválení faktur
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=Strom distribuce faktur
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=Informace o stromu distribuce faktur dodavatele
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=Udržovat data stromu distribuce faktur
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=Záhlaví faktury
+ ;Label for the invoice header group
+InvoiceHeaderDetails=Podrobnosti záhlaví faktury
+ ;Label for the invoice header details form
+InvoiceLineDescription=Popis řádku faktury
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=Podrobnosti řádku faktury
+ ;Label for the invoice line details page
+InvoiceLines=Řádky faktury
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=Faktury ke schválení
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=Celková částka faktury v měně společnosti
+ ;Invoice total in MST label
+LedgerAccount=Účet hlavní knihy
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=Segmenty účtu hlavní knihy
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=Náhled dimenze hlavní knihy
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=Rozpis hodnot dimenze hlavní knihy v tabulce
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=Distribuce řádků – úroveň 1
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=Řádek zdrojového dokumentu – úroveň 1
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=Distribuce řádků – úroveň 2
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=Řádek zdrojového dokumentu – úroveň 2
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=Distribuce řádků – úroveň 3
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=Řádek zdrojového dokumentu – úroveň 3
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=Distribuce řádků
+ ;Line level distributions view label
+MobileWorkflowStatus=Stav mobilního workflow
+ ;Label for the state of vendor invoice mobile workflow enum
+More=Více
+ ;Label for the mobile button labelled "More"
+NewVersion=Je vyžadována nová verze
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=Tento pracovní prostor vyžaduje novější verzi aplikace. Nainstalujte aplikaci z obchodu.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=Počet řádků faktury
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=Zpracováno
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=Tento uzel má pouze informativní charakter
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=Zobrazit úkol přijetí
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=Zobrazit úkol schválení
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=Zobrazit úkol dokončení
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=Zobrazit úkol delegování
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=Zobrazit úkol odepření
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=Zobrazit distribuce záhlaví
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=Zobrazit úkol odvolání
+ ;Label for show recall task for current invoice value
+ShowRejectTask=Zobrazit úkol zamítnutí
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=Zobrazit úkol změny požadavku
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=Zobrazit úkol opakovaného odeslání
+ ;Label for show resubmit task for current invoice value
+Unprocessed=Nezpracovaná
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=Řádek faktury
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=Záhlaví faktury
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=Udržovat stránku seznamu čekajících faktur dodavatele pro mobily
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=Zobrazit stránku seznamu čekajících faktur dodavatele pro mobily
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=Udržovat čekající faktury dodavatele v mobilním zařízení
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=Zobrazit uživatele workflow k delegování nebo akce požadavků na změnu workflow
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=Uživatelé workflow
+ ;Label for the lookup form for valid workflow users for a given workflow item

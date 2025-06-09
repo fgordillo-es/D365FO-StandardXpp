@@ -1,0 +1,120 @@
+﻿AllDistributions=Все распределения
+ ;All distributions view label
+Amount=Сумма
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=Сумма для отображения
+ ;Label for Amount for display.
+AttachmentCount=Число вложений
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=Вложения
+ ;Label for mobile attachments link
+DistributionDetails=Сведения о распределениях
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=Тип узла дерева распределения
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=Узел описания
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=Узел распределения
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=Родительский узел
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=Подузел
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=Распределения заголовка
+ ;Header level distributions view label
+HeaderLine=Распределение заголовка или строки
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=Утверждения накладных
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=Дерево распределения накладных
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=Сведения о дереве распределения накладных поставщика
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=Ведение данных дерева распределения накладных
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=Заголовок накладной
+ ;Label for the invoice header group
+InvoiceHeaderDetails=Сведения заголовка счета
+ ;Label for the invoice header details form
+InvoiceLineDescription=Описание строки накладной
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=Сведения строки накладной
+ ;Label for the invoice line details page
+InvoiceLines=Строки накладной
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=Накладных для утверждения
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=Общее количество по накладной в валюте компании
+ ;Invoice total in MST label
+LedgerAccount=Счет ГК
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=Сегменты счета ГК
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=Предварительный просмотр аналитики учета
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=Значения аналитики учета с разбивкой в таблице
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=Распределения строки уровня 1
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=Строка документа-источника уровня 1
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=Распределения строки уровня 2
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=Строка документа-источника уровня 2
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=Распределения строки уровня 3
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=Строка документа-источника уровня 3
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=Распределения строки
+ ;Line level distributions view label
+MobileWorkflowStatus=Статус мобильного workflow-процесса
+ ;Label for the state of vendor invoice mobile workflow enum
+More=Дополнительно
+ ;Label for the mobile button labelled "More"
+NewVersion=Требуется новая версия
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=Для этой рабочей области требуется более новая версия приложения. Установите приложение из магазина.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=Число строк накладной
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=Обработано
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=Этот узел предназначен только для справки
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=Показать задачу принятия
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=Показать задачу утверждения
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=Показать задачу завершения
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=Показать задачу делегирования
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=Показать задачу отказа
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=Показать распределения заголовка
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=Показать задачу отзыва
+ ;Label for show recall task for current invoice value
+ShowRejectTask=Показать задачу отклонения
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=Показать задачу запроса на изменение
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=Показать задачу повторной отправки
+ ;Label for show resubmit task for current invoice value
+Unprocessed=Не обработано
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=Строка накладной
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=Заголовок накладной
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=Ведение страницы списка ожидающих накладных поставщика для мобильного устройства
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=Просмотр страницы списка ожидающих накладных поставщика для мобильного устройства
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=Ведение ожидающих накладных поставщика на мобильном устройстве
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=Просмотр пользователей workflow-процесса для действий workflow-процесса делегирования или запроса изменения
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=Пользователи workflow-процесса
+ ;Label for the lookup form for valid workflow users for a given workflow item

@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<IgnoreDiagnostics xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>AccountsPayableMobile_BPSuppressions</Name>
+  <Items>
+    <Diagnostic>
+      <DiagnosticType>BestPractices</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>dynamics://TableExtension/VendInvoiceInfoTable.Extension</Path>
+      <Moniker>MetadataExtensionNamingWithExtensionOnly</Moniker>
+      <Message>Metadata Extension 'VendInvoiceInfoTable.Extension' is using a generic name which is not sufficient to avoid conflicts across models.</Message>
+      <Justification>Extension is already released.</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>BestPractices</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>dynamics://View/VendMobileInvoiceHeaderDistributionsView/Method/hasHeaderDistributions</Path>
+      <Moniker>BPXmlDocParameterNotDescribed</Moniker>
+      <Message>BPXmlDocParameterNotDescribed: Parameter '_vendInvoiceInfoTable' is not described in any 'param' tag.</Message>
+      <Justification>New failures caused by platform metadata provider fix</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>BestPractices</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>dynamics://Form/VendMobileInvoiceHeaderDetails/FormDataSourceRoot/VendInvoiceInfoTable/Method/showHeaderDistributions</Path>
+      <Moniker>BPXmlDocParameterNotDescribed</Moniker>
+      <Message>BPXmlDocParameterNotDescribed: Parameter '_vendInvoiceInfoTable' is not described in any 'param' tag.</Message>
+      <Justification>New failures caused by platform metadata provider fix</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>BestPractices</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>dynamics://Form/VendMobileInvoiceInfoListPage/FormDataSourceRoot/VendInvoiceInfoTable/Method/showHeaderDistributions</Path>
+      <Moniker>BPXmlDocParameterNotDescribed</Moniker>
+      <Message>BPXmlDocParameterNotDescribed: Parameter '_vendInvoiceInfoTable' is not described in any 'param' tag.</Message>
+      <Justification>New failures caused by platform metadata provider fix</Justification>
+    </Diagnostic>
+  </Items>
+</IgnoreDiagnostics>

@@ -1,0 +1,120 @@
+﻿AllDistributions=כל ההפצות
+ ;All distributions view label
+Amount=סכום
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=סכום להצגה
+ ;Label for Amount for display.
+AttachmentCount=ספירת קבצים מצורפים
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=קבצים מצורפים
+ ;Label for mobile attachments link
+DistributionDetails=פרטי הפצות
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=סוג צומת עץ של הפצה
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=צומת תיאור
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=צומת הפצה
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=צומת אב
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=צומת משנה
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=הפצות כותרות
+ ;Header level distributions view label
+HeaderLine=הפצת כותרת או שורה
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=אישורי חשבוניות
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=עץ חלוקת חשבוניות
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=מידע על עץ חלוקת חשבוניות של ספק
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=שמר נתוני עץ חלוקת חשבוניות
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=כותרת חשבונית
+ ;Label for the invoice header group
+InvoiceHeaderDetails=פרטי כותרת חשבונית
+ ;Label for the invoice header details form
+InvoiceLineDescription=תיאור בשורת חשבונית
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=פרטים בשורת החשבונית
+ ;Label for the invoice line details page
+InvoiceLines=שורות חשבונית
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=חשבוניות לאישור
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=סכום חשבונית במטבע החברה
+ ;Invoice total in MST label
+LedgerAccount=חשבון של ספר ראשי
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=מקטעי חשבון של ספר ראשי
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=תצוגה מקדימה של ממד של ספר ראשי
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=ערכי ממד של ספר ראשי מפורטים בטבלה
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=חלוקות שורה ברמה 1
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=שורת מסמך מקור ברמה 1
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=חלוקות שורה ברמה 2
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=שורת מסמך מקור ברמה 2
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=חלוקות שורה ברמה 3
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=שורת מסמך מקור ברמה 3
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=חלוקות שורה
+ ;Line level distributions view label
+MobileWorkflowStatus=מצב זרימת עבודה ניידת
+ ;Label for the state of vendor invoice mobile workflow enum
+More=עוד
+ ;Label for the mobile button labelled "More"
+NewVersion=נדרשת גירסה חדשה
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=סביבת עבודה זו דורשת גרסה חדשה יותר של היישום. התקן את היישום מהחנות.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=מספר שורות בחשבונית
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=מעובד
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=צומת זה מיועד להפניה בלבד
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=הצג משימת קבלה
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=הצג משימת אישור
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=הצג משימה שהושלמה
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=הצג משימת נציג
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=הצג משימת מניעה
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=הצג הפצות כותרות
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=הצג משימת אחזור
+ ;Label for show recall task for current invoice value
+ShowRejectTask=הצג משימת דחייה
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=הצג משימת שינוי בקשה
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=הצג משימת הגשה מחדש
+ ;Label for show resubmit task for current invoice value
+Unprocessed=לא מעובד
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=שורת חשבונית
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=כותרת חשבונית
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=שמר דף רשימת חשבוניות ספק שנמצאות בהמתנה עבור הנייד
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=הצג את דף רשימת חשבוניות הספק שנמצאות בהמתנה עבור הנייד
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=שמר חשבוניות הספק שנמצאות בהמתנה במכשיר הנייד
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=הצג את משתמשי זרימת העבודה לפעולות האצלה או בקשה לשינוי פעולות בזרימת עבודה
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=משתמשי זרימת עבודה
+ ;Label for the lookup form for valid workflow users for a given workflow item

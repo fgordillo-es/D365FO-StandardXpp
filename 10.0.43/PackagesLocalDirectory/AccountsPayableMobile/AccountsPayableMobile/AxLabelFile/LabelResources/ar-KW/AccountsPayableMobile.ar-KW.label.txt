@@ -1,0 +1,120 @@
+﻿AllDistributions=جميع التوزيعات
+ ;All distributions view label
+Amount=المبلغ
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=المبلغ المراد عرضه
+ ;Label for Amount for display.
+AttachmentCount=عدد المرفقات
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=المرفقات
+ ;Label for mobile attachments link
+DistributionDetails=تفاصيل التوزيعات
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=نوع عقدة شجرة التوزيع
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=عقدة الوصف
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=عقدة التوزيع
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=العقدة الأصلية
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=العقده الفرعية
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=توزيعات الرأس
+ ;Header level distributions view label
+HeaderLine=توزيع الرأس أو السطر
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=الموافقات على الفواتير
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=شجرة توزيع الفاتورة
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=معلومات شجرة توزيع فاتورة المورد
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=الاحتفاظ ببيانات شجرة توزيع الفاتورة
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=رأس الفاتورة
+ ;Label for the invoice header group
+InvoiceHeaderDetails=تفاصيل رأس الفاتورة
+ ;Label for the invoice header details form
+InvoiceLineDescription=وصف سطر الفاتورة
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=تفاصيل سطر الفاتورة
+ ;Label for the invoice line details page
+InvoiceLines=سطور الفاتورة
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=فواتير في انتظار الموافقة
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=إجمالي الفاتورة بعملة الشركة
+ ;Invoice total in MST label
+LedgerAccount=حساب دفتر الأستاذ
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=شرائح حساب دفتر الأستاذ
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=معاينة بُعد دفتر الأستاذ
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=تقسيم قيم بُعد دفتر الأستاذ إلى جدول
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=توزيعات سطر المستوى 1
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=سطر مستند المصدر للمستوى 1
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=توزيعات سطر المستوى 2
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=سطر مستند المصدر للمستوى 2
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=توزيعات سطر المستوى 3
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=سطر مستند المصدر للمستوى 3
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=توزيعات السطر
+ ;Line level distributions view label
+MobileWorkflowStatus=حالة سير العمل المتنقل
+ ;Label for the state of vendor invoice mobile workflow enum
+More=المزيد
+ ;Label for the mobile button labelled "More"
+NewVersion=مطلوب إصدار جديد
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=تتطلب مساحة العمل هذه إصدارًا أحدث من التطبيق. الرجاء تثبيت التطبيق من المتجر.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=عدد سطور الفاتورة
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=مُعالَج
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=هذه العقدة مرجع فقط
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=إظهار مهمة القبول
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=إظهار مهمة الموافقة
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=إظهار المهمة المكتملة
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=إظهار مهمة التفويض
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=إظهار مهمة رفض
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=إظهار توزيعات الرأس
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=إظهار مهمة استدعاء
+ ;Label for show recall task for current invoice value
+ShowRejectTask=إظهار مهمة رفض
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=إظهار مهمة طلب تغيير
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=إظهار مهمة إعادة الإرسال
+ ;Label for show resubmit task for current invoice value
+Unprocessed=غير معالجة
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=سطر الفاتورة
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=رأس الفاتورة
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=الاحتفاظ بصفحة قائمة فواتير المورد المعلقة للمحمول
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=عرض صفحة قائمة فواتير المورد المعلقة للمحمول
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=الاحتفاظ بفواتير المورد المعلقة للجهاز المحمول
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=عرض مستخدمي سير العمل لإجراءات سير عمل التفويض أو طلب تغيير
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=مستخدمو سير العمل
+ ;Label for the lookup form for valid workflow users for a given workflow item

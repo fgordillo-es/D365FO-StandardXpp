@@ -1,0 +1,120 @@
+﻿AllDistributions=Tüm dağıtımlar
+ ;All distributions view label
+Amount=Tutar
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=Görüntülenecek tutar
+ ;Label for Amount for display.
+AttachmentCount=Ek sayısı
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=Ekler
+ ;Label for mobile attachments link
+DistributionDetails=Dağıtımların ayrıntısı
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=Dağıtım ağacı düğümü türü
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=Açıklama düğümü
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=Dağıtım düğümü
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=Ana düğüm
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=Alt düğüm
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=Başlık dağıtımları
+ ;Header level distributions view label
+HeaderLine=Başlık veya satır dağıtımları
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=Fatura onayları
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=Fatura dağıtım ağacı
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=Satıcı faturası dağıtım ağacı bilgileri
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=Fatura dağıtım ağacı verilerini koru
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=Fatura başlığı
+ ;Label for the invoice header group
+InvoiceHeaderDetails=Fatura başlığı ayrıntıları
+ ;Label for the invoice header details form
+InvoiceLineDescription=Fatura satırı açıklaması
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=Fatura satırı ayrıntıları
+ ;Label for the invoice line details page
+InvoiceLines=Fatura satırları
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=Onaylanacak faturalar
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=Şirket para birimi cinsinden fatura toplamı
+ ;Invoice total in MST label
+LedgerAccount=Genel muhasebe hesabı
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=Genel muhasebe hesabı segmentleri
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=Genel muhasebe boyut önizlemesi
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=Bir tabloda görüntülenen genel muhasebe boyutu değerleri
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=Düzey 1 satır dağıtımları
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=Düzey 1 kaynak belge satırı
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=Düzey 2 satır dağıtımları
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=Düzey 2 kaynak belge satırı
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=Düzey 3 satır dağıtımları
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=Düzey 3 kaynak belge satırı
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=Satır dağıtımları
+ ;Line level distributions view label
+MobileWorkflowStatus=Mobil iş akışı durumu
+ ;Label for the state of vendor invoice mobile workflow enum
+More=Diğer
+ ;Label for the mobile button labelled "More"
+NewVersion=Yeni sürüm gerekli
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=Bu çalışma alanı, uygulamanın daha yeni bir sürümünü gerektiriyor. Lütfen mağazadan uygulamayı yükleyin.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=Fatura satırlarının sayısı
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=İşlendi
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=Bu düğüm yalnızca referans amaçlıdır
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=Kabul etme görevini göster
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=Onay görevini göster
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=Tamamlama görevini göster
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=Atama görevini göster
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=Reddetme görevini göster
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=Başlık dağıtımlarını göster
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=Geri çağırma görevini göster
+ ;Label for show recall task for current invoice value
+ShowRejectTask=Reddetme görevini göster
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=Değişiklik talebi görevini göster
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=Yeniden gönderme görevini göster
+ ;Label for show resubmit task for current invoice value
+Unprocessed=İşlem görmemiş
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=Fatura satırı
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=Fatura başlığı
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=Mobil için bekleyen satıcı faturaları liste sayfasını koru
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=Mobil için bekleyen satıcı faturaları liste sayfasını görüntüle
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=Mobil cihazda bekleyen satıcı faturalarını koru
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=Temsilci için iş akışı kullanıcılarını veya değişiklik talebi iş akışı eylemlerini görüntüle
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=İş akışı kullanıcıları
+ ;Label for the lookup form for valid workflow users for a given workflow item

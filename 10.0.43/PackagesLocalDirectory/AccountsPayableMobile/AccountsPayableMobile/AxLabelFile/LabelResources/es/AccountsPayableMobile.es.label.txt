@@ -1,0 +1,120 @@
+﻿AllDistributions=Todas las distribuciones
+ ;All distributions view label
+Amount=Importe
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=Importe para mostrar
+ ;Label for Amount for display.
+AttachmentCount=Recuento de archivos adjuntos
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=Archivos adjuntos
+ ;Label for mobile attachments link
+DistributionDetails=Detalle de distribuciones
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=Tipo de nodo de árbol de distribución
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=Descripción del nodo
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=Nodo de distribución
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=Nodo principal
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=Subnodo
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=Distribuciones de encabezados
+ ;Header level distributions view label
+HeaderLine=Distribución de encabezados o líneas
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=Aprobaciones de facturas
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=Árbol de distribución de facturas
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=Información sobre el árbol de distribución de facturas de proveedores
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=Mantener los datos del árbol de distribución de facturas
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=Encabezado de factura
+ ;Label for the invoice header group
+InvoiceHeaderDetails=Detalles del encabezado de factura
+ ;Label for the invoice header details form
+InvoiceLineDescription=Descripción de la línea de factura
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=Detalles de la línea de factura
+ ;Label for the invoice line details page
+InvoiceLines=Líneas de factura
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=Facturas para aprobación
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=Total de la factura en la divisa de la empresa
+ ;Invoice total in MST label
+LedgerAccount=Cuenta contable
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=Segmentos de cuenta contable
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=Vista previa de dimensión contable
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=Valores de dimensión contable desglosados en una tabla
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=Distribuciones de línea de nivel 1
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=Línea de documento de origen de nivel 1
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=Distribuciones de línea de nivel 2
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=Línea de documento de origen de nivel 2
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=Distribuciones de línea de nivel 3
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=Línea de documento de origen de nivel 3
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=Distribuciones de línea
+ ;Line level distributions view label
+MobileWorkflowStatus=Estado de flujo de trabajo móvil
+ ;Label for the state of vendor invoice mobile workflow enum
+More=Más
+ ;Label for the mobile button labelled "More"
+NewVersion=Nueva versión requerida
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=Este espacio de trabajo requiere una versión más reciente de la aplicación. Instale la aplicación desde la tienda.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=Número de líneas de factura
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=Procesado
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=Este nodo se ofrece solo como referencia
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=Mostrar tarea de aceptación
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=Mostrar tarea de aprobación
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=Mostrar tarea de finalización
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=Mostrar tarea de delegación
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=Mostrar tarea de denegación
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=Mostrar distribuciones de encabezados
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=Mostrar tarea de recuperación
+ ;Label for show recall task for current invoice value
+ShowRejectTask=Mostrar tarea de rechazo
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=Mostrar tarea de cambio de solicitud
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=Mostrar tarea de reenvío
+ ;Label for show resubmit task for current invoice value
+Unprocessed=No procesado
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=Línea de factura
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=Encabezado de factura
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=Mantener la página de la lista de facturas de proveedor pendientes para móvil
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=Ver la página de la lista de facturas de proveedor pendientes para móvil
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=Mantener las facturas de proveedor pendientes en el dispositivo móvil
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=Ver los usuarios del flujo de trabajo para las acciones de flujo de trabajo de delegación o solicitud de cambio
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=Usuarios del flujo de trabajo
+ ;Label for the lookup form for valid workflow users for a given workflow item

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxLabelFile xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>AccountsPayableMobile_sv</Name>
+	<LabelContentFileName>AccountsPayableMobile.sv.label.txt</LabelContentFileName>
+	<LabelFileId>AccountsPayableMobile</LabelFileId>
+	<Language>sv</Language>
+	<RelativeUriInModelStore>AccountsPayableMobile\AccountsPayableMobile\AxLabelFile\LabelResources\sv\AccountsPayableMobile.sv.label.txt</RelativeUriInModelStore>
+</AxLabelFile>

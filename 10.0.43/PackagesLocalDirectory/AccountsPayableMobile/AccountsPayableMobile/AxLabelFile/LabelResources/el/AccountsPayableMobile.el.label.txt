@@ -1,0 +1,120 @@
+﻿AllDistributions=Όλες οι διανομές
+ ;All distributions view label
+Amount=Ποσό
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=Ποσό για εμφάνιση
+ ;Label for Amount for display.
+AttachmentCount=Πλήθος συνημμένων
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=Συνημμένα
+ ;Label for mobile attachments link
+DistributionDetails=Λεπτομέρεια διανομής
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=Τύπος κόμβου δένδρου διανομής
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=Κόμβος περιγραφής
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=Κόμβος διανομής
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=Γονικός κόμβος
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=Δευτερεύων κόμβος
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=Διανομές κεφαλίδας
+ ;Header level distributions view label
+HeaderLine=Διανομή κεφαλίδας ή γραμμής
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=Εγκρίσεις τιμολογίου
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=Δένδρο διανομής τιμολογίων
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=Πληροφορίες δένδρου διανομής τιμολογίων προμηθευτή
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=Διατήρηση δεδομένων δένδρου διανομής τιμολογίων
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=Κεφαλίδα τιμολογίου
+ ;Label for the invoice header group
+InvoiceHeaderDetails=Λεπτομέρειες κεφαλίδας τιμολογίου
+ ;Label for the invoice header details form
+InvoiceLineDescription=Περιγραφή γραμμής τιμολογίου
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=Λεπτομέρειες γραμμής τιμολογίου
+ ;Label for the invoice line details page
+InvoiceLines=Γραμμές τιμολογίου
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=Τιμολόγια για έγκριση
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=Σύνολο τιμολογίου σε νόμισμα εταιρείας
+ ;Invoice total in MST label
+LedgerAccount=Λογαριασμός καθολικού
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=Τμήματα λογαριασμού καθολικού
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=Προεπισκόπηση διάστασης καθολικού
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=Τιμές διαστάσεων καθολικού χωρισμένες σε πίνακα
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=Διανομές γραμμής επιπέδου 1
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=Γραμμή εγγράφου προέλευσης επιπέδου 1
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=Διανομές γραμμής επιπέδου 2
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=Γραμμή εγγράφου προέλευσης επιπέδου 2
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=Διανομές γραμμής επιπέδου 3
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=Γραμμή εγγράφου προέλευσης επιπέδου 3
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=Διανομές γραμμής
+ ;Line level distributions view label
+MobileWorkflowStatus=Κατάσταση ροής εργασίας για κινητές συσκευές
+ ;Label for the state of vendor invoice mobile workflow enum
+More=Περισσότερα
+ ;Label for the mobile button labelled "More"
+NewVersion=Απαιτείται νέα έκδοση
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=Αυτός ο χώρος εργασίας απαιτεί νεότερη έκδοση της εφαρμογής. Εγκαταστήστε την εφαρμογή από το κατάστημα.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=Αριθμός γραμμών τιμολογίου
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=Επεξεργασμένη
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=Αυτός ο κόμβος προορίζεται μόνο για αναφορά
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=Εμφάνιση εργασίας αποδοχής
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=Εμφάνιση εργασίας έγκρισης
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=Εμφάνιση ολοκληρωμένης εργασίας
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=Εμφάνιση εργασίας παραπομπής
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=Εμφάνιση εργασίας απόρριψης
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=Εμφάνιση διανομών κεφαλίδας
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=Εμφάνιση εργασίας ανάκλησης
+ ;Label for show recall task for current invoice value
+ShowRejectTask=Εμφάνιση εργασίας απόρριψης
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=Εμφάνιση εργασίας αιτήματος αλλαγής
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=Εμφάνιση εργασίας υποβολής εκ νέου
+ ;Label for show resubmit task for current invoice value
+Unprocessed=Μη επεξεργασμένη
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=Γραμμή τιμολογίου
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=Κεφαλίδα τιμολογίου
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=Διατήρηση σελίδας λίστας τιμολογίων προμηθευτή σε εκκρεμότητα για κινητές συσκευές
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=Προβολή της σελίδας λίστας τιμολογίων προμηθευτή σε εκκρεμότητα για κινητές συσκευές
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=Διατήρηση τιμολογίων προμηθευτή σε εκκρεμότητα στην κινητή συσκευή
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=Προβολή των χρηστών ροής εργασίας για παραπομπή ή των ενεργειών ροής εργασίας αιτήματος αλλαγής
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=Χρήστες ροής εργασίας
+ ;Label for the lookup form for valid workflow users for a given workflow item

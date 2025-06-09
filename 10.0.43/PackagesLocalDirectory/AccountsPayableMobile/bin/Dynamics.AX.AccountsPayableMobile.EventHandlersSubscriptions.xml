@@ -1,0 +1,4 @@
+<EventHandlersSubscriptions>
+  <HandlerSubscription TargetElement="Form.VendorInvoiceWorkflowDropDialog" SubscriberElement="VendMobileInvoiceWorkflowStateHandler" SubscriberMethod="VendorInvoiceWorkflowDropDialog_Post_updateWorkflowControls" EventHandlerType="PostDelegateTypeId" RegistrationMethodName="HandlerRegistration1" />
+  <HandlerSubscription TargetElement="VendorInvoiceLineSourceDocLineItem" SubscriberElement="VendMobileInvoiceLineSourceDocLineItemEventHandler" SubscriberMethod="VendorInvoiceLineSourceDocLineItem_Post_useExistingDistributions" EventHandlerType="PostDelegateTypeId" RegistrationMethodName="HandlerRegistration2" />
+</EventHandlersSubscriptions>

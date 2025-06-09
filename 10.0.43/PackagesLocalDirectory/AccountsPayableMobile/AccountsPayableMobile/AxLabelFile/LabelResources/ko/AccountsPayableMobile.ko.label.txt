@@ -1,0 +1,120 @@
+﻿AllDistributions=모든 분포
+ ;All distributions view label
+Amount=금액
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=표시 금액
+ ;Label for Amount for display.
+AttachmentCount=첨부 파일 수
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=첨부 파일
+ ;Label for mobile attachments link
+DistributionDetails=분포 세부 정보
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=분포 트리 노드 유형
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=설명 노드
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=분포 노드
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=상위 노드
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=하위 노드
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=머리글 분포
+ ;Header level distributions view label
+HeaderLine=머리글 또는 라인 분포
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=송장 승인
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=송장 분포 트리
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=공급업체 송장 배포 트리 정보
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=송장 배포 트리 데이터 유지
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=송장 머리글
+ ;Label for the invoice header group
+InvoiceHeaderDetails=송장 머리글 세부 정보
+ ;Label for the invoice header details form
+InvoiceLineDescription=송장 라인 설명
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=송장 라인 세부 정보
+ ;Label for the invoice line details page
+InvoiceLines=송장 라인
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=승인을 위한 송장
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=회사 통화 송장 총액
+ ;Invoice total in MST label
+LedgerAccount=원장 계정
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=원장 계정 세그먼트
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=원장 차원 프리뷰
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=테이블로 분할된 원장 차원 값
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=수준 1 라인 분포
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=수준 1 소스 문서 라인
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=수준 2 라인 분포
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=수준 2 소스 문서 라인
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=수준 3 라인 분포
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=수준 3 소스 문서 라인
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=라인 분포
+ ;Line level distributions view label
+MobileWorkflowStatus=모바일 워크플로 상태
+ ;Label for the state of vendor invoice mobile workflow enum
+More=더 보기
+ ;Label for the mobile button labelled "More"
+NewVersion=새 버전 필요
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=이 작업 영역에는 최신 버전의 애플리케이션이 필요합니다. 스토어에서 애플리케이션을 설치하세요.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=송장 라인 수
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=처리됨
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=이 노드는 참조 전용입니다
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=수락 작업 표시
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=승인 작업 표시
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=완료 작업 표시
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=위임 작업 표시
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=거부 작업 표시
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=머리글 분포 표시
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=회수 작업 표시
+ ;Label for show recall task for current invoice value
+ShowRejectTask=거부 작업 표시
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=요청 변경 작업 표시
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=다시 제출 작업 표시
+ ;Label for show resubmit task for current invoice value
+Unprocessed=처리되지 않음
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=송장 라인
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=송장 머리글
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=모바일용 보류 중인 공급업체 송장 목록 페이지 유지
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=모바일용 보류 중인 공급업체 송장 목록 페이지 보기
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=모바일 디바이스에서 보류 중인 공급업체 송장 유지
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=위임을 위한 워크플로 사용자 보기 또는 워크플로 작업 변경 요청
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=워크플로 사용자
+ ;Label for the lookup form for valid workflow users for a given workflow item

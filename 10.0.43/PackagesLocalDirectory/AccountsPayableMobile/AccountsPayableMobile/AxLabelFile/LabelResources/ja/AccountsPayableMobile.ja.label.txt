@@ -1,0 +1,120 @@
+﻿AllDistributions=すべての配分
+ ;All distributions view label
+Amount=金額
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=表示金額
+ ;Label for Amount for display.
+AttachmentCount=添付ファイル数
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=添付ファイル
+ ;Label for mobile attachments link
+DistributionDetails=配分の詳細
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=配送ツリー ノード タイプ
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=説明ノード
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=配送ノード
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=親ノード
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=サブ ノード
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=ヘッダーの配分
+ ;Header level distributions view label
+HeaderLine=ヘッダーまたは明細行の配分
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=請求書の承認
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=請求書配分ツリー
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=仕入先請求書配分ツリー情報
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=請求書配分ツリー データの管理
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=請求書ヘッダー
+ ;Label for the invoice header group
+InvoiceHeaderDetails=請求書ヘッダー詳細
+ ;Label for the invoice header details form
+InvoiceLineDescription=請求明細行の説明
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=請求明細書の詳細
+ ;Label for the invoice line details page
+InvoiceLines=請求明細行
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=承認のための請求書
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=会社基本通貨での請求書合計
+ ;Invoice total in MST label
+LedgerAccount=勘定科目
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=勘定科目の区分
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=勘定分析コードのプレビュー
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=勘定分析コード値をテーブルに分割
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=レベル 1 の明細行の配分
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=レベル 1 の元伝票明細行
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=レベル 2 の明細行の配分
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=レベル 2 の元伝票明細行
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=レベル 3 の明細行の配分
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=レベル 3 の元伝票明細行
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=明細行の配分
+ ;Line level distributions view label
+MobileWorkflowStatus=モバイル ワークフローの状態
+ ;Label for the state of vendor invoice mobile workflow enum
+More=詳細
+ ;Label for the mobile button labelled "More"
+NewVersion=新しいバージョンが必要です
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=このワークスペースには、アプリケーションの新しいバージョンが必要です。ストアからアプリケーションをインストールしてください。
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=請求明細行数
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=処理済
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=このノードは参照専用です
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=受け入れタスクの表示
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=承認タスクの表示
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=完了済みのタスクの表示
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=委任タスクの表示
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=拒否タスクの表示
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=ヘッダーの配分の表示
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=取り消しタスクの表示
+ ;Label for show recall task for current invoice value
+ShowRejectTask=拒否タスクの表示
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=要求変更タスクの表示
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=再送信タスクの表示
+ ;Label for show resubmit task for current invoice value
+Unprocessed=未処理
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=請求明細行
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=請求書ヘッダー
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=モバイル用の保留中の仕入先請求書リスト ページの管理
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=モバイル用の保留中の仕入先請求書リスト ページの表示
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=モバイル デバイスで保留中の仕入先請求書の管理
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=ワークフロー変更アクションの委任または要求のワークフロー ユーザーの表示
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=ワークフロー ユーザー
+ ;Label for the lookup form for valid workflow users for a given workflow item

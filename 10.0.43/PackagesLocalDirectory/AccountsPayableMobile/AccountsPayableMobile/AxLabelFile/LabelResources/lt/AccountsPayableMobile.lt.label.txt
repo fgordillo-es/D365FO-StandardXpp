@@ -1,0 +1,120 @@
+﻿AllDistributions=Visas paskirstymas
+ ;All distributions view label
+Amount=Suma
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=Rodoma suma
+ ;Label for Amount for display.
+AttachmentCount=Priedų skaičius
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=Priedai
+ ;Label for mobile attachments link
+DistributionDetails=Paskirstymo informacija
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=Paskirstymo medžio mazgo tipas
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=Aprašo mazgas
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=Paskirstymo mazgas
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=Pirminis mazgas
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=Papildomas mazgas 
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=Antraštės paskirstymas
+ ;Header level distributions view label
+HeaderLine=Antraštės arba eilutės paskirstymas
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=Sąskaitų faktūrų patvirtinimai
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=SF paskirstymo medis
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=Tiekėjo SF paskirstymo medžio informacija
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=Tvarkyti SF paskirstymo medžio duomenis
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=SF antraštė
+ ;Label for the invoice header group
+InvoiceHeaderDetails=SF antraštės informacija
+ ;Label for the invoice header details form
+InvoiceLineDescription=SF eilutės aprašas
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=SF eilutės informacija
+ ;Label for the invoice line details page
+InvoiceLines=SF eilutės
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=SF, kurias reikia patvirtinti
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=SF bendroji suma įmonės valiuta
+ ;Invoice total in MST label
+LedgerAccount=DK sąskaita
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=DK sąskaitos segmentai
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=DK dimensijos peržiūra
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=DK dimensijų vertės pateiktos lentelėje
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=1 lygio eilučių paskirstymas
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=1 lygio šaltinio dokumento eilutė
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=2 lygio eilučių paskirstymas
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=2 lygio šaltinio dokumento eilutė
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=3 lygio eilučių paskirstymas
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=3 lygio šaltinio dokumento eilutė
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=Eilučių paskirstymas
+ ;Line level distributions view label
+MobileWorkflowStatus=Mobiliosios darbo eigos būsena
+ ;Label for the state of vendor invoice mobile workflow enum
+More=Daugiau
+ ;Label for the mobile button labelled "More"
+NewVersion=Reikia įdiegti naują versiją
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=Norint naudoti šią darbo sritį, reikia įdiegti naujesnę programos versiją. Įdiekite programą iš parduotuvės.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=SF eilučių skaičius
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=Įvykdyta
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=Šis mazgas yra tik kaip nuoroda
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=Rodyti priimamą užduotį
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=Rodyti patvirtinimo užduotį
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=Rodyti baigtą užduotį
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=Rodyti perduodamą užduotį
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=Rodyti atmetamą užduotį
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=Rodyti antraštės paskirstymą
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=Rodyti atšaukiamą užduotį
+ ;Label for show recall task for current invoice value
+ShowRejectTask=Rodyti atmetamą užduotį
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=Rodyti užduotį, kurią prašoma pakeisti
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=Rodyti pakartotinai pateikiamą užduotį
+ ;Label for show resubmit task for current invoice value
+Unprocessed=Neapdorota
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=SF eilutė
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=SF antraštė
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=Tvarkyti laukiančių tiekėjo SF sąrašo puslapį, skirtą mobiliesiems įrenginiams
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=Peržiūrėti laukiančių tiekėjo SF sąrašo puslapį, skirtą mobiliesiems įrenginiams
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=Tvarkyti laukiančias tiekėjo SF mobiliajame įrenginyje
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=Peržiūrėti perdavimo darbo eigos vartotojus arba prašyti pakeisti darbo eigos veiksmus
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=Darbo eigos vartotojai
+ ;Label for the lookup form for valid workflow users for a given workflow item

@@ -1,0 +1,120 @@
+﻿AllDistributions=Kaikki jakelut
+ ;All distributions view label
+Amount=Summa
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=Näytettävä summa
+ ;Label for Amount for display.
+AttachmentCount=Liitemäärä
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=Liitteet
+ ;Label for mobile attachments link
+DistributionDetails=Jakeluiden tiedot
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=Jakelupuun solmutyyppi
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=Kuvaussolmu
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=Jakelusolmu
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=Ylätason solmu
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=Alisolmu
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=Ylätunnisteen jakelut
+ ;Header level distributions view label
+HeaderLine=Ylätunnisteen tai rivin jakelu
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=Laskun hyväksynnät
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=Laskun jakelupuu
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=Toimittajan laskun jakelupuun tiedot
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=Ylläpidä laskun jakelupuun tietoja
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=Laskun ylätunniste
+ ;Label for the invoice header group
+InvoiceHeaderDetails=Laskun ylätunnisteen tiedot
+ ;Label for the invoice header details form
+InvoiceLineDescription=Laskurivin kuvaus
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=Laskurivin tiedot
+ ;Label for the invoice line details page
+InvoiceLines=Laskurivit
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=Hyväksyttävät laskut
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=Laskun loppusumma yrityksen valuuttana
+ ;Invoice total in MST label
+LedgerAccount=Kirjanpitotili
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=Kirjanpitotilin segmentit
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=Kirjanpidon dimension esikatselu
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=Kirjanpidon dimensioarvot taulukkoon eriteltynä
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=Tason 1 rivijakelut
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=Tason 1 lähdeasiakirjan rivi
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=Tason 2 rivijakelut
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=Tason 2 lähdeasiakirjan rivi
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=Tason 3 rivijakelut
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=Tason 3 lähdeasiakirjan rivi
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=Rivijakelut
+ ;Line level distributions view label
+MobileWorkflowStatus=Mobiilityönkulun tila
+ ;Label for the state of vendor invoice mobile workflow enum
+More=Lisää
+ ;Label for the mobile button labelled "More"
+NewVersion=Vaaditaan uusi versio
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=Tämä työtila vaatii sovelluksesta uudemman version. Asenna sovellus kaupasta.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=Laskurivien määrä
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=Käsitelty
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=Tämä solmu on vain tiedoksi
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=Näytä Hyväksyminen-tehtävä
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=Näytä Hyväksyntä-tehtävä
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=Näytä Suorita-tehtävä
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=Näytä Delegointi-tehtävä
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=Näytä Kielto-tehtävä
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=Näytä ylätunnisteen jakelut
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=Näytä Peruuta-tehtävä
+ ;Label for show recall task for current invoice value
+ShowRejectTask=Näytä Hylkää-tehtävä
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=Näytä Muutospyyntö-tehtävä
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=Näytä Lähetä uudelleen -tehtävä
+ ;Label for show resubmit task for current invoice value
+Unprocessed=Käsittelemätön
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=Laskurivi
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=Laskun ylätunniste
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=Ylläpidä odottavien toimittajan laskujen mobiililuettelosivua
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=Näytä odottavien toimittajan laskujen mobiililuettelosivu
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=Ylläpidä odottavia toimittajan laskuja mobiililaitteessa
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=Näytä työnkulun Delegointi- tai Muutospyyntö-toimintojen käyttäjät
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=Työnkulun käyttäjät
+ ;Label for the lookup form for valid workflow users for a given workflow item

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxSecurityDutyExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>VendInvoiceVendorInvoicesMaintain.Extension</Name>
+	<Privileges>
+		<AxSecurityPrivilegeReference>
+			<Name>VendMobileInvoiceAllDistributionTreeMaintain</Name>
+		</AxSecurityPrivilegeReference>
+		<AxSecurityPrivilegeReference>
+			<Name>VendMobileInvoiceMaintain</Name>
+		</AxSecurityPrivilegeReference>
+		<AxSecurityPrivilegeReference>
+			<Name>VendMobileInvoiceInfoListPageMaintain</Name>
+		</AxSecurityPrivilegeReference>
+	</Privileges>
+	<PropertyModifications />
+</AxSecurityDutyExtension>

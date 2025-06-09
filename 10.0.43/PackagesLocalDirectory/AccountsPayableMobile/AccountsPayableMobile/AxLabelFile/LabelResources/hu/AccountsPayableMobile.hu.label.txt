@@ -1,0 +1,120 @@
+﻿AllDistributions=Minden felosztás
+ ;All distributions view label
+Amount=Összeg
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=Megjelenítendő összeg
+ ;Label for Amount for display.
+AttachmentCount=Mellékletek száma
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=Mellékletek
+ ;Label for mobile attachments link
+DistributionDetails=Felosztások részletei
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=Felosztási fa csomóponttípus
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=Leíráscsomópont
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=Elosztási csomópont
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=Fölérendelt csomópont
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=Alcsomópont
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=Felosztások fejléce
+ ;Header level distributions view label
+HeaderLine=Felosztási sor vagy fejléc
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=Számlajóváhagyások
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=Számlafelosztási fa
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=Szállítói számlával kapcsolatos felosztási fa adatok
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=Számlafelosztási fa adatainak karban tartása
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=Számlafejléc
+ ;Label for the invoice header group
+InvoiceHeaderDetails=Számlafejléc részletei
+ ;Label for the invoice header details form
+InvoiceLineDescription=Számlasor leírása
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=Számlasor részletei
+ ;Label for the invoice line details page
+InvoiceLines=Számlasorok
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=Jóváhagyásra váró számlák
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=Számla teljes összege a vállalat pénznemében
+ ;Invoice total in MST label
+LedgerAccount=Főkönyvi számla
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=Főkönyviszámla-szegmensek
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=Főkönyvdimenzió előnézete
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=Főkönyvidimenzió-értékek, egy táblába kibontva
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=1. szintű sorfelosztások
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=1. szintű forrásbizonylatsor
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=2. szintű sorfelosztások
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=2. szintű forrásbizonylatsor
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=3. szintű sorfelosztások
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=3. szintű forrásbizonylatsor
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=Sorfelosztások
+ ;Line level distributions view label
+MobileWorkflowStatus=Mobilmunkafolyamat-állapot
+ ;Label for the state of vendor invoice mobile workflow enum
+More=Részletek
+ ;Label for the mobile button labelled "More"
+NewVersion=Új verzió szükséges
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=Ez a munkaterület az alkalmazás újabb verzióját igényli. Telepítse az alkalmazást az áruházból.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=Számlasorok száma
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=Feldolgozva
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=A csomópont kizárólag csak tájékoztató jellegű
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=Elfogadási feladat megjelenítése
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=Jóváhagyási feladat megjelenítése
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=Befejezési feladat megjelenítése
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=Delegálási feladat megjelenítése
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=Elutasítási feladat megjelenítése
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=Fejlécfelosztások megjelenítése
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=Visszahívási feladat megjelenítése
+ ;Label for show recall task for current invoice value
+ShowRejectTask=Elutasítási feladat megjelenítése
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=Változtatáskérelmezési feladat megjelenítése
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=Újraküldési feladat megjelenítése
+ ;Label for show resubmit task for current invoice value
+Unprocessed=Feldolgozatlan
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=Számlasor
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=Számlafejléc
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=Függőben lévő szállítói számlák listaoldalának karbantartása mobileszközök esetében
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=Függőben lévő szállítói számlák listaoldalának megtekintése mobileszközök esetében
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=Függőben lévő szállítói számlák listaoldalának karbantartása mobileszközön
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=Munkafolyamat-felhasználók megtekintése a delegáláshoz, vagy munkafolyamat-műveletek változtatásának kérése
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=Munkafolyamat-felhasználók
+ ;Label for the lookup form for valid workflow users for a given workflow item

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>VendMobileInvoiceApprovalWorkspace</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Backing class for the vendor invoice approval mobile application
+/// </summary>
+[SysAppWorkspaceAttribute('5AA08A22-BFDF-4D1B-A293-88845C225790', 'VendInvoiceApprovalMobileApp')]
+[SysAppWorkspaceSecurityAttribute('VendMobileInvoiceAssignedToMeListPage')]
+public class VendMobileInvoiceApprovalWorkspace extends SysAppWorkspace
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>getWorkspaceMetadata</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets the workspace metadata instance.
+    /// </summary>
+    /// <returns>An instance of <c>SysAppWorkspaceMetadata</c>.</returns>
+    public SysAppWorkspaceMetadata getWorkspaceMetadata()
+    {
+        SysAppWorkspaceMetadata metadata = super();
+    
+        metadata.workspaceTitle("@AccountsPayableMobile:InvoiceApprovals");
+        metadata.workspaceDescription("@AccountsPayableMobile:InvoicesForApproval");
+
+        this.addSettings(metadata);
+
+        return metadata;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>addSettings</Name>
+				<Source><![CDATA[
+    private void addSettings(SysAppWorkspaceMetadata _metadata)
+    {
+        VendMobileInvoiceApprovalConfig config = VendMobileInvoiceApprovalConfig::construct();
+                
+        _metadata.addConfig(VendMobileInvoiceApprovalConfig::getConfigName(), config);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

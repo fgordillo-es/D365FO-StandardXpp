@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<z:anyType xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns=""
+	i:type="AxCompilerMetadata" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/">
+	<Extends>SysAppWorkspace</Extends>
+	<IsPublic>true</IsPublic>
+	<Attributes>
+		<AxAttribute>
+			<Name>SysAppWorkspaceAttribute</Name>
+			<Parameters>
+				<AxAttributeParameter>
+					<TypeValue>'5AA08A22-BFDF-4D1B-A293-88845C225790'</TypeValue>
+					<AdditionalData />
+				</AxAttributeParameter>
+				<AxAttributeParameter>
+					<TypeValue>'VendInvoiceApprovalMobileApp'</TypeValue>
+					<AdditionalData />
+				</AxAttributeParameter>
+			</Parameters>
+		</AxAttribute>
+		<AxAttribute>
+			<Name>SysAppWorkspaceSecurityAttribute</Name>
+			<Parameters>
+				<AxAttributeParameter>
+					<TypeValue>'VendMobileInvoiceAssignedToMeListPage'</TypeValue>
+					<AdditionalData />
+				</AxAttributeParameter>
+			</Parameters>
+		</AxAttribute>
+	</Attributes>
+	<Methods>
+		<Method>
+			<Name>getWorkspaceMetadata</Name>
+			<Visibility>Public</Visibility>
+			<ReturnType>
+				<Type>Class</Type>
+				<TypeName>SysAppWorkspaceMetadata</TypeName>
+			</ReturnType>
+		</Method>
+		<Method>
+			<Name>addSettings</Name>
+			<Parameters>
+				<AxMethodParameter>
+					<Type>Class</Type>
+					<TypeName>SysAppWorkspaceMetadata</TypeName>
+					<Name>_metadata</Name>
+				</AxMethodParameter>
+			</Parameters>
+			<ReturnType>
+				<TypeName></TypeName>
+			</ReturnType>
+		</Method>
+	</Methods>
+</z:anyType>

@@ -1,0 +1,120 @@
+﻿AllDistributions=所有分配
+ ;All distributions view label
+Amount=金額
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=顯示的金額
+ ;Label for Amount for display.
+AttachmentCount=附件計數
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=附件
+ ;Label for mobile attachments link
+DistributionDetails=分配詳細資料
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=分配樹狀節點類型
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=描述節點
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=分配節點
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=父節點
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=子節點
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=標頭分配
+ ;Header level distributions view label
+HeaderLine=標頭或明細分配
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=發票核准
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=發票分配樹狀結構
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=廠商發票分配樹狀結構資訊
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=維護發票分配樹狀結構資料
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=發票標頭
+ ;Label for the invoice header group
+InvoiceHeaderDetails=發票標頭詳細資料
+ ;Label for the invoice header details form
+InvoiceLineDescription=發票明細描述
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=發票明細詳細資料
+ ;Label for the invoice line details page
+InvoiceLines=發票明細
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=待核准的發票
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=發票總計 (公司貨幣)
+ ;Invoice total in MST label
+LedgerAccount=分類帳科目
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=分類帳科目區段
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=分類帳維度預覽
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=將分類帳維度值細分成表格
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=層級 1 明細分配
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=層級 1 來源文件明細
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=層級 2 明細分配
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=層級 2 來源文件明細
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=層級 3 明細分配
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=層級 3 來源文件明細
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=明細分配
+ ;Line level distributions view label
+MobileWorkflowStatus=行動工作流程狀態
+ ;Label for the state of vendor invoice mobile workflow enum
+More=更多
+ ;Label for the mobile button labelled "More"
+NewVersion=需要新版本
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=此工作區需要更新版本的應用程式。請從商店安裝應用程式。
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=發票明細數
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=已處理
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=此節點僅供參考
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=顯示接受任務
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=顯示核准任務
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=顯示完成任務
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=顯示委派任務
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=顯示拒絕任務
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=顯示標頭分配
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=顯示撤回任務
+ ;Label for show recall task for current invoice value
+ShowRejectTask=顯示拒絕任務
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=顯示要求變更任務
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=顯示重新提交任務
+ ;Label for show resubmit task for current invoice value
+Unprocessed=未處理
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=發票明細
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=發票標頭
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=針對行動裝置維護待處理廠商發票的清單頁面
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=針對行動裝置檢視待處理廠商發票的清單頁面
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=維護行動裝置上的待處理廠商發票
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=檢視委派的工作流程使用者或要求變更工作流程動作
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=工作流程使用者
+ ;Label for the lookup form for valid workflow users for a given workflow item

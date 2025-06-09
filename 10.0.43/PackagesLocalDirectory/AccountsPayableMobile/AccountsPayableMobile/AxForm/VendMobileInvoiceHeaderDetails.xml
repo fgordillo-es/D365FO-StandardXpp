@@ -1,0 +1,1697 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxForm xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>VendMobileInvoiceHeaderDetails</Name>
+	<SourceCode>
+		<Methods xmlns="">
+			<Method>
+				<Name>classDeclaration</Name>
+				<Source><![CDATA[
+[Form]
+public class VendMobileInvoiceHeaderDetails extends FormRun implements VendorInvoiceIWorkflow
+{
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateWorkflowIconForHeader</Name>
+				<Source><![CDATA[
+    private void updateWorkflowIconForHeader()
+    {
+        //The workflow icon on header should be visible only if you can submit it to the workflow with an active workflow configuration
+        //or if there are workitems on the invoice for the current user
+        //or if there is a workflow history available for the invoice
+        if ((this.canSubmitToWorkflow() && Workflow::findWorkflowConfigurationToActivate(vendInvoiceInfoTable, workflowTypeStr(VendProcessInvoice))
+            || Workflow::findWorkItemsForCurrentUser(vendInvoiceInfoTable).elements()
+            || Workflow::findTrackingStatusForDocument(vendInvoiceInfoTable)))
+        {
+            VendorInvoiceHeaderWorkflowDropDialog.visible(true);
+        }
+        else
+        {
+            VendorInvoiceHeaderWorkflowDropDialog.visible(false);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canSubmitToWorkflow</Name>
+				<Source><![CDATA[
+    public boolean canSubmitToWorkflow()
+    {
+        return vendInvoiceInfoTable.canSubmitToWorkflow();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>refreshAfterWorkflowSubmit</Name>
+				<Source><![CDATA[
+    public void refreshAfterWorkflowSubmit()
+    {
+        vendInvoiceInfoTable_ds.reread();
+        vendInvoiceInfoTable_ds.refresh();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>refreshWorkflowIcononLine</Name>
+				<Source><![CDATA[
+    public void refreshWorkflowIcononLine()
+    {
+        return;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>attachmentCount</Name>
+				<Source><![CDATA[
+    [SysClientCacheDataMethod(true)]
+    public display VendInvoiceAttachmentCount attachmentCount()
+    {
+        return DocuRef::getAttachmentCount(element);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+		<DataSources xmlns="">
+			<DataSource>
+				<Name>VendInvoiceInfoTable</Name>
+				<Methods>
+					<Method>
+						<Name>active</Name>
+						<Source><![CDATA[
+        public int active()
+        {
+            int ret = super();
+
+            element.updateWorkflowIconForHeader();
+    
+            return ret;
+        }
+
+]]></Source>
+					</Method>
+					<Method>
+						<Name>init</Name>
+						<Source><![CDATA[
+        public void init()
+        {
+            super();
+
+            vendInvoiceInfoTable_ds.cacheAddMethod(tableMethodStr(VendInvoiceInfoTable, checkIfWorkflowCompletedIcon));
+        }
+
+]]></Source>
+					</Method>
+					<Method>
+						<Name>AccountingCurrency</Name>
+						<Source><![CDATA[
+        [SysClientCacheDataMethodAttribute(true)]
+        public display CurrencyCode AccountingCurrency()
+        {
+            return Ledger::accountingCurrency();
+        }
+
+]]></Source>
+					</Method>
+					<Method>
+						<Name>showHeaderDistributions</Name>
+						<Source><![CDATA[
+        /// <summary>
+        /// Display method used to determine whether or not to show the header distributions link on the invoice approval mobile app.
+        /// </summary>
+        /// <returns>A boolean indicating whether or not to show header distribtions</returns>
+        [SysClientCacheDataMethodAttribute(true)]
+        public display boolean showHeaderDistributions(VendInvoiceInfoTable _vendInvoiceInfoTable)
+        {
+            return VendMobileInvoiceHeaderDistributionsView::hasHeaderDistributions(_vendInvoiceInfoTable);
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+				<Fields />
+			</DataSource>
+			<DataSource>
+				<Name>VendInvoiceInfoLine</Name>
+				<Methods>
+					<Method>
+						<Name>init</Name>
+						<Source><![CDATA[
+        public void init()
+        {
+            super();
+
+            vendInvoiceInfoLine_ds.cacheAddMethod(tableMethodStr(VendInvoiceInfoLine, packingSlipId));
+            vendInvoiceInfoLine_ds.cacheAddMethod(tableMethodStr(VendInvoiceInfoLine, pdsCWUnitId));
+            vendInvoiceInfoLine_ds.cacheAddMethod(tableMethodStr(VendInvoiceInfoLine, itemName));
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+				<Fields />
+			</DataSource>
+		</DataSources>
+		<DataControls xmlns="">
+			<Control>
+				<Name>SaveButton</Name>
+				<Type>Button</Type>
+				<Methods>
+					<Method>
+						<Name>clicked</Name>
+						<Source><![CDATA[
+        /// <summary>
+        /// Used solely as part of the recording of the mobile application in order for the task recorder to recognize that we have done a save action
+        /// on our entity in order to properly fire events that are necessary on the mobile client.
+        /// </summary>
+        public void clicked()
+        {
+            super();
+            VendInvoiceInfoTable_ds.write();
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+		</DataControls>
+		<Members xmlns="" />
+	</SourceCode>
+	<DataSources>
+		<AxFormDataSource xmlns="">
+			<Name>VendInvoiceInfoTable</Name>
+			<Table>VendInvoiceInfoTable</Table>
+			<Fields>
+				<AxFormDataSourceField>
+					<DataField>AccountingDistributionTemplate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AddressRefRecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AddressRefTableId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Approved</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Approver</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>BankLCImportLine</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>BatchAdministration</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CashDisc</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CashDiscCode</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CashDiscDate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CashDiscPercent</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CountyOrigDest</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CreatedBy</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CreatedDateTime</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CreditCorrection</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CurrencyCode</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DataAreaId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DefaultDimension</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DeliveryName</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DeliveryPostalAddress</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Description</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DocumentDate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DocumentNum</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DocumentOrigin</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>EndDateTime</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>EndDisc</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>EnterpriseNumber</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ErrorInvalidDistribution</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>EUROTriangulation</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ExchRate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ExchRateSecondary</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>FixedDueDate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>FixedExchRate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Hold</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>IgnoreCalculatedSalesTax</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InclTax</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventLocationId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventSiteId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InvoiceAccount</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InvoiceReleaseDate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InvoiceRoundOff</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InvoiceType</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LastMatchVariance</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ListCode</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Log</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LogisticsElectronicAddress</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>MarkupGroup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>MatchStatus</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>MobileWorkflowStatus</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Num</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>NumberSequenceGroup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>OrderAccount</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Ordering</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PackedExtensions</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ParmId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ParmJobStatus</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Partition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Payment</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PaymentSched</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PaymId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PaymMode</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PaymSpec</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PoolRecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Port</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PostingProfile</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ProcessingAdvanced</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PurchAgreementHeader_PSN</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PurchId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PurchName</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ReCalculate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ReleaseDateComment</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RemittanceLocation</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RequestStatus</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>SettleVoucher</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>SourceDocumentHeader</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>SourceDocumentLine</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>StartDateTime</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>StatProcId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Storno</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableRefId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TaxGroup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TaxRoundOff</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TransactionCode</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TransDate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Transport</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TransportationDocument</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VarianceApproved</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VarianceApprovedDateTime</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VarianceApprover</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VarianceComment</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VATNum</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VendBankAccountID</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VendInvoiceGroup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VendInvoiceSaveStatus</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VendorRequestedWorkerEmail</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VendPaymentGroup</DataField>
+				</AxFormDataSourceField>
+			</Fields>
+			<ReferencedDataSources />
+			<DataSourceLinks />
+			<DerivedDataSources />
+		</AxFormDataSource>
+		<AxFormDataSource xmlns="">
+			<Name>VendInvoiceInfoListPageView</Name>
+			<Table>VendInvoiceInfoListPageView</Table>
+			<Fields>
+				<AxFormDataSourceField>
+					<DataField>DataAreaId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ParmId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Partition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ProductReceipts</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<AllowAdd>No</AllowAdd>
+					<AllowEdit>No</AllowEdit>
+					<DataField>PurchIds</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableRefId</DataField>
+				</AxFormDataSourceField>
+			</Fields>
+			<ReferencedDataSources />
+			<JoinSource>VendInvoiceInfoTable</JoinSource>
+			<LinkType>OuterJoin</LinkType>
+			<InsertIfEmpty>No</InsertIfEmpty>
+			<DataSourceLinks>
+				<AxFormDataSourceRootLink>
+					<Name>VendInvoiceInfoTable</Name>
+				</AxFormDataSourceRootLink>
+			</DataSourceLinks>
+			<DerivedDataSources />
+		</AxFormDataSource>
+		<AxFormDataSource xmlns="">
+			<Name>VendInvoiceTotalFromAccountingDistributionView</Name>
+			<Table>VendInvoiceTotalAccountingDistributionSum</Table>
+			<Fields>
+				<AxFormDataSourceField>
+					<DataField>CalculateInvoiceTotal</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DataAreaId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InvoiceTotal</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ParmId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Partition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableRefId</DataField>
+				</AxFormDataSourceField>
+			</Fields>
+			<ReferencedDataSources />
+			<JoinSource>VendInvoiceInfoTable</JoinSource>
+			<LinkType>OuterJoin</LinkType>
+			<InsertIfEmpty>No</InsertIfEmpty>
+			<DataSourceLinks>
+				<AxFormDataSourceRootLink>
+					<Name>VendInvoiceInfoTable</Name>
+				</AxFormDataSourceRootLink>
+			</DataSourceLinks>
+			<DerivedDataSources />
+		</AxFormDataSource>
+		<AxFormDataSource xmlns="">
+			<Name>VendInvoiceInfoLine</Name>
+			<Table>VendInvoiceInfoLine</Table>
+			<Fields>
+				<AxFormDataSourceField>
+					<DataField>AccountingDistributionTemplate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AddressRefRecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AddressRefTableId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AdvanceApplicationId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AgreementLine_PSN</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>changedManually</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>closed</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CountyOrigDest</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>currencyCode</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DataAreaId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DefaultDimension</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DeliveryName</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DeliveryPostalAddress</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Description</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DocumentOrigin</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>IntrastatCommodity</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventNow</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventTransId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InvoiceAccount</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InvoiceLineNum</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ItemId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LineAmount</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LineDisc</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LineNum</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LinePercent</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LineType</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>MultiLnDisc</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>MultiLnPercent</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>OrderAccount</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Ordering</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>OrigCountryRegionId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>OrigPurchId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>OrigStateId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PackedExtensions</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ParmId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Partition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PayrollLedgerDimension</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PDSCalculatedUnitPrice</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PDSCalculationId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PdsCWReceiveNow</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PdsCWRemainAfter</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PdsCWRemainBefore</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Port</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PriceUnit</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ProcurementCategory</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PSAIsFinal</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PSAReleaseAmount</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PSAReleasePercent</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PSARetainageAmount</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PSARetainageBalance</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PSARetainagePercent</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PurchaseLineLineNumber</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PurchCommitmentLine_PSN</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PurchLineRecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PurchMarkup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PurchPrice</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PurchUnit</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ReasonTableRef</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ReceiveNow</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RemainAfter</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RemainAfterInvent</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RemainBefore</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RemainBeforeInvent</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RemainBeforeInventPhysical</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RequestStatus</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>SourceDocumentLine</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>StatProcId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableRefId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Tax1099Amount</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Tax1099BoxDetail</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Tax1099Fields</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Tax1099State</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Tax1099StateAmount</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TaxGroup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TaxItemGroup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TaxWithholdGroup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TaxWithholdItemGroupHeadingId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TransactionCode</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Transport</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VendDirective_PSN</DataField>
+				</AxFormDataSourceField>
+			</Fields>
+			<ReferencedDataSources />
+			<JoinSource>VendInvoiceInfoTable</JoinSource>
+			<LinkType>Active</LinkType>
+			<DataSourceLinks />
+			<DerivedDataSources />
+		</AxFormDataSource>
+	</DataSources>
+	<Design>
+		<Caption xmlns="">@SYS334380</Caption>
+		<DataSource xmlns="">VendInvoiceInfoTable</DataSource>
+		<HeightMode xmlns="">SizeToContent</HeightMode>
+		<Pattern xmlns="">SimpleDetails-FastTabsContainer</Pattern>
+		<PatternVersion xmlns="">1.4</PatternVersion>
+		<TitleDataSource xmlns="">VendInvoiceInfoTable</TitleDataSource>
+		<WidthMode xmlns="">SizeToAvailable</WidthMode>
+		<WorkflowDataSource xmlns="">VendInvoiceInfoTable</WorkflowDataSource>
+		<WorkflowType xmlns="">VendProcessInvoice</WorkflowType>
+		<Controls xmlns="">
+			<AxFormControl xmlns=""
+				i:type="AxFormActionPaneControl">
+				<Name>ActionPane</Name>
+				<Type>ActionPane</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormButtonGroupControl">
+						<Name>SaveAfterWorkflowGroup</Name>
+						<Type>ButtonGroup</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormButtonControl">
+								<Name>SaveButton</Name>
+								<Type>Button</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<NeedsRecord>Yes</NeedsRecord>
+								<Text>Save</Text>
+							</AxFormControl>
+						</Controls>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormButtonGroupControl">
+						<Name>FormButtonGroupControl1</Name>
+						<Type>ButtonGroup</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormDropDialogButtonControl">
+								<Name>VendorInvoiceHeaderWorkflowDropDialog</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<Type>DropDialogButton</Type>
+								<Visible>No</Visible>
+								<FormControlExtension
+									i:nil="true" />
+								<ButtonDisplay>TextWithImageLeft</ButtonDisplay>
+								<CopyCallerQuery>Yes</CopyCallerQuery>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+								<MenuItemName>VendorInvoiceWorkflowDropDialog</MenuItemName>
+								<NormalImage>Workflow</NormalImage>
+							</AxFormControl>
+						</Controls>
+					</AxFormControl>
+				</Controls>
+			</AxFormControl>
+			<AxFormControl xmlns=""
+				i:type="AxFormGroupControl">
+				<Name>InvoiceHeader</Name>
+				<Pattern>FieldsFieldGroups</Pattern>
+				<PatternVersion>1.1</PatternVersion>
+				<Type>Group</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormGroupControl">
+						<Name>groupInvoiceHead</Name>
+						<ElementPosition>1073741822</ElementPosition>
+						<FilterExpression>%1</FilterExpression>
+						<Type>Group</Type>
+						<VerticalSpacing>-1</VerticalSpacing>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>CompanyLookup</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>DataAreaId</DataField>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+								<Label>@AccountsPayable:VendorInvoiceJournalAccount</Label>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>PurchParmTable_InvoiceAccount</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<ElementPosition>1073741822</ElementPosition>
+								<FilterExpression>%1</FilterExpression>
+								<HelpText>@FieldDescriptions_AccountsPayable:VendEditInvoice_PurchParmTable_InvoiceAccount</HelpText>
+								<Type>String</Type>
+								<VerticalSpacing>-1</VerticalSpacing>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>InvoiceAccount</DataField>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>VendInvoiceInfoTable_PurchName</Name>
+								<ElementPosition>1610612733</ElementPosition>
+								<FilterExpression>%1</FilterExpression>
+								<Type>String</Type>
+								<VerticalSpacing>-1</VerticalSpacing>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>PurchName</DataField>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+								<Label>@SYS129167</Label>
+							</AxFormControl>
+						</Controls>
+						<Caption>@SYS9455</Caption>
+						<DataSource>VendInvoiceInfoTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormGroupControl">
+						<Name>groupVendorIdentification</Name>
+						<ElementPosition>1610612734</ElementPosition>
+						<FilterExpression>%1</FilterExpression>
+						<Type>Group</Type>
+						<VerticalSpacing>-1</VerticalSpacing>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>PurchParmTable_Num</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<ElementPosition>715827882</ElementPosition>
+								<FilterExpression>%1</FilterExpression>
+								<Type>String</Type>
+								<VerticalSpacing>-1</VerticalSpacing>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>Num</DataField>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+								<FastTabSummary>No</FastTabSummary>
+							</AxFormControl>
+						</Controls>
+						<Caption>@SYS313566</Caption>
+						<DataSource>VendInvoiceInfoTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormGroupControl">
+						<Name>InvoiceDetails</Name>
+						<AutoDeclaration>Yes</AutoDeclaration>
+						<ElementPosition>850045608</ElementPosition>
+						<FilterExpression>%1</FilterExpression>
+						<Type>Group</Type>
+						<VerticalSpacing>-1</VerticalSpacing>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>InvoiceDetails_Description</Name>
+								<FilterExpression>%1</FilterExpression>
+								<Type>String</Type>
+								<VerticalSpacing>-1</VerticalSpacing>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>Description</DataField>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+							</AxFormControl>
+						</Controls>
+						<DataGroup>InvoiceDetails</DataGroup>
+						<DataSource>VendInvoiceInfoTable</DataSource>
+						<FrameType>None</FrameType>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormGroupControl">
+						<Name>groupVendorIdentification2</Name>
+						<Type>Group</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>InvoiceGrouping_VendInvoiceGroup2</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<ElementPosition>1073741823</ElementPosition>
+								<FilterExpression>%1</FilterExpression>
+								<Type>String</Type>
+								<VerticalSpacing>-1</VerticalSpacing>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>VendInvoiceGroup</DataField>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+							</AxFormControl>
+						</Controls>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormGroupControl">
+						<Name>groupInvoiceRelatedDocs</Name>
+						<AutoDeclaration>Yes</AutoDeclaration>
+						<ElementPosition>1073741822</ElementPosition>
+						<FilterExpression>%1</FilterExpression>
+						<Type>Group</Type>
+						<VerticalSpacing>-1</VerticalSpacing>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>VendInvoiceInfoListPageView_PurchIds</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>PurchIds</DataField>
+								<DataSource>VendInvoiceInfoListPageView</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>VendInvoiceInfoListPageView_ProductReceipts</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ProductReceipts</DataField>
+								<DataSource>VendInvoiceInfoListPageView</DataSource>
+								<Label>@SYS330155</Label>
+							</AxFormControl>
+						</Controls>
+						<Caption>@SYS312235</Caption>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormGroupControl">
+						<Name>groupInvoiceDates</Name>
+						<AutoDeclaration>Yes</AutoDeclaration>
+						<ElementPosition>1610612734</ElementPosition>
+						<FilterExpression>%1</FilterExpression>
+						<Type>Group</Type>
+						<VerticalSpacing>-1</VerticalSpacing>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormDateControl">
+								<Name>PurchParmTable_DocumentDate</Name>
+								<ElementPosition>1431655763</ElementPosition>
+								<FilterExpression>%1</FilterExpression>
+								<Type>Date</Type>
+								<VerticalSpacing>-1</VerticalSpacing>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>DocumentDate</DataField>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormDateControl">
+								<Name>PurchParmTable_TransDate</Name>
+								<ElementPosition>858993458</ElementPosition>
+								<FilterExpression>%1</FilterExpression>
+								<HelpText>@FieldDescriptions_AccountsPayable:VendEditInvoice_PurchParmTable_TransDate</HelpText>
+								<Type>Date</Type>
+								<VerticalSpacing>-1</VerticalSpacing>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>TransDate</DataField>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+								<Label>@SYS14475</Label>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormDateControl">
+								<Name>PurchParmTable_FixedDueDate</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<ElementPosition>1717986916</ElementPosition>
+								<FilterExpression>%1</FilterExpression>
+								<HelpText>@FieldDescriptions_AccountsPayable:VendEditInvoice_PurchParmTable_FixedDueDate</HelpText>
+								<Type>Date</Type>
+								<VerticalSpacing>-1</VerticalSpacing>
+								<FormControlExtension
+									i:nil="true" />
+								<DataMethod>editFixedDueDate</DataMethod>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+								<FastTabSummary>No</FastTabSummary>
+							</AxFormControl>
+						</Controls>
+						<Caption>@SYS313567</Caption>
+						<DataSource>VendInvoiceInfoTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormGroupControl">
+						<Name>groupOtherInvoiceDetails2</Name>
+						<Type>Group</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormComboBoxControl">
+								<Name>MatchVariance</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<Type>ComboBox</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataMethod>checkIfMatchedStatus</DataMethod>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+								<Label>@AccountsPayable:MatchStatus</Label>
+								<ViewEditMode>View</ViewEditMode>
+								<Items />
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormCheckBoxControl">
+								<Name>VarianceApproved</Name>
+								<AllowEdit>No</AllowEdit>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<HelpText>@FieldDescriptions_AccountsPayable:VendEditInvoice_VarianceApproved</HelpText>
+								<Type>CheckBox</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>VarianceApproved</DataField>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+								<Label>@SYS116197</Label>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormComboBoxControl">
+								<Name>VendInvoiceInfoTable_BudgetCheckResult</Name>
+								<AllowEdit>No</AllowEdit>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<ConfigurationKey>LedgerAdv2BudgetCtrl</ConfigurationKey>
+								<ExtendedStyle>budgetCheckResult_status</ExtendedStyle>
+								<PreviewPartRef>BudgetCheckResultPreview</PreviewPartRef>
+								<Type>ComboBox</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataMethod>displayBudgetCheckResult</DataMethod>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+								<Label>@SYS306912</Label>
+								<Items />
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormRealControl">
+								<Name>InvoiceTotal</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<Type>Real</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>InvoiceTotal</DataField>
+								<DataSource>VendInvoiceTotalFromAccountingDistributionView</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>VendInvoiceInfoTable_CurrencyCode</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>CurrencyCode</DataField>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormRealControl">
+								<Name>InvoiceTotalsAccountingCurrency</Name>
+								<Type>Real</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataMethod>displayInvoiceTotalsInMST</DataMethod>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+								<Label>@AccountsPayableMobile:InvoiceTotalCompanyCurrency</Label>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>AccountingCurrency</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataMethod>AccountingCurrency</DataMethod>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+								<Label>@SYS75668</Label>
+							</AxFormControl>
+						</Controls>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormGroupControl">
+						<Name>WorkflowGroup</Name>
+						<Type>Group</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormCheckBoxControl">
+								<Name>ShowAccept</Name>
+								<Type>CheckBox</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataMethod>showAccept</DataMethod>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+								<Label>@AccountsPayableMobile:ShowAcceptTask</Label>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormCheckBoxControl">
+								<Name>ShowApprove</Name>
+								<Type>CheckBox</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataMethod>showApprove</DataMethod>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+								<Label>@AccountsPayableMobile:ShowApprovalTask</Label>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormCheckBoxControl">
+								<Name>ShowComplete</Name>
+								<Type>CheckBox</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataMethod>showComplete</DataMethod>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+								<Label>@AccountsPayableMobile:ShowCompleteTask</Label>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormCheckBoxControl">
+								<Name>ShowDelegate</Name>
+								<Type>CheckBox</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataMethod>showDelegate</DataMethod>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+								<Label>@AccountsPayableMobile:ShowDelegateTask</Label>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormCheckBoxControl">
+								<Name>ShowRecall</Name>
+								<Type>CheckBox</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataMethod>showRecall</DataMethod>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+								<Label>@AccountsPayableMobile:ShowRecallTask</Label>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormCheckBoxControl">
+								<Name>ShowReject</Name>
+								<Type>CheckBox</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataMethod>showReject</DataMethod>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+								<Label>@AccountsPayableMobile:ShowRejectTask</Label>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormCheckBoxControl">
+								<Name>ShowRequestChange</Name>
+								<Type>CheckBox</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataMethod>showRequestChange</DataMethod>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+								<Label>@AccountsPayableMobile:ShowRequestChangeTask</Label>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormCheckBoxControl">
+								<Name>ShowResubmit</Name>
+								<Type>CheckBox</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataMethod>showResubmit</DataMethod>
+								<DataSource>VendInvoiceInfoTable</DataSource>
+								<Label>@AccountsPayableMobile:ShowResubmitTask</Label>
+							</AxFormControl>
+						</Controls>
+						<Caption>@SYS334380</Caption>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormIntegerControl">
+						<Name>NumOfLines</Name>
+						<Type>Integer</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataMethod>numberOfLines</DataMethod>
+						<DataSource>VendInvoiceInfoTable</DataSource>
+						<Label>@AccountsPayableMobile:NumberOfInvoiceLines</Label>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormCheckBoxControl">
+						<Name>ShowHeaderDistributions</Name>
+						<Type>CheckBox</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataMethod>showHeaderDistributions</DataMethod>
+						<DataSource>VendInvoiceInfoTable</DataSource>
+						<Label>@AccountsPayableMobile:ShowHeaderDistributions</Label>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormStringControl">
+						<Name>VendIDAndName</Name>
+						<Type>String</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataMethod>displayVendIDAndName</DataMethod>
+						<DataSource>VendInvoiceInfoTable</DataSource>
+						<Label>@SYS128945</Label>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormStringControl">
+						<Name>PaymTerm</Name>
+						<Type>String</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataMethod>displayPaymTerms</DataMethod>
+						<DataSource>VendInvoiceInfoTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormStringControl">
+						<Name>CashDisc</Name>
+						<Type>String</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataMethod>displayCashDisc</DataMethod>
+						<DataSource>VendInvoiceInfoTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormComboBoxControl">
+						<Name>ParmJobStatus</Name>
+						<Type>ComboBox</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ParmJobStatus</DataField>
+						<DataSource>VendInvoiceInfoTable</DataSource>
+						<Items />
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormComboBoxControl">
+						<Name>VendInvoiceInfoTable_MobileWorkflowStatus</Name>
+						<Type>ComboBox</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>MobileWorkflowStatus</DataField>
+						<DataSource>VendInvoiceInfoTable</DataSource>
+						<Label>@AccountsPayableMobile:MobileWorkflowStatus</Label>
+						<Items />
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormIntegerControl">
+						<Name>AttachmentCount</Name>
+						<Type>Integer</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataMethod>attachmentCount</DataMethod>
+					</AxFormControl>
+				</Controls>
+				<ColumnsMode>Fill</ColumnsMode>
+				<FrameType>None</FrameType>
+			</AxFormControl>
+			<AxFormControl xmlns=""
+				i:type="AxFormTabControl">
+				<Name>LinesTab</Name>
+				<Type>Tab</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormTabPageControl">
+						<Name>LinesTabPage</Name>
+						<Pattern>ToolbarList</Pattern>
+						<PatternVersion>1.2</PatternVersion>
+						<Type>TabPage</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormGridControl">
+								<Name>gridParmLine</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<ElementPosition>1610612734</ElementPosition>
+								<FilterExpression>%1</FilterExpression>
+								<Type>Grid</Type>
+								<VerticalSpacing>-1</VerticalSpacing>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>InvoiceLineIdentifier</Name>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataMethod>displayInvoiceLineIdentifier</DataMethod>
+										<DataSource>VendInvoiceInfoLine</DataSource>
+										<Label>@AccountsPayableMobile:InvoiceLineDescription</Label>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormRealControl">
+										<Name>VendInvoiceInfoLine_LineNum</Name>
+										<Type>Real</Type>
+										<Visible>No</Visible>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>LineNum</DataField>
+										<DataSource>VendInvoiceInfoLine</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormComboBoxControl">
+										<Name>VendInvoiceInfoLine_BudgetCheckResult</Name>
+										<AllowEdit>No</AllowEdit>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<ConfigurationKey>LedgerAdv2BudgetCtrl</ConfigurationKey>
+										<ExtendedStyle>budgetCheckResult_status</ExtendedStyle>
+										<HelpText>@FieldDescriptions_AccountsPayable:VendEditInvoice_VendInvoiceInfoLine_BudgetCheckResult</HelpText>
+										<PreviewPartRef>BudgetCheckResultPreview</PreviewPartRef>
+										<Skip>Yes</Skip>
+										<Type>ComboBox</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataMethod>displayBudgetCheckResult</DataMethod>
+										<DataSource>VendInvoiceInfoLine</DataSource>
+										<DisplayLength>1</DisplayLength>
+										<DisplayLengthMode>Fixed</DisplayLengthMode>
+										<Label>@SYS342081</Label>
+										<Items />
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>PurchParmLine_ItemId</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<ElementPosition>452101820</ElementPosition>
+										<FilterExpression>%1</FilterExpression>
+										<HelpText>@FieldDescriptions_AccountsPayable:VendEditInvoice_PurchParmLine_ItemId</HelpText>
+										<Type>String</Type>
+										<VerticalSpacing>-1</VerticalSpacing>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>ItemId</DataField>
+										<DataSource>VendInvoiceInfoLine</DataSource>
+										<Label>@SYS129737</Label>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>itemName</Name>
+										<AllowEdit>No</AllowEdit>
+										<ElementPosition>565127275</ElementPosition>
+										<FilterExpression>%1</FilterExpression>
+										<Skip>Yes</Skip>
+										<Type>String</Type>
+										<VerticalSpacing>-1</VerticalSpacing>
+										<FormControlExtension
+											i:nil="true" />
+										<DataMethod>itemName</DataMethod>
+										<DataSource>VendInvoiceInfoLine</DataSource>
+										<Label>@SYS319915</Label>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormReferenceGroupControl">
+										<Name>PurchParmLine_ProcurementCategory</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<ElementPosition>678152730</ElementPosition>
+										<FilterExpression>%1</FilterExpression>
+										<HelpText>@FieldDescriptions_AccountsPayable:VendEditInvoice_PurchParmLine_ProcurementCategory</HelpText>
+										<Type>ReferenceGroup</Type>
+										<VerticalSpacing>-1</VerticalSpacing>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormStringControl">
+												<Name>PurchParmLine_ProcurementCategory_Name</Name>
+												<DataRelationPath>ProcurementCategory</DataRelationPath>
+												<FilterExpression>%1</FilterExpression>
+												<HeightMode>Auto</HeightMode>
+												<Type>String</Type>
+												<VerticalSpacing>-1</VerticalSpacing>
+												<WidthMode>Auto</WidthMode>
+												<FormControlExtension
+													i:nil="true" />
+											</AxFormControl>
+										</Controls>
+										<DataSource>VendInvoiceInfoLine</DataSource>
+										<ReferenceField>ProcurementCategory</ReferenceField>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormRealControl">
+										<Name>PurchParmLine_ReceiveNow</Name>
+										<ElementPosition>791178185</ElementPosition>
+										<FilterExpression>%1</FilterExpression>
+										<HelpText>@FieldDescriptions_AccountsPayable:VendEditInvoice_PurchParmLine_ReceiveNow</HelpText>
+										<Type>Real</Type>
+										<VerticalSpacing>-1</VerticalSpacing>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>ReceiveNow</DataField>
+										<DataSource>VendInvoiceInfoLine</DataSource>
+										<Label>@SYS129091</Label>
+										<NoOfDecimals>-1</NoOfDecimals>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>VendInvoiceInfoLine_PurchUnit</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<ElementPosition>904203640</ElementPosition>
+										<FilterExpression>%1</FilterExpression>
+										<HelpText>@FieldDescriptions_AccountsPayable:VendEditInvoice_VendInvoiceInfoLine_PurchUnit</HelpText>
+										<Type>String</Type>
+										<VerticalSpacing>-1</VerticalSpacing>
+										<FormControlExtension
+											i:nil="true" />
+										<DataMethod>editPurchUnit</DataMethod>
+										<DataSource>VendInvoiceInfoLine</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormRealControl">
+										<Name>PurchParmLine_PdsCWReceiveNow</Name>
+										<ElementPosition>932460003</ElementPosition>
+										<FilterExpression>%1</FilterExpression>
+										<Type>Real</Type>
+										<VerticalSpacing>-1</VerticalSpacing>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>PdsCWReceiveNow</DataField>
+										<DataSource>VendInvoiceInfoLine</DataSource>
+										<Label>@PDS1</Label>
+										<NoOfDecimals>-1</NoOfDecimals>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>VendInvoiceInfoLine_CWUnit</Name>
+										<ElementPosition>960716366</ElementPosition>
+										<FilterExpression>%1</FilterExpression>
+										<Type>String</Type>
+										<VerticalSpacing>-1</VerticalSpacing>
+										<FormControlExtension
+											i:nil="true" />
+										<DataMethod>pdsCWUnitId</DataMethod>
+										<DataSource>VendInvoiceInfoLine</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormRealControl">
+										<Name>PurchParmLine_PurchPrice_line</Name>
+										<ElementPosition>1017229095</ElementPosition>
+										<FilterExpression>%1</FilterExpression>
+										<Type>Real</Type>
+										<VerticalSpacing>-1</VerticalSpacing>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>PurchPrice</DataField>
+										<DataSource>VendInvoiceInfoLine</DataSource>
+										<NoOfDecimals>-1</NoOfDecimals>
+										<ShowZero>No</ShowZero>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormRealControl">
+										<Name>PurchParmLine_LineAmount</Name>
+										<ElementPosition>1130254550</ElementPosition>
+										<FilterExpression>%1</FilterExpression>
+										<Type>Real</Type>
+										<VerticalSpacing>-1</VerticalSpacing>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>LineAmount</DataField>
+										<DataSource>VendInvoiceInfoLine</DataSource>
+										<Label>@SYS129097</Label>
+										<NoOfDecimals>-1</NoOfDecimals>
+										<ShowZero>No</ShowZero>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>PurchParmLine_OrigPurchId</Name>
+										<ElementPosition>1243280005</ElementPosition>
+										<FilterExpression>%1</FilterExpression>
+										<Type>String</Type>
+										<VerticalSpacing>-1</VerticalSpacing>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>OrigPurchId</DataField>
+										<DataSource>VendInvoiceInfoLine</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>PurchParmLine_DocumentId</Name>
+										<AllowEdit>No</AllowEdit>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<ElementPosition>1356305460</ElementPosition>
+										<FilterExpression>%1</FilterExpression>
+										<Skip>Yes</Skip>
+										<Type>String</Type>
+										<VerticalSpacing>-1</VerticalSpacing>
+										<FormControlExtension
+											i:nil="true" />
+										<DataMethod>packingSlipId</DataMethod>
+										<DataSource>VendInvoiceInfoLine</DataSource>
+										<Label>@SYS330155</Label>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>SalesTax_TaxItemGroup</Name>
+										<ElementPosition>1073741822</ElementPosition>
+										<FilterExpression>%1</FilterExpression>
+										<Type>String</Type>
+										<VerticalSpacing>-1</VerticalSpacing>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>TaxItemGroup</DataField>
+										<DataSource>VendInvoiceInfoLine</DataSource>
+										<Label>@SYS21932</Label>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>SalesTax_TaxGroup</Name>
+										<ElementPosition>1610612733</ElementPosition>
+										<FilterExpression>%1</FilterExpression>
+										<HelpText>@FieldDescriptions_AccountsPayable:VendEditInvoice_SalesTax_TaxGroup</HelpText>
+										<Type>String</Type>
+										<VerticalSpacing>-1</VerticalSpacing>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>TaxGroup</DataField>
+										<DataSource>VendInvoiceInfoLine</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormRealControl">
+										<Name>VendInvoiceInfoLine_Tax1099Amount</Name>
+										<Type>Real</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>Tax1099Amount</DataField>
+										<DataSource>VendInvoiceInfoLine</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>VendInvoiceInfoLine_Tax1099State</Name>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>Tax1099State</DataField>
+										<DataSource>VendInvoiceInfoLine</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormRealControl">
+										<Name>VendInvoiceInfoLine_Tax1099StateAmount</Name>
+										<Type>Real</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>Tax1099StateAmount</DataField>
+										<DataSource>VendInvoiceInfoLine</DataSource>
+									</AxFormControl>
+								</Controls>
+								<DataSource>VendInvoiceInfoLine</DataSource>
+								<Style>Tabular</Style>
+								<VisibleRows>5</VisibleRows>
+								<VisibleRowsMode>Fixed</VisibleRowsMode>
+							</AxFormControl>
+						</Controls>
+						<Caption>@AccountsPayableMobile:InvoiceLines</Caption>
+					</AxFormControl>
+				</Controls>
+				<Style>FastTabs</Style>
+			</AxFormControl>
+			<AxFormControl xmlns=""
+				i:type="AxFormGroupControl">
+				<Name>FooterGroup</Name>
+				<Pattern>FieldsFieldGroups</Pattern>
+				<PatternVersion>1.1</PatternVersion>
+				<Type>Group</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls />
+				<ColumnsMode>Fill</ColumnsMode>
+			</AxFormControl>
+		</Controls>
+	</Design>
+	<Parts />
+</AxForm>

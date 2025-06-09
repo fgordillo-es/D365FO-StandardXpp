@@ -1,0 +1,120 @@
+﻿AllDistributions=Wszystkie dystrybucje
+ ;All distributions view label
+Amount=Kwota
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=Kwota do wyświetlenia
+ ;Label for Amount for display.
+AttachmentCount=Liczba załączników
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=Załączniki
+ ;Label for mobile attachments link
+DistributionDetails=Szczegół dystrybucji
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=Typ węzła drzewa dystrybucji
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=Węzeł opisu
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=Węzeł dystrybucji
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=Węzeł nadrzędny
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=Podwęzeł
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=Dystrybucje nagłówka
+ ;Header level distributions view label
+HeaderLine=Dystrybucja nagłówka lub wiersza
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=Zatwierdzenia faktur
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=Drzewo dystrybucji faktur
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=Informacje dotyczące drzewa dystrybucji faktur od dostawców
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=Obsługa danych drzewa dystrybucji faktur
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=Nagłówek faktury
+ ;Label for the invoice header group
+InvoiceHeaderDetails=Szczegóły nagłówka faktury
+ ;Label for the invoice header details form
+InvoiceLineDescription=Opis wiersza faktury
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=Szczegóły wierszy faktury
+ ;Label for the invoice line details page
+InvoiceLines=Wiersze faktury
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=Faktury do zatwierdzenia
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=Suma faktury w walucie firmy
+ ;Invoice total in MST label
+LedgerAccount=Konto księgowe
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=Segmenty konta księgowego
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=Podgląd wymiarów księgowych
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=Wartości wymiaru księgowego podzielone na tabelę
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=Dystrybucje wierszy na poziomie 1
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=Wiersz dokumentu źródłowego na poziomie 1
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=Dystrybucje wierszy na poziomie 2
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=Wiersz dokumentu źródłowego na poziomie 2
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=Dystrybucje wierszy na poziomie 3
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=Wiersz dokumentu źródłowego na poziomie 3
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=Dystrybucje wierszy
+ ;Line level distributions view label
+MobileWorkflowStatus=Stan mobilnego przepływu pracy
+ ;Label for the state of vendor invoice mobile workflow enum
+More=Więcej
+ ;Label for the mobile button labelled "More"
+NewVersion=Wymagana jest nowa wersja
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=Ten obszar roboczy wymaga nowszej wersji aplikacji. Zainstaluj aplikację ze Sklepu.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=Liczba wierszy faktury
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=Przetworzono
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=Ten węzeł ma charakter wyłącznie informacyjny
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=Pokaż zadanie akceptowania
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=Pokaż zadanie zatwierdzania
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=Pokaż zadanie wykonania
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=Pokaż zadanie delegowania
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=Pokaż zadanie odmowy
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=Pokaż dystrybucje nagłówków
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=Pokaż zadanie odwołania
+ ;Label for show recall task for current invoice value
+ShowRejectTask=Pokaż zadanie odrzucenia
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=Pokaż zadanie żądania zmiany
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=Pokaż zadanie ponownego przesłania
+ ;Label for show resubmit task for current invoice value
+Unprocessed=Nieprzetworzone
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=Wiersz faktury
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=Nagłówek faktury
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=Obsługa strony listy oczekujących faktur od dostawców dla urządzeń przenośnych
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=Wyświetlanie strony listy oczekujących faktur od dostawców dla urządzeń przenośnych
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=Obsługa oczekujących faktur od dostawców na urządzeniu przenośnym
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=Wyświetlanie użytkowników przepływu pracy dla akcji przepływu pracy delegowania lub żądania zmiany
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=Użytkownicy przepływu pracy
+ ;Label for the lookup form for valid workflow users for a given workflow item

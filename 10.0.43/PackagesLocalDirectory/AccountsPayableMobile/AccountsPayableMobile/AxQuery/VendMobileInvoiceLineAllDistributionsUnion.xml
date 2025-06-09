@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxQuery xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns=""
+	i:type="AxQuerySimple">
+	<Name>VendMobileInvoiceLineAllDistributionsUnion</Name>
+	<SourceCode>
+		<Methods>
+			<Method>
+				<Name>classDeclaration</Name>
+				<Source><![CDATA[
+[Query]
+public class VendMobileInvoiceLineAllDistributionsUnion extends QueryRun
+{
+}
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<QueryType>Union</QueryType>
+	<DataSources>
+		<AxQuerySimpleRootDataSource>
+			<Name>VendMobileInvoiceLineLevel1DistributionsView</Name>
+			<Table>VendMobileInvoiceLineLevel1DistributionsView</Table>
+			<DataSources />
+			<DerivedDataSources />
+			<Fields>
+				<AxQuerySimpleDataSourceField>
+					<Name>AccountingDistributionRecId</Name>
+					<Field>AccountingDistributionRecId</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>InvoiceLineRecId</Name>
+					<Field>InvoiceLineRecId</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>L1SourceDocumentLine</Name>
+					<Field>L1SourceDocumentLine</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>L2SourceDocumentLine</Name>
+					<Field>L2SourceDocumentLine</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>L3SourceDocumentLine</Name>
+					<Field>L3SourceDocumentLine</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>SourceDocumentLineRecId</Name>
+					<Field>SourceDocumentLineRecId</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>unionAllBranchId</Name>
+					<Field>unionAllBranchId</Field>
+				</AxQuerySimpleDataSourceField>
+			</Fields>
+			<Ranges />
+			<GroupBy />
+			<Having />
+			<OrderBy />
+		</AxQuerySimpleRootDataSource>
+		<AxQuerySimpleRootDataSource>
+			<Name>VendMobileInvoiceLineLevel2DistributionsView</Name>
+			<Table>VendMobileInvoiceLineLevel2DistributionsView</Table>
+			<DataSources />
+			<DerivedDataSources />
+			<Fields>
+				<AxQuerySimpleDataSourceField>
+					<Name>AccountingDistributionRecId</Name>
+					<Field>AccountingDistributionRecId</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>InvoiceLineRecId</Name>
+					<Field>InvoiceLineRecId</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>L1SourceDocumentLine</Name>
+					<Field>L1SourceDocumentLine</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>L2SourceDocumentLine</Name>
+					<Field>L2SourceDocumentLine</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>L3SourceDocumentLine</Name>
+					<Field>L3SourceDocumentLine</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>SourceDocumentLineRecId</Name>
+					<Field>SourceDocumentLineRecId</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>unionAllBranchId</Name>
+					<Field>unionAllBranchId</Field>
+				</AxQuerySimpleDataSourceField>
+			</Fields>
+			<Ranges />
+			<GroupBy />
+			<Having />
+			<OrderBy />
+		</AxQuerySimpleRootDataSource>
+		<AxQuerySimpleRootDataSource>
+			<Name>VendMobileInvoiceLineLevel3DistributionsView</Name>
+			<Table>VendMobileInvoiceLineLevel3DistributionsView</Table>
+			<DataSources />
+			<DerivedDataSources />
+			<Fields>
+				<AxQuerySimpleDataSourceField>
+					<Name>AccountingDistributionRecId</Name>
+					<Field>AccountingDistributionRecId</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>InvoiceLineRecId</Name>
+					<Field>InvoiceLineRecId</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>L1SourceDocumentLine</Name>
+					<Field>L1SourceDocumentLine</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>L2SourceDocumentLine</Name>
+					<Field>L2SourceDocumentLine</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>L3SourceDocumentLine</Name>
+					<Field>L3SourceDocumentLine</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>SourceDocumentLineRecId</Name>
+					<Field>SourceDocumentLineRecId</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>unionAllBranchId</Name>
+					<Field>unionAllBranchId</Field>
+				</AxQuerySimpleDataSourceField>
+			</Fields>
+			<Ranges />
+			<GroupBy />
+			<Having />
+			<OrderBy />
+		</AxQuerySimpleRootDataSource>
+	</DataSources>
+</AxQuery>

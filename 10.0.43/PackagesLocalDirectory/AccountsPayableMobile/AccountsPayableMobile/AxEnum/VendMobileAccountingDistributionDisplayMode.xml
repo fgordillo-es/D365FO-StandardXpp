@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxEnum xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>VendMobileAccountingDistributionDisplayMode</Name>
+	<EnumValues>
+		<AxEnumValue>
+			<Name>AllLines</Name>
+		</AxEnumValue>
+		<AxEnumValue>
+			<Name>AllLinesLeafNodesOnly</Name>
+			<Value>1</Value>
+		</AxEnumValue>
+		<AxEnumValue>
+			<Name>HeaderOnly</Name>
+			<Value>2</Value>
+		</AxEnumValue>
+		<AxEnumValue>
+			<Name>HeaderLeafNodesOnly</Name>
+			<Value>3</Value>
+		</AxEnumValue>
+		<AxEnumValue>
+			<Name>AllLinesExtPriceOnly</Name>
+			<Value>4</Value>
+		</AxEnumValue>
+	</EnumValues>
+</AxEnum>

@@ -1,0 +1,120 @@
+﻿AllDistributions=All distributions
+ ;All distributions view label
+Amount=Amount
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=Amount for display
+ ;Label for Amount for display.
+AttachmentCount=Attachment count
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=Attachments
+ ;Label for mobile attachments link
+DistributionDetails=Distributions detail
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=Distribution tree node type
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=Description node
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=Distribution node
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=Parent node
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=Sub node
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=Header distributions
+ ;Header level distributions view label
+HeaderLine=Header or line distribution
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=Invoice approvals
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=Invoice distribution tree
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=Vendor invoice distribution tree information
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=Maintain invoice distribution tree data
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=Invoice header
+ ;Label for the invoice header group
+InvoiceHeaderDetails=Invoice header details
+ ;Label for the invoice header details form
+InvoiceLineDescription=Invoice line description
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=Invoice line details
+ ;Label for the invoice line details page
+InvoiceLines=Invoice lines
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=Invoices for approval
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=Invoice total in company currency
+ ;Invoice total in MST label
+LedgerAccount=Ledger account
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=Ledger account segments
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=Ledger dimension preview
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=Ledger dimension values broken out into a table
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=Level 1 line distributions
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=Level 1 source document line
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=Level 2 line distributions
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=Level 2 source document line
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=Level 3 line distributions
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=Level 3 source document line
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=Line distributions
+ ;Line level distributions view label
+MobileWorkflowStatus=Mobile workflow status
+ ;Label for the state of vendor invoice mobile workflow enum
+More=More
+ ;Label for the mobile button labelled "More"
+NewVersion=New version required
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=This workspace requires a newer version of the application. Please install the application from the store.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=Number of invoice lines
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=Processed
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=This node is for reference only
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=Show accept task
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=Show approval task
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=Show complete task
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=Show delegate task
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=Show deny task
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=Show header distributions
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=Show recall task
+ ;Label for show recall task for current invoice value
+ShowRejectTask=Show reject task
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=Show request change task
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=Show resubmit task
+ ;Label for show resubmit task for current invoice value
+Unprocessed=Unprocessed
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=Invoice line
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=Invoice header
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=Maintain pending vendor invoices list page for mobile
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=View the pending vendor invoices list page for mobile
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=Maintain pending vendor invoices on the mobile device
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=View the workflow users for delegation or request change workflow actions
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=Workflow users
+ ;Label for the lookup form for valid workflow users for a given workflow item

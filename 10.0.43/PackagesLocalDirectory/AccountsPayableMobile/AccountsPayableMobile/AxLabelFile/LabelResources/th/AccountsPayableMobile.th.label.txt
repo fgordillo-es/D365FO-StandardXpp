@@ -1,0 +1,120 @@
+﻿AllDistributions=การกระจายทั้งหมด
+ ;All distributions view label
+Amount=จำนวน
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=จำนวนที่จะแสดง
+ ;Label for Amount for display.
+AttachmentCount=จำนวนเอกสารแนบ
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=สิ่งที่แนบ
+ ;Label for mobile attachments link
+DistributionDetails=รายละเอียดการกระจาย
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=ชนิดโหนดแผนภูมิการกระจาย
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=โหนดคำอธิบาย
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=โหนดการกระจาย
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=โหนดหลัก
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=โหนดรอง
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=การกระจายระดับส่วนหัว
+ ;Header level distributions view label
+HeaderLine=การกระจายจากส่วนหัวหรือรายการ
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=การอนุมัติใบแจ้งหนี้
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=แผนภูมิการกระจายของใบแจ้งหนี้
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=ข้อมูลแผนภูมิการกระจายใบแจ้งหนี้ของผู้จัดจำหน่าย
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=รักษาข้อมูลแผนภูมิการกระจายของใบแจ้งหนี้
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=ส่วนหัวของใบแจ้งหนี้
+ ;Label for the invoice header group
+InvoiceHeaderDetails=รายละเอียดส่วนหัวของใบแจ้งหนี้
+ ;Label for the invoice header details form
+InvoiceLineDescription=คำอธิบายรายการในใบแจ้งหนี้
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=รายละเอียดรายการในใบแจ้งหนี้
+ ;Label for the invoice line details page
+InvoiceLines=รายการในใบแจ้งหนี้
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=ใบแจ้งหนี้สำหรับการอนุมัติ
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=ยอดรวมของใบแจ้งหนี้ในสกุลเงินของบริษัท
+ ;Invoice total in MST label
+LedgerAccount=บัญชีแยกประเภท
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=เซ็กเมนต์บัญชีแยกประเภท
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=ตัวอย่างของมิติบัญชีแยกประเภท
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=จำแนกค่าของมิติบัญชีแยกประเภทลงในตาราง
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=การกระจายรายการระดับ 1
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=รายการเอกสารต้นทางระดับ 1
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=การกระจายรายการระดับ 2
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=รายการเอกสารต้นทางระดับ 2
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=การกระจายรายการระดับ 3
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=รายการเอกสารต้นทางระดับ 3
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=การกระจายรายการ
+ ;Line level distributions view label
+MobileWorkflowStatus=สถานะลำดับงานบนมือถือ
+ ;Label for the state of vendor invoice mobile workflow enum
+More=เพิ่มเติม
+ ;Label for the mobile button labelled "More"
+NewVersion=ต้องใช้รุ่นใหม่
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=พื้นที่ทำงานนี้ต้องใช้แอพลิเคชันรุ่นใหม่กว่า กรุณาติดตั้งแอพลิเคชันจากร้านค้า
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=จำนวนรายการในใบแจ้งหนี้
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=ดำเนินการแล้ว
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=โหนดนี้ใช้สำหรับการอ้างอิงเท่านั้น
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=แสดงงานยอมรับ
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=แสดงงานการอนุมัติ
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=แสดงงานเสร็จสมบูรณ์
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=แสดงงานมอบหมาย
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=แสดงงานปฏิเสธ
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=แสดงการกระจายระดับส่วนหัว
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=แสดงงานเรียกคืน
+ ;Label for show recall task for current invoice value
+ShowRejectTask=แสดงงานปฏิเสธ
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=แสดงงานการเปลี่ยนแปลงคำขอ
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=แสดงงานส่งใหม่
+ ;Label for show resubmit task for current invoice value
+Unprocessed=ยังไม่ได้ดำเนินการ
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=รายการในใบแจ้งหนี้
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=ส่วนหัวของใบแจ้งหนี้
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=รักษาหน้ารายการในใบแจ้งหนี้ของผู้จัดจำหน่ายที่รอดำเนินการสำหรับมือถือ
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=ดูหน้ารายการในใบแจ้งหนี้ของผู้จัดจำหน่ายที่รอดำเนินการสำหรับมือถือ
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=รักษาใบแจ้งหนี้ของผู้จัดจำหน่ายที่รอดำเนินการบนอุปกรณ์เคลื่อนที่
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=ดูผู้ใช้ลำดับงานสำหรับการดำเนินการลำดับงานการมอบหมายหรือการเปลี่ยนแปลงคำขอ
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=ผู้ใช้ลำดับงาน
+ ;Label for the lookup form for valid workflow users for a given workflow item

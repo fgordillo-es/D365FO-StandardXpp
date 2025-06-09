@@ -1,0 +1,120 @@
+﻿AllDistributions=Усі розподіли
+ ;All distributions view label
+Amount=Сума
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=Сума для відображення
+ ;Label for Amount for display.
+AttachmentCount=Кількість вкладень
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=Вкладення
+ ;Label for mobile attachments link
+DistributionDetails=Деталі розподілів
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=Тип вузла дерева розподілу
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=Вузол опису
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=Вузол розподілу
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=Батьківський вузол
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=Підвузол
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=Розподіли із заголовка
+ ;Header level distributions view label
+HeaderLine=Розподіли із заголовка або рядка
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=Затвердження рахунка
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=Дерево розподілу рахунків
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=Інформація про дерево розподілу рахунків постачальника
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=Налаштувати дані дерева розподілу рахунків
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=Заголовок рахунка
+ ;Label for the invoice header group
+InvoiceHeaderDetails=Відомості заголовка рахунка
+ ;Label for the invoice header details form
+InvoiceLineDescription=Опис рядка рахунка
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=Відомості рядка рахунка
+ ;Label for the invoice line details page
+InvoiceLines=Рядки рахунка
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=Рахунки-фактури для затвердження
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=Загальна сума рахунка у валюті компанії
+ ;Invoice total in MST label
+LedgerAccount=Рахунок у головній книзі
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=Сегменти рахунку в головній книзі
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=Попередній перегляд виміру головної книги
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=Значення виміру головної книги у вигляді таблиці
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=Розподіли рядка рівня 1
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=Рядок вихідного документа рівня 1
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=Розподіли рядка рівня 2
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=Рядок вихідного документа рівня 2
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=Розподіли рядка рівня 3
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=Рядок вихідного документа рівня 3
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=Розподіли рядка
+ ;Line level distributions view label
+MobileWorkflowStatus=Стан мобільного робочого процесу
+ ;Label for the state of vendor invoice mobile workflow enum
+More=Більше
+ ;Label for the mobile button labelled "More"
+NewVersion=Потрібна нова версія
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=Для цієї робочої області потрібна новіша версія програми. Інсталюйте програму з магазину.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=Кількість рядків рахунка
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=Оброблено
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=Цей вузол призначено лише для довідки
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=Показати завдання прийому
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=Показати завдання затвердження
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=Показати завдання виконання
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=Показати завдання делегування
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=Показати завдання відмови
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=Показати розподіли із заголовка
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=Показати завдання відкликання
+ ;Label for show recall task for current invoice value
+ShowRejectTask=Показати завдання відхилення
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=Показати завдання запита зміни
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=Показати завдання повторного надсилання
+ ;Label for show resubmit task for current invoice value
+Unprocessed=Необроблені
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=Рядок рахунка
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=Заголовок рахунка
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=Налаштувати сторінку списку рахунків постачальників, що очікують на розгляд, для мобільних пристроїв
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=Переглянути сторінку списку рахунків постачальників, що очікують на розгляд, для мобільних пристроїв
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=Налаштувати рахунки-фактури постачальників, що очікують на розгляд, для мобільних пристроїв
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=Переглянути користувачів робочого процесу для дій делегування або запита змінення робочого процесу
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=Користувачі робочого процесу
+ ;Label for the lookup form for valid workflow users for a given workflow item

@@ -1,0 +1,120 @@
+﻿AllDistributions=Kõik jaotused
+ ;All distributions view label
+Amount=Summa
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=Kuvatav summa
+ ;Label for Amount for display.
+AttachmentCount=Manuste arv
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=Manused
+ ;Label for mobile attachments link
+DistributionDetails=Jaotuste üksikasjad
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=Jaotustepuu sõlme tüüp
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=Kirjeldussõlm
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=Jaotussõlm
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=Emasõlm
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=Alamsõlm
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=Päise jaotused
+ ;Header level distributions view label
+HeaderLine=Päise või rea jaotus
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=Arve kinnitamised
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=Arve jaotustepuu
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=Hankijaarve jaotustepuu teave
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=Arve jaotustepuu andmete haldamine
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=Arve päis
+ ;Label for the invoice header group
+InvoiceHeaderDetails=Arvepäise üksikasjad
+ ;Label for the invoice header details form
+InvoiceLineDescription=Arverea kirjeldus
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=Arverea üksikasjad
+ ;Label for the invoice line details page
+InvoiceLines=Arve read
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=Arved heakskiitmiseks
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=Arve kogusumma ettevõtte valuutas
+ ;Invoice total in MST label
+LedgerAccount=Pearaamatukonto
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=Pearaamatukonto segmendid
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=Pearaamatu dimensiooni eelvaade
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=Pearaamatu dimensiooniväärtused tabelisse jaotatult
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=1. taseme rea jaotus
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=1. taseme lähtedokumendi rida
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=2. taseme rea jaotus
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=2. taseme lähtedokumendi rida
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=3. taseme rea jaotus
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=3. taseme lähtedokumendi rida
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=Rea jaotused
+ ;Line level distributions view label
+MobileWorkflowStatus=Mobiilse töövoo olek
+ ;Label for the state of vendor invoice mobile workflow enum
+More=Rohkem
+ ;Label for the mobile button labelled "More"
+NewVersion=Vajalik on uus versioon
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=See tööruum vajab rakenduse uuemat versiooni. Installige rakendus poest.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=Arveridade arv
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=Töödeldud
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=See režiim on ainult viiteks
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=Kuva kinnitusülesanne
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=Kuva heakskiitmisülesanne
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=Kuva lõpetamisülesanne
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=Kuva delegeerimisülesanne
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=Kuva keelamisülesanne
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=Kuva päise jaotused
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=Kuva tagasikutsumisülesanne
+ ;Label for show recall task for current invoice value
+ShowRejectTask=Kuva tagasilükkamisülesanne
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=Kuva muutmistaotluse ülesanne
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=Kuva uuesti esitamise ülesanne
+ ;Label for show resubmit task for current invoice value
+Unprocessed=Töötlemata
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=Arve rida
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=Arve päis
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=Ootel hankijaarvete mobiilile mõeldud loendilehe haldamine
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=Ootel hankijaarvete mobiilile mõeldud loendilehe kuvamine
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=Ootel hankijaarvete haldamine mobiilses seadmes
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=Delegeerimiseks töövoo kasutajate või töövoo muutmise taotlustegevuste kuvamine
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=Töövoo kasutajad
+ ;Label for the lookup form for valid workflow users for a given workflow item

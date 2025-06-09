@@ -1,0 +1,120 @@
+﻿AllDistributions=Alla fördelningar
+ ;All distributions view label
+Amount=Belopp
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=Belopp som visas
+ ;Label for Amount for display.
+AttachmentCount=Antal bilagor
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=Bilagor
+ ;Label for mobile attachments link
+DistributionDetails=Distributionsinformation
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=Distributionsträd av nodtyp
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=Beskrivningsnod
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=Distributionsnod
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=Överordnad nod
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=Underordnad nod
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=Huvudfördelningar
+ ;Header level distributions view label
+HeaderLine=Huvud- eller radfördelning
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=Fakturagodkännanden
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=Fakturafördelningsträd
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=Information om fördelningsträd för leverantörsfakturor
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=Underhåll data för fakturafördelningsträd
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=Fakturahuvud
+ ;Label for the invoice header group
+InvoiceHeaderDetails=Detaljer för fakturahuvud
+ ;Label for the invoice header details form
+InvoiceLineDescription=Fakturaradbeskrivning
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=Detaljer för fakturarad
+ ;Label for the invoice line details page
+InvoiceLines=Fakturarader
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=Fakturor för godkännande
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=Fakturasumma i företagets valuta
+ ;Invoice total in MST label
+LedgerAccount=Huvudbokskonto
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=Segment i huvudbokskonto
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=Förhandsgranskning av redovisningsdimension
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=Redovisningsdimensionsvärden uppdelade i en tabell
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=Radfördelningar på nivå 1
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=Källdokumentrad på nivå 1
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=Radfördelningar på nivå 2
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=Källdokumentrad på nivå 2
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=Radfördelningar på nivå 3
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=Källdokumentrad på nivå 3
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=Radfördelningar
+ ;Line level distributions view label
+MobileWorkflowStatus=Status för mobilt arbetsflöde
+ ;Label for the state of vendor invoice mobile workflow enum
+More=Mer
+ ;Label for the mobile button labelled "More"
+NewVersion=Ny version krävs
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=Det krävs en nyare version av programmet för arbetsytan. Installera programmet från butiken.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=Antal fakturarader
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=Bearbetat
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=Denna nod är endast för referens
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=Visa accepterauppgift
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=Visa godkännandeuppgift
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=Visa slutförd uppgift
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=Visa delegerauppgift
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=Visa nekauppgift
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=Visa huvudfördelningar
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=Visa återkallelseuppgift
+ ;Label for show recall task for current invoice value
+ShowRejectTask=Visa avslåuppgift
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=Visa uppgift att begär ändring
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=Visa uppgift att skicka igen
+ ;Label for show resubmit task for current invoice value
+Unprocessed=Obearbetat
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=Fakturarad
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=Fakturahuvud
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=Underhåll väntande listsida med leverantörsfakturor för mobil
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=Visa väntande listsida med leverantörsfakturor för mobil
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=Underhåll väntande leverantörsfakturor på den mobila enheten
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=Visa arbetsflödesanvändare för delegering eller begär ändrade arbetsflödesåtgärder
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=Arbetsflödesanvändare
+ ;Label for the lookup form for valid workflow users for a given workflow item

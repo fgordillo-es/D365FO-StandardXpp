@@ -1,0 +1,120 @@
+﻿AllDistributions=Toate distribuțiile
+ ;All distributions view label
+Amount=Sumă
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=Suma pentru afișare
+ ;Label for Amount for display.
+AttachmentCount=Număr de atașări
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=Atașări
+ ;Label for mobile attachments link
+DistributionDetails=Detaliu distribuții
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=Tipul nod arbore de distribuție
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=Nod descriere
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=Nod distribuție
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=Nod părinte
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=Nod secundar
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=Distribuții antet
+ ;Header level distributions view label
+HeaderLine=Distribuție antet sau rând
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=Aprobări facturi
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=Arbore distribuție facturi
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=Informații arbore distribuție facturi furnizori
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=Întrețineți datele arborelui de distribuție a facturilor
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=Antet factură
+ ;Label for the invoice header group
+InvoiceHeaderDetails=Detalii antet factură
+ ;Label for the invoice header details form
+InvoiceLineDescription=Descriere linie de factură
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=Detalii linie de factură
+ ;Label for the invoice line details page
+InvoiceLines=Linii de factură
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=Facturi pentru aprobare
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=Total factură în moneda companiei
+ ;Invoice total in MST label
+LedgerAccount=Cont contabil
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=Segmente evidență contabilă
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=Previzualizare dimensiune registru contabil
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=Valorile dimensiunii registrului contabil, desfășurate într-un tabel
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=Distribuții de linii de nivel 1
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=Rând document sursă de nivel 1
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=Distribuții de linii de nivel 2
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=Rând document sursă de nivel 2
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=Distribuții de linii de nivel 3
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=Rând document sursă de nivel 3
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=Distribuții de linii
+ ;Line level distributions view label
+MobileWorkflowStatus=Stare flux de lucru mobil
+ ;Label for the state of vendor invoice mobile workflow enum
+More=Mai mult
+ ;Label for the mobile button labelled "More"
+NewVersion=Versiunea nouă necesară
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=Acest spațiu de lucru necesită o versiune mai nouă a aplicației. Vă rugăm să instalați aplicația din magazin.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=Număr linii de factură
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=Procesat
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=Acest nod este doar pentru referință
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=Afișare activitate acceptare
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=Afișare activitate aprobare
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=Afișare activitate finalizată
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=Afișare activitate delegată
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=Afișare activitate refuz
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=Afișare distribuții antet
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=Afișare activitate rechemare
+ ;Label for show recall task for current invoice value
+ShowRejectTask=Afișare activitate respingere
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=Afișare activitate modificare cerere
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=Afișare activitate reremitere
+ ;Label for show resubmit task for current invoice value
+Unprocessed=Neprocesat
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=Linie factură
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=Antet factură
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=Întrețineți pagina listei de facturi de furnizor în așteptare pentru mobil
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=Vizualizați pagina listei de facturi de furnizor în așteptare pentru mobil
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=Întrețineți facturile de furnizor în așteptare pe dispozitivul mobil
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=Vizualizați utilizatorii fluxului de lucru pentru delegare sau solicitați schimbarea acțiunilor din fluxul de lucru
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=Utilizatori flux de lucru
+ ;Label for the lookup form for valid workflow users for a given workflow item

@@ -1,0 +1,11 @@
+<EventHandlers>
+  <BusinessEventHandlers>
+    <EventHandler delegateElementName="VendorInvoiceWorkflowDropDialog" delegateElementTypeId="FormTypeId" delegateMethodName="updateWorkflowControls" eventHandlerElementName="VendMobileInvoiceWorkflowStateHandler" eventHandlerElementTypeId="ClassTypeId" eventHandlerMethodName="VendorInvoiceWorkflowDropDialog_Post_updateWorkflowControls" delegateTypeId="PostDelegateTypeId" />
+    <EventHandler delegateElementName="VendorInvoiceLineSourceDocLineItem" delegateElementTypeId="ClassTypeId" delegateMethodName="useExistingDistributions" eventHandlerElementName="VendMobileInvoiceLineSourceDocLineItemEventHandler" eventHandlerElementTypeId="ClassTypeId" eventHandlerMethodName="VendorInvoiceLineSourceDocLineItem_Post_useExistingDistributions" delegateTypeId="PostDelegateTypeId" />
+  </BusinessEventHandlers>
+  <DataEventHandlers />
+  <FormEventHandlers />
+  <FormControlEventHandlers />
+  <FormDataSourceEventHandler />
+  <FormDataFieldEventHandler />
+</EventHandlers>

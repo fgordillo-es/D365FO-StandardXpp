@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxView xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>VendMobileInvoiceLineLevel1DistributionsView</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+public class VendMobileInvoiceLineLevel1DistributionsView extends common
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>sourceDocumentLineZero</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Represents a 0 value for the <c>SourceDocumentLine</c> value.
+    /// </summary>
+    /// <returns>A 0 value</returns>
+    public static str sourceDocumentLineZero()
+    {
+        return SysComputedColumn::returnLiteral(0);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<Label>@AccountsPayableMobile:Level1LineDistributions</Label>
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>AutoReport</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoLookup</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoIdentification</Name>
+			<AutoPopulate>Yes</AutoPopulate>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoSummary</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoBrowse</Name>
+			<Fields />
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<Fields>
+		<AxViewField xmlns=""
+			i:type="AxViewFieldBound">
+			<Name>InvoiceLineRecId</Name>
+			<Label>@AccountsPayableMobile:VendInvoiceInfoLineRecId</Label>
+			<DataField>RecId</DataField>
+			<DataSource>VendInvoiceInfoLine</DataSource>
+		</AxViewField>
+		<AxViewField xmlns=""
+			i:type="AxViewFieldBound">
+			<Name>AccountingDistributionRecId</Name>
+			<Label>@SYS300392</Label>
+			<DataField>RecId</DataField>
+			<DataSource>AccountingDistribution</DataSource>
+		</AxViewField>
+		<AxViewField xmlns=""
+			i:type="AxViewFieldBound">
+			<Name>SourceDocumentLineRecId</Name>
+			<Label>@SYS132694</Label>
+			<DataField>RecId</DataField>
+			<DataSource>SourceDocumentLine</DataSource>
+		</AxViewField>
+		<AxViewField xmlns=""
+			i:type="AxViewFieldBound">
+			<Name>L1SourceDocumentLine</Name>
+			<Label>@AccountsPayableMobile:Level1SourceDocumentLine</Label>
+			<DataField>RecId</DataField>
+			<DataSource>SourceDocumentLine</DataSource>
+		</AxViewField>
+		<AxViewField xmlns=""
+			i:type="AxViewFieldComputedInt64">
+			<Name>L2SourceDocumentLine</Name>
+			<Label>@AccountsPayableMobile:Level2SourceDocumentLine</Label>
+			<ViewMethod>sourceDocumentLineZero</ViewMethod>
+		</AxViewField>
+		<AxViewField xmlns=""
+			i:type="AxViewFieldComputedInt64">
+			<Name>L3SourceDocumentLine</Name>
+			<Label>@AccountsPayableMobile:Level3SourceDocumentLine</Label>
+			<ViewMethod>sourceDocumentLineZero</ViewMethod>
+		</AxViewField>
+	</Fields>
+	<Indexes />
+	<Mappings />
+	<Relations />
+	<StateMachines />
+	<ViewMetadata>
+		<Name>Metadata</Name>
+		<SourceCode>
+			<Methods />
+		</SourceCode>
+		<DataSources>
+			<AxQuerySimpleRootDataSource>
+				<Name>VendInvoiceInfoLine</Name>
+				<DynamicFields>Yes</DynamicFields>
+				<Table>VendInvoiceInfoLine</Table>
+				<DataSources>
+					<AxQuerySimpleEmbeddedDataSource>
+						<Name>SourceDocumentLine</Name>
+						<DynamicFields>Yes</DynamicFields>
+						<Table>SourceDocumentLine</Table>
+						<DataSources>
+							<AxQuerySimpleEmbeddedDataSource>
+								<Name>AccountingDistribution</Name>
+								<DynamicFields>Yes</DynamicFields>
+								<Table>AccountingDistribution</Table>
+								<DataSources />
+								<DerivedDataSources />
+								<Fields />
+								<Ranges />
+								<Relations>
+									<AxQuerySimpleDataSourceRelation>
+										<Name>QueryDataSourceRelation1</Name>
+										<Field>RecId</Field>
+										<JoinDataSource>SourceDocumentLine</JoinDataSource>
+										<RelatedField>SourceDocumentLine</RelatedField>
+									</AxQuerySimpleDataSourceRelation>
+								</Relations>
+							</AxQuerySimpleEmbeddedDataSource>
+						</DataSources>
+						<DerivedDataSources />
+						<Fields />
+						<Ranges />
+						<Relations>
+							<AxQuerySimpleDataSourceRelation>
+								<Name>QueryDataSourceRelation1</Name>
+								<Field>SourceDocumentLine</Field>
+								<JoinDataSource>VendInvoiceInfoLine</JoinDataSource>
+								<RelatedField>RecId</RelatedField>
+							</AxQuerySimpleDataSourceRelation>
+						</Relations>
+					</AxQuerySimpleEmbeddedDataSource>
+					<AxQuerySimpleEmbeddedDataSource>
+						<Name>VendInvoiceInfoTable</Name>
+						<DynamicFields>Yes</DynamicFields>
+						<Table>VendInvoiceInfoTable</Table>
+						<DataSources />
+						<DerivedDataSources />
+						<Fields />
+						<Ranges>
+							<AxQuerySimpleDataSourceRange>
+								<Name>ParmJobStatus</Name>
+								<Field>ParmJobStatus</Field>
+								<Value>!Executed</Value>
+							</AxQuerySimpleDataSourceRange>
+						</Ranges>
+						<UseRelations>Yes</UseRelations>
+						<Relations />
+					</AxQuerySimpleEmbeddedDataSource>
+				</DataSources>
+				<DerivedDataSources />
+				<Fields />
+				<Ranges />
+				<GroupBy />
+				<Having />
+				<OrderBy />
+			</AxQuerySimpleRootDataSource>
+		</DataSources>
+	</ViewMetadata>
+</AxView>

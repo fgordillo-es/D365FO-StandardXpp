@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>VendMobileInvoiceLineSourceDocLineItemEventHandler</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Class to handle events from the <c>VendorInvoiceLineSourceDocLineItem</c> class for mobile functionality.
+/// </summary>
+public static class VendMobileInvoiceLineSourceDocLineItemEventHandler
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>VendorInvoiceLineSourceDocLineItem_Post_useExistingDistributions</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Post event handler for the useExistingDistributions method on <c>VendorInvoiceLineSourceDocLineItem</c>.
+    /// </summary>
+    /// <param name="args">Pre/Post params collection.</param>
+    [PostHandlerFor(classStr(VendorInvoiceLineSourceDocLineItem), methodStr(VendorInvoiceLineSourceDocLineItem, useExistingDistributions))]
+    public static void VendorInvoiceLineSourceDocLineItem_Post_useExistingDistributions(XppPrePostArgs args)
+    {
+        boolean ret = args.getReturnValue();
+
+        if (!ret)
+        {
+            // If we are executing in mobile mode
+            if (SysAppMobile::isMobileMode())
+            {
+                VendorInvoiceLineSourceDocLineItem vendorInvoiceLineSourceDocLineItem = args.getThis();
+
+                SourceDocumentHeaderRecId sourceDocumentHeaderRecId = vendorInvoiceLineSourceDocLineItem.parmSourceDocument().parmSourceDocumentHeader().RecId;
+
+                VendInvoiceRequestStatus vendInvoiceRequestStatus = VendInvoiceInfoTable::findSourceDocumentHeader(sourceDocumentHeaderRecId).RequestStatus;
+
+                // If the invoice is in workflow
+                if (vendInvoiceRequestStatus == VendInvoiceRequestStatus::InReview || VendInvoiceRequestStatus == VendInvoiceRequestStatus::Rejected)
+                {
+                    // Check to see if all source document lines are fully distributed
+                    SourceDocumentLine sourceDocumentLineDistributed;
+
+                    select count(RecId) from sourceDocumentLineDistributed
+                        where sourceDocumentLineDistributed.SourceDocumentHeader == sourceDocumentHeaderRecId
+                            && sourceDocumentLineDistributed.AccountingStatus != SourceDocumentLineAccountingStatus::FullyDistributed;
+
+                    if (sourceDocumentLineDistributed.RecId == 0)
+                    {
+                        args.setReturnValue(true);
+                    }
+                }
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

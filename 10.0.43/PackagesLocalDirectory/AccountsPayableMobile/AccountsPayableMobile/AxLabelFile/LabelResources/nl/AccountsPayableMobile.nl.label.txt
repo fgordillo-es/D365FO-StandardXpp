@@ -1,0 +1,120 @@
+﻿AllDistributions=Alle distributies
+ ;All distributions view label
+Amount=Bedrag
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=Bedrag voor weergave
+ ;Label for Amount for display.
+AttachmentCount=Aantal bijlagen
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=Bijlagen
+ ;Label for mobile attachments link
+DistributionDetails=Distributiedetails
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=Knooppunttype van distributiestructuur
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=Knooppunt omschrijving
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=Distributieknooppunt
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=Bovenliggend knooppunt
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=Subknooppunt
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=Koptekstdistributies
+ ;Header level distributions view label
+HeaderLine=Koptekst- of regeldistributies
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=Factuurgoedkeuringen
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=Factuurdistributiestructuur
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=Informatie over distributiestructuur van leveranciersfactuur
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=Structuurgegevens van factuurdistributie onderhouden
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=Factuurkoptekst
+ ;Label for the invoice header group
+InvoiceHeaderDetails=Details van factuurkoptekst
+ ;Label for the invoice header details form
+InvoiceLineDescription=Beschrijving van factuurregel
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=Details van factuurregel
+ ;Label for the invoice line details page
+InvoiceLines=Factuurregels
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=Facturen ter goedkeuring
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=Factuurtotaal in bedrijfsvaluta
+ ;Invoice total in MST label
+LedgerAccount=Grootboekrekening
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=Grootboekrekeningsegmenten
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=Voorbeeld van grootboekdimensie
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=Grootboekdimensiewaarden opgesplitst in een tabel
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=Regeldistributies van niveau 1
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=Brondocumentregel van niveau 1
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=Regeldistributies van niveau 2
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=Brondocumentregel van niveau 2
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=Regeldistributies van niveau 3
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=Brondocumentregel van niveau 3
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=Regeldistributies
+ ;Line level distributions view label
+MobileWorkflowStatus=Status van mobiele workflow
+ ;Label for the state of vendor invoice mobile workflow enum
+More=Meer
+ ;Label for the mobile button labelled "More"
+NewVersion=Nieuwe versie vereist
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=Dit werkgebied vereist een nieuwere versie van de toepassing. Installeer de toepassing vanuit het archief.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=Aantal factuurregels
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=Verwerkt
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=Dit knooppunt dient alleen ter referentie
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=Acceptatietaak weergeven
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=Goedkeuringstaak weergeven
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=Voltooiingstaak weergeven
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=Delegeringstaak weergeven
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=Afwijzingstaak weergeven
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=Koptekstdistributies weergeven
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=Terugroepingstaak weergeven
+ ;Label for show recall task for current invoice value
+ShowRejectTask=Weigeringstaak weergeven
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=Aanvraagwijzigingstaak weergeven
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=Herindieningstaak weergeven
+ ;Label for show resubmit task for current invoice value
+Unprocessed=Niet-verwerkt
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=Factuurregel
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=Factuurkoptekst
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=Lijstpagina met leveranciersfacturen in behandeling voor mobiel onderhouden
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=De lijstpagina met leveranciersfacturen in behandeling voor mobiel weergeven
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=Leveranciersfacturen in behandeling onderhouden op het mobiele apparaat
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=De workflowgebruikers voor acties van delegerings- of aanvraagwijzigingsworkflows weergeven
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=Workflowgebruikers
+ ;Label for the lookup form for valid workflow users for a given workflow item

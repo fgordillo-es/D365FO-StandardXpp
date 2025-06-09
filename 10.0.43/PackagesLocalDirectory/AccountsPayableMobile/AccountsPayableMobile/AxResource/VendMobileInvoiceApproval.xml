@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxResource xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>VendMobileInvoiceApproval</Name>
+	<FileName>VendMobileInvoiceApproval.js</FileName>
+	<RelativeUriInModelStore>AccountsPayableMobile\AccountsPayableMobile\AxResource\ResourceContent\Scripts\VendMobileInvoiceApproval.js</RelativeUriInModelStore>
+	<TypeOfResource>Scripts</TypeOfResource>
+</AxResource>

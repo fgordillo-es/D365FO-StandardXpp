@@ -1,0 +1,671 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxForm xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>VendMobileInvoiceAllDistributionTree</Name>
+	<SourceCode>
+		<Methods xmlns="">
+			<Method>
+				<Name>classDeclaration</Name>
+				<Source><![CDATA[
+[Form]
+public class VendMobileInvoiceAllDistributionTree extends FormRun
+{
+    
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    public void init()
+    {
+        super();
+
+        // Ensure that this form opens empty and doesn't just grab the first <c>VendInvoiceInfoTable</c> record. Depending on the size of the invoice
+        // the opening of the form and running the query can be expensive and for mobile, it opens, runs the code once, and then applies the correct
+        // record filter after that.  This code prevents us from unnecessarily running our code twice.
+        VendInvoiceInfoTable_ds.query().dataSourceTable(tableNum(VendInvoiceInfoTable)).addRange(fieldNum(VendInvoiceInfoTable, RecId)).value(queryValue(0));
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+		<DataSources xmlns="">
+			<DataSource>
+				<Name>VendInvoiceInfoTable</Name>
+				<Methods>
+					<Method>
+						<Name>executeQuery</Name>
+						<Source><![CDATA[
+        public void executeQuery()
+        {
+            super();
+
+            VendMobileInvoiceDistributionTree distributionsTree;
+
+            boolean processParents = true;
+            TableId tableToSkip = 0;
+
+            if(element.args().parmEnumType() == enumNum(VendMobileAccountingDistributionDisplayMode))
+            {
+                switch(element.args().parmEnum())
+                {
+                    case VendMobileAccountingDistributionDisplayMode::AllLinesLeafNodesOnly:
+                        processParents = false;
+                        break;
+                    case VendMobileAccountingDistributionDisplayMode::HeaderOnly:
+                        tableToSkip = tableNum(VendInvoiceInfoLine);
+                        break;
+                    case VendMobileAccountingDistributionDisplayMode::HeaderLeafNodesOnly:
+                        processParents = false;
+                        tableToSkip = tableNum(VendInvoiceInfoLine);
+                        break;
+                }
+            }
+
+            VendMobileInvoiceDistributionTree::populateTempBuffer(distributionsTree, VendInvoiceInfoTable.SourceDocumentHeader, 0, processParents, tableToSkip);
+
+            vendMobileInvoiceDistributionTree.setTmpData(distributionsTree);
+            vendMobileInvoiceDistributionTree_ds.executeQuery();
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+				<Fields />
+			</DataSource>
+			<DataSource>
+				<Name>VendMobileInvoiceDistributionTree</Name>
+				<Methods>
+					<Method>
+						<Name>init</Name>
+						<Source><![CDATA[
+        public void init()
+        {
+            super();
+
+            this.queryBuildDataSource().addDynalink(fieldNum(VendMobileInvoiceDistributionTree, InvoiceRecId), VendInvoiceInfoTable, fieldNum(VendInvoiceInfoTable, RecId));
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+				<Fields />
+			</DataSource>
+		</DataSources>
+		<DataControls xmlns="" />
+		<Members xmlns="" />
+	</SourceCode>
+	<DataSources>
+		<AxFormDataSource xmlns="">
+			<Name>VendInvoiceInfoTable</Name>
+			<Table>VendInvoiceInfoTable</Table>
+			<Fields>
+				<AxFormDataSourceField>
+					<DataField>AccountingDistributionTemplate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AddressRefRecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AddressRefTableId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Approved</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Approver</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>BankLCImportLine</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>BatchAdministration</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CashDisc</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CashDiscCode</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CashDiscDate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CashDiscPercent</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CountyOrigDest</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CreatedBy</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CreatedDateTime</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CreditCorrection</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CurrencyCode</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DataAreaId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DefaultDimension</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DeliveryName</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DeliveryPostalAddress</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Description</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DocumentDate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DocumentNum</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DocumentOrigin</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>EndDateTime</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>EndDisc</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>EnterpriseNumber</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ErrorInvalidDistribution</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>EUROTriangulation</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ExchRate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ExchRateSecondary</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>FixedDueDate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>FixedExchRate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Hold</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>IgnoreCalculatedSalesTax</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InclTax</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventLocationId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventSiteId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InvoiceAccount</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InvoiceReleaseDate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InvoiceRoundOff</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InvoiceType</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LastMatchVariance</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ListCode</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Log</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LogisticsElectronicAddress</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>MarkupGroup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>MatchStatus</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Num</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>NumberSequenceGroup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>OrderAccount</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Ordering</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PackedExtensions</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ParmId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ParmJobStatus</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Partition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Payment</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PaymentSched</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PaymId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PaymMode</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PaymSpec</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PoolRecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Port</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PostingProfile</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ProcessingAdvanced</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PurchAgreementHeader_PSN</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PurchId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PurchName</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ReCalculate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ReleaseDateComment</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RemittanceLocation</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RequestStatus</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>SettleVoucher</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>SourceDocumentHeader</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>SourceDocumentLine</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>StartDateTime</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>StatProcId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Storno</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableRefId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TaxGroup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TaxRoundOff</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TransactionCode</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TransDate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Transport</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TransportationDocument</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VarianceApproved</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VarianceApprovedDateTime</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VarianceApprover</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VarianceComment</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VATNum</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VendBankAccountID</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VendInvoiceGroup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VendInvoiceSaveStatus</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VendorRequestedWorkerEmail</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>VendPaymentGroup</DataField>
+				</AxFormDataSourceField>
+			</Fields>
+			<ReferencedDataSources />
+			<DataSourceLinks />
+			<DerivedDataSources />
+		</AxFormDataSource>
+		<AxFormDataSource xmlns="">
+			<Name>VendMobileInvoiceDistributionTree</Name>
+			<Table>VendMobileInvoiceDistributionTree</Table>
+			<Fields>
+				<AxFormDataSourceField>
+					<DataField>AccountingDistribution</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AmountForDisplay</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DataAreaId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Description</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DimensionDisplayValue</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InvoiceHeaderOnlyRecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InvoiceLineRecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InvoiceRecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LedgerDimension</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Partition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>SourceDocumentLine</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TopLevelSourceDocumentLine</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TransactionCurrency</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TreeNodeType</DataField>
+				</AxFormDataSourceField>
+			</Fields>
+			<ReferencedDataSources>
+				<AxFormReferencedDataSource>
+					<Name>LedgerDimension</Name>
+					<Table>DimensionAttributeValueCombination</Table>
+					<Fields>
+						<AxFormDataSourceField>
+							<DataField>AccountStructure</DataField>
+						</AxFormDataSourceField>
+						<AxFormDataSourceField>
+							<DataField>DataAreaForCreation</DataField>
+						</AxFormDataSourceField>
+						<AxFormDataSourceField>
+							<DataField>DEL_CombinationHash1</DataField>
+						</AxFormDataSourceField>
+						<AxFormDataSourceField>
+							<DataField>DEL_CombinationHash2</DataField>
+						</AxFormDataSourceField>
+						<AxFormDataSourceField>
+							<DataField>DEL_CombinationHash3</DataField>
+						</AxFormDataSourceField>
+						<AxFormDataSourceField>
+							<DataField>DEL_CombinationHash4</DataField>
+						</AxFormDataSourceField>
+						<AxFormDataSourceField>
+							<DataField>DEL_CombinationHash5</DataField>
+						</AxFormDataSourceField>
+						<AxFormDataSourceField>
+							<DataField>DisplayValue</DataField>
+						</AxFormDataSourceField>
+						<AxFormDataSourceField>
+							<DataField>Hash</DataField>
+						</AxFormDataSourceField>
+						<AxFormDataSourceField>
+							<DataField>LedgerDimensionType</DataField>
+						</AxFormDataSourceField>
+						<AxFormDataSourceField>
+							<DataField>MainAccount</DataField>
+						</AxFormDataSourceField>
+						<AxFormDataSourceField>
+							<DataField>MainAccountValue</DataField>
+						</AxFormDataSourceField>
+						<AxFormDataSourceField>
+							<DataField>ModifiedBy</DataField>
+						</AxFormDataSourceField>
+						<AxFormDataSourceField>
+							<DataField>Partition</DataField>
+						</AxFormDataSourceField>
+						<AxFormDataSourceField>
+							<DataField>RecId</DataField>
+						</AxFormDataSourceField>
+						<AxFormDataSourceField>
+							<DataField>TableId</DataField>
+						</AxFormDataSourceField>
+					</Fields>
+					<ReferencedDataSources />
+					<JoinSource>VendMobileInvoiceDistributionTree</JoinSource>
+					<LinkType>OuterJoin</LinkType>
+					<JoinRelation>LedgerDimension</JoinRelation>
+				</AxFormReferencedDataSource>
+			</ReferencedDataSources>
+			<JoinSource>VendInvoiceInfoTable</JoinSource>
+			<LinkType>Active</LinkType>
+			<DataSourceLinks />
+			<DerivedDataSources />
+		</AxFormDataSource>
+	</DataSources>
+	<Design>
+		<Caption xmlns="">@AccountsPayableMobile:AllDistributions</Caption>
+		<Pattern xmlns="">SimpleList</Pattern>
+		<PatternVersion xmlns="">1.1</PatternVersion>
+		<Style xmlns="">SimpleList</Style>
+		<Controls xmlns="">
+			<AxFormControl xmlns=""
+				i:type="AxFormActionPaneControl">
+				<Name>ActionPane</Name>
+				<Type>ActionPane</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls />
+			</AxFormControl>
+			<AxFormControl xmlns=""
+				i:type="AxFormGroupControl">
+				<Name>FilterGroup</Name>
+				<Pattern>CustomAndQuickFilters</Pattern>
+				<PatternVersion>1.1</PatternVersion>
+				<Type>Group</Type>
+				<WidthMode>SizeToAvailable</WidthMode>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl>
+						<Name>QuickFilter</Name>
+						<FormControlExtension>
+							<Name>QuickFilterControl</Name>
+							<ExtensionComponents />
+							<ExtensionProperties>
+								<AxFormControlExtensionProperty>
+									<Name>targetControlName</Name>
+									<Type>String</Type>
+								</AxFormControlExtensionProperty>
+								<AxFormControlExtensionProperty>
+									<Name>placeholderText</Name>
+									<Type>String</Type>
+								</AxFormControlExtensionProperty>
+								<AxFormControlExtensionProperty>
+									<Name>defaultColumnName</Name>
+									<Type>String</Type>
+								</AxFormControlExtensionProperty>
+							</ExtensionProperties>
+						</FormControlExtension>
+					</AxFormControl>
+				</Controls>
+				<ArrangeMethod>HorizontalLeft</ArrangeMethod>
+				<FrameType>None</FrameType>
+				<Style>CustomFilter</Style>
+				<ViewEditMode>Edit</ViewEditMode>
+			</AxFormControl>
+			<AxFormControl xmlns=""
+				i:type="AxFormGridControl">
+				<Name>InvoiceDistributions</Name>
+				<Type>Grid</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormStringControl">
+						<Name>Description</Name>
+						<Type>String</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>Description</DataField>
+						<DataSource>VendMobileInvoiceDistributionTree</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormStringControl">
+						<Name>Amount</Name>
+						<Type>String</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>AmountForDisplay</DataField>
+						<DataSource>VendMobileInvoiceDistributionTree</DataSource>
+						<Label>@AccountsPayableMobile:Amount</Label>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormStringControl">
+						<Name>Currency</Name>
+						<Type>String</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>TransactionCurrency</DataField>
+						<DataSource>VendMobileInvoiceDistributionTree</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormStringControl">
+						<Name>DisplayValue</Name>
+						<AutoDeclaration>Yes</AutoDeclaration>
+						<Type>String</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>DisplayValue</DataField>
+						<DataSource>LedgerDimension</DataSource>
+						<Label>@AccountsPayableMobile:LedgerAccount</Label>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormInt64Control">
+						<Name>AccountingDistributionRecId</Name>
+						<Type>Int64</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>AccountingDistribution</DataField>
+						<DataSource>VendMobileInvoiceDistributionTree</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormInt64Control">
+						<Name>TopLevelSourceDocumentLine</Name>
+						<Type>Int64</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>TopLevelSourceDocumentLine</DataField>
+						<DataSource>VendMobileInvoiceDistributionTree</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormComboBoxControl">
+						<Name>TreeNodeType</Name>
+						<Type>ComboBox</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>TreeNodeType</DataField>
+						<DataSource>VendMobileInvoiceDistributionTree</DataSource>
+						<Items />
+					</AxFormControl>
+				</Controls>
+				<DataSource>VendMobileInvoiceDistributionTree</DataSource>
+				<Style>Tabular</Style>
+			</AxFormControl>
+			<AxFormControl xmlns=""
+				i:type="AxFormGroupControl">
+				<Name>Footer</Name>
+				<Pattern>FieldsFieldGroups</Pattern>
+				<PatternVersion>1.1</PatternVersion>
+				<Type>Group</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormInt64Control">
+						<Name>RecId</Name>
+						<Type>Int64</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>RecId</DataField>
+						<DataSource>VendInvoiceInfoTable</DataSource>
+					</AxFormControl>
+				</Controls>
+				<ColumnsMode>Fill</ColumnsMode>
+			</AxFormControl>
+		</Controls>
+	</Design>
+	<Parts />
+</AxForm>

@@ -1,0 +1,120 @@
+﻿AllDistributions=Tất cả các phần phân bổ
+ ;All distributions view label
+Amount=Số tiền
+ ;Used to display an amount field on the forms supporting mobile
+AmountForDisplay=Số tiền để hiển thị
+ ;Label for Amount for display.
+AttachmentCount=Số lượng tệp đính kèm
+ ;Label for the attachment count control for header and line level document attachments.
+Attachments=Tệp đính kèm
+ ;Label for mobile attachments link
+DistributionDetails=Chi tiết về các phần phân bổ
+ ;Used as a caption on the detail page for a distribution
+DistributionTreeNodeType=Loại nút trên cây phân bổ
+ ;Label for the VendMobileInvoiceDistributionTreeType enum.
+DistributionTreeNodeTypeDescription=Nút mô tả
+ ;Label for the VendMobileInvoiceDistributionTreeType::DescriptionNode enum value.
+DistributionTreeNodeTypeDistribution=Nút phân bổ
+ ;Label for the VendMobileInvoiceDistributionTreeType::DistributionNode enum value.
+DistributionTreeNodeTypeParent=Nút chính
+ ;Label for the VendMobileInvoiceDistributionTreeType::ParentNode enum value.
+DistributionTreeNodeTypeSub=Nút phụ
+ ;Label for the VendMobileInvoiceDistributionTreeType::SubNode enum value.
+HeaderDistributions=Các phần phân bổ trên tiêu đề
+ ;Header level distributions view label
+HeaderLine=Phần phô bổ trên tiêu đề hoặc dòng
+ ;Label for column storing whether or not a distribution is from the header or line of an invoice
+InvoiceApprovals=Phê duyệt hóa đơn
+ ;Label for the Invoice approval mobile application title
+InvoiceDistributionTree=Cây phân bổ hóa đơn
+ ;Label for the vendor invoice distibution tree table
+InvoiceDistributionTreeDeveloperDocumentation=Thông tin về cây phân bổ hóa đơn của nhà cung cấp
+ ;Label for the developer documentation for the Invoice distribution tree table
+InvoiceDistributionTreeMaintain=Duy trì dữ liệu cây phân bổ hóa đơn
+ ;Label for the invoice distribution tree privilege
+InvoiceHeader=Tiêu đề hóa đơn
+ ;Label for the invoice header group
+InvoiceHeaderDetails=Chi tiết tiêu đề hóa đơn
+ ;Label for the invoice header details form
+InvoiceLineDescription=Mô tả dòng hóa đơn
+ ;Label for the identifier for an invoice line
+InvoiceLineDetails=Chi tiết dòng hóa đơn
+ ;Label for the invoice line details page
+InvoiceLines=Các dòng hóa đơn
+ ;Label for the caption to the invoice lines list
+InvoicesForApproval=Hóa dơn để phê duyệt
+ ;Label for the Invoice approval mobile application resource
+InvoiceTotalCompanyCurrency=Tổng số trên hóa đơn tính bằng đơn vị tiền tệ của công ty
+ ;Invoice total in MST label
+LedgerAccount=Tài khoản sổ cái
+ ;Used to display an amount field on the forms supporting mobile
+LedgerAccountSegments=Phân đoạn tài khoản sổ cái
+ ;Used as a caption on the details page for a given ledger dimension
+LedgerDimensionPreview=Bản xem trước phân hệ sổ cái
+ ;Table label for the LedgerMobileDimensionPreview table used in the invoice approval mobile app.
+LedgerMobileDimensionPreviewDeveloperDocumentation=Giá trị phân hệ sổ cái được chia thành một bảng
+ ;Label for the ledger dimension preview developer documentation
+Level1LineDistributions=Các phần phân bổ trên dòng cấp 1
+ ;Level 1 depth invoice line distributions view label
+Level1SourceDocumentLine=Dòng tài liệu nguồn cấp 1
+ ;Label used for representing the top level source document line for an invoice
+Level2LineDistributions=Các phần phân bổ trên dòng cấp 2
+ ;Level 2 depth invoice line distributions view label
+Level2SourceDocumentLine=Dòng tài liệu nguồn cấp 2
+ ;Label used for representing the second level source document line for an invoice
+Level3LineDistributions=Các phần phân bổ trên dòng cấp 3
+ ;Level 3 depth invoice line distributions view label
+Level3SourceDocumentLine=Dòng tài liệu nguồn cấp 3
+ ;Label used for representing the second level source document line for an invoice
+LineDistributions=Các phần phân bổ trên dòng
+ ;Line level distributions view label
+MobileWorkflowStatus=Trạng thái quy trình trên thiết bị di động
+ ;Label for the state of vendor invoice mobile workflow enum
+More=Thêm
+ ;Label for the mobile button labelled "More"
+NewVersion=Yêu cầu phiên bản mới
+ ;Label for the error message presented to the end user when they have an unsupported version of the mobile platform.
+NewVersionDescription=Không gian làm việc này yêu cầu phiên bản ứng dụng mới hơn. Vui lòng cài đặt ứng dụng từ cửa hàng.
+ ;Label for the error message description presented to the end user when they have an unsupported version of the mobile platform.
+NumberOfInvoiceLines=Số lượng dòng hóa đơn
+ ;Label to indicate the numbe of invoice lines for a given invoice
+Processed=Đã xử lý
+ ;Label for the processed state of vendor invoice mobile workflow
+ReferenceOnlyNode=Nút này chỉ để tham chiếu
+ ;Indicator for a tree node value that is purely for reference
+ShowAcceptTask=Hiển thị nhiệm vụ chấp nhận
+ ;Label for show accept task for current invoice value
+ShowApprovalTask=Hiển thị nhiệm vụ phê duyệt
+ ;Label for show approval task for current invoice value
+ShowCompleteTask=Hiển thị nhiệm vụ hoàn tất
+ ;Label for show complete task for current invoice value
+ShowDelegateTask=Hiển thị nhiệm vụ đại diện
+ ;Label for show delegate task for current invoice value
+ShowDenyTask=Hiển thị nhiệm vụ từ chối
+ ;Label for show deny task for current invoice value
+ShowHeaderDistributions=Hiển thị các phần phân bổ trên tiêu đề
+ ;Label to indicate whether the invoice details should display the header distributions link in the mobile approval app
+ShowRecallTask=Hiển thị nhiệm vụ thu hồi
+ ;Label for show recall task for current invoice value
+ShowRejectTask=Hiển thị nhiệm vụ từ chối
+ ;Label for show reject task for current invoice value
+ShowRequestChangeTask=Đã nhiệm vụ yêu cầu thay đổi
+ ;Label for show request change task for current invoice value
+ShowResubmitTask=Hiển thị nhiệm vụ gửi lại
+ ;Label for show resubmit task for current invoice value
+Unprocessed=Chưa xử lý
+ ;Label for the initial unprocessed state of vendor invoice mobile workflow
+VendInvoiceInfoLineRecId=Dòng hóa đơn
+ ;Label for views using a recId pulled from VendInvoiceInfoLine
+VendInvoiceInfoTableRecId=Tiêu đề hóa đơn
+ ;Label for views using a recId pulled from VendInvoiceInfoTable
+VendMobileInvoiceAssignedToMeListPageMaintain=Duy trì trang danh sách hóa đơn của nhà cung cấp đang chờ xử lý cho thiết bị di động
+ ;Label for the maintain privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceAssignedToMeListPageView=Xem trang danh sách hóa đơn của nhà cung cấp đang chờ xử lý cho thiết bị di động
+ ;Label for the view privilege of the mobile pending vendor invoice list page
+VendMobileInvoiceMaintain=Duy trì các hóa đơn của nhà cung cấp đang chờ xử lý trên thiết bị di động
+ ;Label for the maintain privilege of pending vendor invoices
+VendMobileInvoiceWorkflowUserView=Xem người dùng trong quy trình để ủy quyền hoặc các hành động đối với quy trình yêu cầu thay đổi
+ ;Label for viewing the workflow users for delegation or request change workflow actions
+WorkflowUsers=Người dùng trong quy trình
+ ;Label for the lookup form for valid workflow users for a given workflow item
