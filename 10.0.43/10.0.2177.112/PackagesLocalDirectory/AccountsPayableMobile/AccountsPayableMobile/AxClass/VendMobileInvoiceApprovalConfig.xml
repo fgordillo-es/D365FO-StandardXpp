@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>VendMobileInvoiceApprovalConfig</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Configuration class used to manage system settings and label translation for the invoice approvals mobile application.
+/// </summary>
+[DataContractAttribute('VendMobileInvoiceApprovalConfig')]
+public class VendMobileInvoiceApprovalConfig
+{
+    boolean isMatchingEnabled;
+    boolean isTotalsEnabled;
+    str approveLabel, acceptLabel, completeLabel, rejectLabel, delegateLabel, requestChangeLabel, resubmitLabel, recallLabel;
+    str distributionsLabel, attachmentsLabel, moreLabel, newVersionLabel, newVersionDescriptionLabel;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Instantiates a new instance of <c>VendMobileInvoiceApprovalConfig</c>
+    /// </summary>
+    protected void new()
+    {
+        super();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>construct</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Creates and initializes a new instance of <c>VendMobileInvoiceApprovalConfig</c>.
+    /// </summary>
+    /// <returns>Initialized instance of the config object.</returns>
+    public static VendMobileInvoiceApprovalConfig construct()
+    {
+        VendParameters vendParameters = VendParameters::find();
+
+        VendMobileInvoiceApprovalConfig config = new VendMobileInvoiceApprovalConfig();
+
+        config.invoiceMatchingEnabled(vendParameters.editUseInvoiceMatching());
+        config.invoiceTotalsEnabled(vendParameters.editCalculateInvoiceTotal());
+        config.approveLabel(new MenuFunction(menuItemActionStr(VendInvoiceApprovalApprove), MenuItemType::Action).label());
+        config.acceptLabel(new MenuFunction(menuItemActionStr(WorkflowClaimWorkItem), MenuItemType::Action).label());
+        config.completeLabel(new MenuFunction(menuItemActionStr(VendInvoiceTaskComplete), MenuItemType::Action).label());
+        config.rejectLabel(new MenuFunction(menuItemActionStr(VendInvoiceApprovalReject), MenuItemType::Action).label());
+        config.requestChangeLabel("@SYS108711");
+        config.resubmitLabel(new MenuFunction(menuItemActionStr(VendInvoiceHeaderWorkflowReSubmit), MenuItemType::Action).label());
+        config.delegateLabel(new MenuFunction(menuItemActionStr(VendInvoiceTaskDelegate), MenuItemType::Action).label());
+        config.recallLabel(new MenuFunction(menuItemActionStr(VendInvoiceHeaderWorkflowCancel), MenuItemType::Action).label());
+        config.distributionsLabel("@SourceDocumentation:Distributions");
+        config.attachmentsLabel("@AccountsPayableMobile:Attachments");
+        config.moreLabel("@AccountsPayableMobile:More");
+        config.newVersionLabel("@AccountsPayableMobile:NewVersion");
+        config.newVersionDescriptionLabel("@AccountsPayableMobile:NewVersionDescription");
+
+        return config;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getConfigName</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets the name of the config class contract attribute.
+    /// </summary>
+    /// <returns>The attribute name of the contract.</returns>
+    public static Description getConfigName()
+    {
+        DictClass dictClass = new DictClass(classNum(VendMobileInvoiceApprovalConfig));
+        DataContractAttribute attribute = dictClass.getAttribute(classStr(DataContractAttribute));
+        return attribute.Name();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>invoiceMatchingEnabled</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Returns whether or not invoice matching is enabled in the system.
+    /// </summary>
+    /// <param name = "_isMatchingEnabled">Is matching enabled.</param>
+    /// <returns>true if invoice matching is enabled.</returns>
+    [DataMemberAttribute('InvoiceMatchingEnabled')]
+    public boolean invoiceMatchingEnabled(boolean _isMatchingEnabled = isMatchingEnabled)
+    {
+        isMatchingEnabled = _isMatchingEnabled;
+        return isMatchingEnabled;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>invoiceTotalsEnabled</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Returns whether or not invoice totals is enabled in the system.
+    /// </summary>
+    /// <param name = "_isTotalsEnabled">Is invoice totals enabled.</param>
+    /// <returns>true if invoice totals is enabled.</returns>
+    [DataMemberAttribute('InvoiceTotalsEnabled')]
+    public boolean invoiceTotalsEnabled(boolean _isTotalsEnabled = isTotalsEnabled)
+    {
+        isTotalsEnabled = _isTotalsEnabled;
+        return isTotalsEnabled;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>approveLabel</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// The approve workflow label in the invoice approval mobile application.
+    /// </summary>
+    /// <param name = "_approveLabel">Approve label to be used.</param>
+    /// <returns>A translated approve label.</returns>
+    [DataMemberAttribute('ApproveLabel')]
+    public str approveLabel(str _approveLabel = approveLabel)
+    {
+        approveLabel = _approveLabel;
+        return approveLabel;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>acceptLabel</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// The accept workflow label in the invoice approval mobile application.
+    /// </summary>
+    /// <param name = "_acceptLabel">Accept label to be used.</param>
+    /// <returns>A translated accept label.</returns>
+    [DataMemberAttribute('AcceptLabel')]
+    public str acceptLabel(str _acceptLabel = acceptLabel)
+    {
+        acceptLabel = _acceptLabel;
+        return acceptLabel;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>completeLabel</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// The complete workflow label in the invoice approval mobile application.
+    /// </summary>
+    /// <param name = "_completeLabel">Complete label to be used.</param>
+    /// <returns>A translated complete label.</returns>
+    [DataMemberAttribute('CompleteLabel')]
+    public str completeLabel(str _completeLabel = completeLabel)
+    {
+        completeLabel = _completeLabel;
+        return completeLabel;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>rejectLabel</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// The reject workflow label in the invoice approval mobile application.
+    /// </summary>
+    /// <param name = "_rejectLabel">Reject label to be used.</param>
+    /// <returns>A translated reject label.</returns>
+    [DataMemberAttribute('RejectLabel')]
+    public str rejectLabel(str _rejectLabel = rejectLabel)
+    {
+        rejectLabel = _rejectLabel;
+        return rejectLabel;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>requestChangeLabel</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// The request change workflow label in the invoice approval mobile application.
+    /// </summary>
+    /// <param name = "_requestChangeLabel">Request change label to be used.</param>
+    /// <returns>A translated request change label.</returns>
+    [DataMemberAttribute('RequestChangeLabel')]
+    public str requestChangeLabel(str _requestChangeLabel = requestChangeLabel)
+    {
+        requestChangeLabel = _requestChangeLabel;
+        return requestChangeLabel;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>resubmitLabel</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// The resubmit workflow label in the invoice approval mobile application.
+    /// </summary>
+    /// <param name = "_resubmitLabel">Resubmit label to be used.</param>
+    /// <returns>A translated resubmit label.</returns>
+    [DataMemberAttribute('ResubmitLabel')]
+    public str resubmitLabel(str _resubmitLabel = resubmitLabel)
+    {
+        resubmitLabel = _resubmitLabel;
+        return resubmitLabel;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>delegateLabel</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// The delegate workflow label in the invoice approval mobile application.
+    /// </summary>
+    /// <param name = "_delegateLabel">Delegate label to be used.</param>
+    /// <returns>A translated delegate label.</returns>
+    [DataMemberAttribute('DelegateLabel')]
+    public str delegateLabel(str _delegateLabel = delegateLabel)
+    {
+        delegateLabel = _delegateLabel;
+        return delegateLabel;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>recallLabel</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// The recall workflow label in the invoice approval mobile application.
+    /// </summary>
+    /// <param name = "_recallLabel">Recall label to be used.</param>
+    /// <returns>A translated recall label.</returns>
+    [DataMemberAttribute('RecallLabel')]
+    public str recallLabel(str _recallLabel = recallLabel)
+    {
+        recallLabel = _recallLabel;
+        return recallLabel;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>distributionsLabel</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// The distributions label in the invoice approval mobile application.
+    /// </summary>
+    /// <param name = "_distributionsLabel">Distributions label.</param>
+    /// <returns>A translated distributions label.</returns>
+    [DataMemberAttribute('DistributionsLabel')]
+    public str distributionsLabel(str _distributionsLabel = distributionsLabel)
+    {
+        distributionsLabel = _distributionsLabel;
+        return distributionsLabel;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>attachmentsLabel</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// The attachments label in the invoice approval mobile application
+    /// </summary>
+    /// <param name = "_attachmentsLabel">Attachments label</param>
+    /// <returns>A translated attachments label</returns>
+    [DataMemberAttribute('AttachmentsLabel')]
+    public str attachmentsLabel(str _attachmentsLabel = attachmentsLabel)
+    {
+        attachmentsLabel = _attachmentsLabel;
+        return attachmentsLabel;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>moreLabel</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// The more label used for the more button in the invoice approval mobile application.
+    /// </summary>
+    /// <param name = "_moreLabel">More button label.</param>
+    /// <returns>A translated more button label.</returns>
+    [DataMemberAttribute('MoreLabel')]
+    public str moreLabel(str _moreLabel = moreLabel)
+    {
+        moreLabel = _moreLabel;
+        return moreLabel;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>newVersionLabel</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// The new version label used for the error message when the user has an unsupported version of the mobile platform.
+    /// </summary>
+    /// <param name = "_newVersionLabel">New version label.</param>
+    /// <returns>A translated new version label.</returns>
+    [DataMemberAttribute('NewVersionLabel')]
+    public str newVersionLabel(str _newVersionLabel = newVersionLabel)
+    {
+        newVersionLabel = _newVersionLabel;
+        return newVersionLabel;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>newVersionDescriptionLabel</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// The new version description label used for the error message when the user has an unsupported version of the mobile platform.
+    /// </summary>
+    /// <param name = "_newVersionDescriptionLabel">New version description label.</param>
+    /// <returns>A translated new version description label.</returns>
+    [DataMemberAttribute('NewVersionDescriptionLabel')]
+    public str newVersionDescriptionLabel(str _newVersionDescriptionLabel = newVersionDescriptionLabel)
+    {
+        newVersionDescriptionLabel = _newVersionDescriptionLabel;
+        return newVersionDescriptionLabel;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>
